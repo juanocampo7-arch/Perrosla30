@@ -1,0 +1,672 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Utensils, 
+  ChefHat, 
+  Receipt, 
+  Plus, 
+  Minus, 
+  Trash2, 
+  MessageSquare,
+  CheckCircle,
+  ClipboardList,
+  Map as MapIcon,
+  X,
+  AlertTriangle
+} from 'lucide-react';
+
+// --- MOCK DATA: Menú base para pruebas ---
+const MENU_CATEGORIES = ['Perros', 'Hamburguesas', 'Arepas', 'Asados', 'Salchipapas', 'Desgranados', 'Bebidas', 'Adicionales'];
+
+const MOCK_MENU = {
+  'Perros': [
+    { id: 'p1', name: 'Perro Sencillo', price: 18000 },
+    { id: 'p2', name: 'Perro Doble', price: 21000 },
+    { id: 'p3', name: 'Perro Triple', price: 24000 },
+    { id: 'p4', name: 'Choriperro', price: 21000 },
+    { id: 'p5', name: 'Perra', price: 21000 },
+    { id: 'p6', name: 'Chow Chow Instagram', price: 25000 },
+    { id: 'p7', name: 'San Bernardo', price: 36000 },
+    { id: 'p8', name: 'Perro con Salchicha Ranchera', price: 21000 },
+    { id: 'p9', name: 'Perro Super Ranchero', price: 33000 },
+    { id: 'p10', name: 'Perro con Salchicha Americana', price: 21000 },
+    { id: 'p11', name: 'Perro Vegano', price: 19000 },
+  ],
+  'Hamburguesas': [
+    { id: 'h1', name: 'Hamburguesa Sencilla', price: 19000 },
+    { id: 'h2', name: 'Hamburguesa Doble', price: 23000 },
+    { id: 'h3', name: 'Hamburguesa Triple', price: 27000 },
+    { id: 'h4', name: 'Hamburguesa Filete de Pollo', price: 22000 },
+    { id: 'h5', name: 'Hamburguesa de Lomo de Cerdo', price: 22000 },
+    { id: 'h6', name: 'Hamburguesa Vegetariana', price: 20000 },
+    { id: 'h7', name: 'Hamburguesa Mixta', price: 28000 },
+    { id: 'h8', name: 'Reina de la Casa', price: 35000 },
+  ],
+  'Arepas': [
+    { id: 'ar1', name: 'Arepa Burguer', price: 19000 },
+    { id: 'ar2', name: 'Arepa Mixta', price: 28000 },
+  ],
+  'Asados': [
+    { id: 'as1', name: 'Chuzo de Pollo', price: 23000 },
+    { id: 'as2', name: 'Chuzo de Cerdo', price: 23000 },
+    { id: 'as3', name: 'Chuzo de Res', price: 27000 },
+    { id: 'as4', name: 'Costillas BBQ', price: 32000 },
+    { id: 'as5', name: 'Picada', price: 56000 },
+    { id: 'as6', name: 'Chorizo Santarrosano X2', price: 26000 },
+  ],
+  'Salchipapas': [
+    { id: 's1', name: 'Salchipapa Pequeña', price: 19000 },
+    { id: 's2', name: 'Salchipapa Mediana', price: 23000 },
+    { id: 's3', name: 'Salchipapa Megafamiliar', price: 50000 },
+    { id: 's4', name: 'Salchipapa Americana Pequeña', price: 24000 },
+    { id: 's5', name: 'Salchipapa Americana Mediana', price: 28000 },
+    { id: 's6', name: 'Salchipapa Americana Familiar', price: 62000 },
+    { id: 's7', name: 'Choripapa Pequeña', price: 23000 },
+    { id: 's8', name: 'Choripapa Mediana', price: 27000 },
+  ],
+  'Desgranados': [
+    { id: 'd1', name: 'Desgranado Gratinado', price: 25000 },
+    { id: 'd2', name: 'Desgranado', price: 25000 },
+    { id: 'd3', name: 'Coctel de Huevo', price: 20000 },
+  ],
+  'Bebidas': [
+    { id: 'b1', name: 'Power', price: 5000 },
+    { id: 'b2', name: 'Gaseosa 400 ML', price: 5000 },
+    { id: 'b3', name: 'Agua Sin Gas', price: 5000 },
+    { id: 'b4', name: 'Agua Con Gas', price: 5000 },
+    { id: 'b5', name: 'Gaseosa 1.5L', price: 8000 },
+    { id: 'b6', name: 'Gaseosa Gopack', price: 5000 },
+    { id: 'b7', name: 'Jarra de Limonada', price: 8000 },
+    { id: 'b8', name: 'Jarra de Jugo', price: 11000 },
+    { id: 'b9', name: 'Limonada de Coco', price: 11000 },
+    { id: 'b10', name: 'Limonada Cherry', price: 11000 },
+    { id: 'b11', name: 'Limonada de Mango Biche', price: 11000 },
+    { id: 'b12', name: 'Limonada de Hierba Buena', price: 11000 },
+  ],
+  'Adicionales': [
+    { id: 'ad1', name: 'Porción de Huevo', price: 10000 },
+    { id: 'ad2', name: 'Porción de Tocineta', price: 7000 },
+    { id: 'ad3', name: 'Porción de Maíz', price: 4000 },
+    { id: 'ad4', name: 'Piña Calada', price: 4000 },
+    { id: 'ad5', name: 'Queso', price: 6000 },
+    { id: 'ad6', name: 'Porción Papa 250 GRM', price: 10000 },
+  ]
+};
+
+// Posiciones de las mesas basadas en el mapa proporcionado
+const TABLE_POSITIONS = [
+  { id: 1, left: '8%', top: '55%' },
+  { id: 2, left: '18%', top: '55%' },
+  { id: 3, left: '6%', top: '85%' },
+  { id: 4, left: '13%', top: '85%' },
+  { id: 5, left: '20%', top: '85%' },
+  { id: 6, left: '32%', top: '55%' },
+  { id: 7, left: '32%', top: '85%' },
+  { id: 8, left: '40%', top: '85%' },
+  { id: 9, left: '48%', top: '85%' },
+  { id: 10, left: '56%', top: '85%' },
+  { id: 11, left: '64%', top: '85%' },
+  { id: 12, left: '52%', top: '58%' },
+  { id: 13, left: '60%', top: '58%' },
+  { id: 14, left: '68%', top: '58%' },
+  { id: 15, left: '76%', top: '85%' },
+  { id: 16, left: '83%', top: '85%' },
+  { id: 17, left: '90%', top: '85%' },
+  { id: 18, left: '96%', top: '85%' },
+  { id: 19, left: '82%', top: '58%' },
+  { id: 20, left: '92%', top: '58%' },
+];
+
+export default function App() {
+  // --- ESTADOS DE LA APLICACIÓN ---
+  // Vistas: 'mesero' | 'cocina' | 'caja'
+  const [currentView, setCurrentView] = useState('mesero');
+  
+  // Estado de la Orden Actual (Mesero)
+  const [waiterName, setWaiterName] = useState('');
+  const [tableNumber, setTableNumber] = useState('');
+  const [activeCategory, setActiveCategory] = useState(MENU_CATEGORIES[0]);
+  const [currentOrderItems, setCurrentOrderItems] = useState([]);
+  const [generalNote, setGeneralNote] = useState('');
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [lastSubmittedOrder, setLastSubmittedOrder] = useState(null);
+  
+  // Estado global del sistema
+  const [orderCounter, setOrderCounter] = useState(1);
+  const [kitchenOrders, setKitchenOrders] = useState([]);
+  const [cashierOrders, setCashierOrders] = useState([]);
+
+  // Notificaciones (Toast)
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  // --- LÓGICA DEL MESERO ---
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(amount);
+  };
+
+  const addItemToOrder = (product) => {
+    setCurrentOrderItems(prev => {
+      const existingItemIndex = prev.findIndex(item => item.id === product.id && item.note === '');
+      if (existingItemIndex >= 0) {
+        const newItems = [...prev];
+        newItems[existingItemIndex].quantity += 1;
+        return newItems;
+      }
+      return [...prev, { ...product, quantity: 1, note: '' }];
+    });
+  };
+
+  const updateItemQuantity = (index, delta) => {
+    setCurrentOrderItems(prev => {
+      const newItems = [...prev];
+      const newQuantity = newItems[index].quantity + delta;
+      if (newQuantity > 0) {
+        newItems[index].quantity = newQuantity;
+      } else {
+        newItems.splice(index, 1); 
+      }
+      return newItems;
+    });
+  };
+
+  const updateItemNote = (index, note) => {
+    setCurrentOrderItems(prev => {
+      const newItems = [...prev];
+      newItems[index].note = note;
+      return newItems;
+    });
+  };
+
+  const removeItem = (index) => {
+    setCurrentOrderItems(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const clearCurrentOrder = () => {
+    setCurrentOrderItems([]);
+    setGeneralNote('');
+    showToast('Orden vaciada correctamente.', 'error');
+  };
+
+  const calculateTotal = () => {
+    return currentOrderItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+  };
+
+  const submitOrder = () => {
+    if (!waiterName.trim()) {
+      showToast('Por favor ingresa el nombre del mesero.', 'error');
+      return;
+    }
+    if (!tableNumber) {
+      showToast('Por favor selecciona una mesa del mapa.', 'error');
+      return;
+    }
+    if (currentOrderItems.length === 0) {
+      showToast('La orden está vacía. Agrega productos antes de enviar.', 'error');
+      return;
+    }
+
+    const newOrder = {
+      orderId: orderCounter,
+      waiter: waiterName,
+      table: tableNumber,
+      items: [...currentOrderItems],
+      generalNote: generalNote,
+      total: calculateTotal(),
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      status: 'pending' 
+    };
+
+    setKitchenOrders(prev => [...prev, { ...newOrder }]);
+    setCashierOrders(prev => [...prev, { ...newOrder, status: 'unpaid' }]);
+    
+    setLastSubmittedOrder({ id: orderCounter, table: tableNumber });
+    setOrderCounter(prev => prev + 1);
+    setCurrentOrderItems([]);
+    setGeneralNote('');
+  };
+
+  // --- LÓGICA DE COCINA Y CAJA ---
+  const completeKitchenOrder = (orderId) => {
+    setKitchenOrders(prev => prev.filter(o => o.orderId !== orderId));
+  };
+
+  const payCashierOrder = (orderId) => {
+    setCashierOrders(prev => prev.filter(o => o.orderId !== orderId));
+    showToast(`Pago registrado para la orden #${orderId}`);
+  };
+
+  const cancelOrder = (orderId) => {
+    // Elimina la orden de todas las vistas
+    setKitchenOrders(prev => prev.filter(o => o.orderId !== orderId));
+    setCashierOrders(prev => prev.filter(o => o.orderId !== orderId));
+    showToast(`Orden #${orderId} anulada del sistema.`, 'error');
+  };
+
+  // --- RENDERIZADO DE COMPONENTES ---
+
+  const renderWaiterTerminal = () => (
+    <div className="flex flex-col lg:flex-row h-full gap-4">
+      {/* Menú y Categorías */}
+      <div className="flex-1 flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="flex overflow-x-auto bg-gray-50 p-2 gap-2 border-b">
+          {MENU_CATEGORIES.map(category => (
+            <button
+              key={category}
+              onClick={() => setActiveCategory(category)}
+              className={`px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${
+                activeCategory === category 
+                  ? 'bg-red-600 text-white shadow-md' 
+                  : 'bg-white text-gray-700 border hover:bg-red-50'
+              }`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+        
+        <div className="p-4 overflow-y-auto flex-1 bg-gray-50">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {MOCK_MENU[activeCategory]?.map(product => (
+              <button
+                key={product.id}
+                onClick={() => addItemToOrder(product)}
+                className="bg-white border rounded-lg p-3 text-left shadow-sm hover:shadow-md hover:border-red-500 transition-all flex flex-col justify-between h-24 active:scale-95"
+              >
+                <span className="font-bold text-gray-800 text-sm leading-tight line-clamp-2">{product.name}</span>
+                <span className="text-red-600 font-semibold text-sm">{formatCurrency(product.price)}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Ticket / Resumen de Orden */}
+      <div className="w-full lg:w-96 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col h-[calc(100vh-8rem)] lg:h-auto">
+        <div className="p-4 bg-gray-900 text-white rounded-t-xl flex justify-between items-center">
+          <h2 className="text-xl font-bold">Orden #{orderCounter}</h2>
+          <div className="flex items-center gap-3">
+            {currentOrderItems.length > 0 && (
+              <button 
+                onClick={clearCurrentOrder}
+                className="text-gray-400 hover:text-red-400 p-1.5 bg-gray-800 rounded-full transition-colors flex items-center justify-center"
+                title="Vaciar Orden Completamente"
+              >
+                <Trash2 size={18} />
+              </button>
+            )}
+            {tableNumber && <span className="bg-red-600 px-3 py-1 rounded-full text-sm font-bold">Mesa {tableNumber}</span>}
+          </div>
+        </div>
+
+        <div className="p-4 border-b space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del Mesero</label>
+            <input 
+              type="text" 
+              value={waiterName}
+              onChange={(e) => setWaiterName(e.target.value)}
+              placeholder="Ej. Carlos"
+              className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-red-500 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Mesa</label>
+            <button
+              onClick={() => setIsMapModalOpen(true)}
+              className={`w-full border rounded-lg p-2 flex items-center justify-between focus:ring-2 focus:ring-red-500 outline-none transition-colors ${tableNumber ? 'bg-red-50 border-red-200' : 'bg-gray-50 hover:bg-red-50'}`}
+            >
+              <span className={`font-bold ${tableNumber ? 'text-red-700' : 'text-gray-500'}`}>
+                {tableNumber ? `Mesa ${tableNumber}` : 'Seleccionar Mesa...'}
+              </span>
+              <MapIcon size={18} className={tableNumber ? 'text-red-600' : 'text-gray-400'} />
+            </button>
+          </div>
+        </div>
+
+        {/* Lista de Items */}
+        <div className="flex-1 overflow-y-auto p-2 space-y-2 bg-gray-50">
+          {currentOrderItems.length === 0 ? (
+            <div className="text-center text-gray-400 mt-10">
+              <Utensils className="mx-auto h-12 w-12 mb-2 opacity-50" />
+              <p>La orden está vacía</p>
+            </div>
+          ) : (
+            currentOrderItems.map((item, index) => (
+              <div key={index} className="bg-white p-3 rounded-lg shadow-sm border text-sm relative group">
+                <div className="flex justify-between items-start mb-2 pr-6">
+                  <span className="font-bold text-gray-800">{item.name}</span>
+                  <span className="font-semibold text-gray-600 whitespace-nowrap">{formatCurrency(item.price * item.quantity)}</span>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-3 bg-gray-100 rounded-lg p-1">
+                    <button onClick={() => updateItemQuantity(index, -1)} className="p-1 bg-white rounded shadow-sm text-red-600 hover:bg-red-50"><Minus size={16} /></button>
+                    <span className="font-bold w-4 text-center">{item.quantity}</span>
+                    <button onClick={() => updateItemQuantity(index, 1)} className="p-1 bg-white rounded shadow-sm text-green-600 hover:bg-green-50"><Plus size={16} /></button>
+                  </div>
+                </div>
+                
+                <button 
+                  onClick={() => removeItem(index)} 
+                  className="absolute top-3 right-3 text-gray-300 hover:text-red-600 transition-colors"
+                  title="Eliminar producto"
+                >
+                  <Trash2 size={18} />
+                </button>
+                
+                {/* NUEVO CAMPO DE ESPECIFICACIONES MEJORADO */}
+                <div className="mt-3 bg-gray-50 p-2 rounded-lg border border-gray-200 flex items-start gap-2 focus-within:border-red-400 focus-within:bg-white transition-all shadow-inner">
+                  <MessageSquare size={16} className="text-gray-400 mt-0.5 flex-shrink-0" />
+                  <textarea 
+                    rows={1}
+                    placeholder="Especificaciones (ej. sin cebolla, para llevar)..." 
+                    value={item.note}
+                    onChange={(e) => updateItemNote(index, e.target.value)}
+                    className="w-full text-sm bg-transparent outline-none resize-none overflow-hidden text-gray-700"
+                    onInput={(e) => {
+                      e.target.style.height = 'auto';
+                      e.target.style.height = e.target.scrollHeight + 'px';
+                    }}
+                  />
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Totales y Botón Enviar */}
+        <div className="p-4 border-t bg-white rounded-b-xl">
+          <input 
+            type="text" 
+            placeholder="Observaciones generales de la orden..." 
+            value={generalNote}
+            onChange={(e) => setGeneralNote(e.target.value)}
+            className="w-full border rounded-lg p-2 mb-4 text-sm focus:ring-2 focus:ring-red-500 outline-none"
+          />
+          <div className="flex justify-between items-center mb-4 text-lg">
+            <span className="font-bold text-gray-600">Total:</span>
+            <span className="font-extrabold text-2xl text-red-600">{formatCurrency(calculateTotal())}</span>
+          </div>
+          <button 
+            onClick={submitOrder}
+            className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 text-lg"
+          >
+            <ClipboardList size={24} />
+            Enviar Orden
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderKitchen = () => (
+    <div className="h-full flex flex-col">
+      <div className="mb-4">
+        <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+          <ChefHat className="text-orange-500" /> Monitor de Cocina
+        </h2>
+        <p className="text-gray-500">Órdenes pendientes de preparación</p>
+      </div>
+
+      <div className="flex-1 overflow-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start">
+        {kitchenOrders.length === 0 ? (
+          <div className="col-span-full flex flex-col items-center justify-center text-gray-400 mt-20">
+            <CheckCircle className="h-16 w-16 mb-4 text-green-200" />
+            <p className="text-xl">No hay órdenes pendientes en cocina.</p>
+          </div>
+        ) : (
+          kitchenOrders.map(order => (
+            <div key={order.orderId} className="bg-yellow-50 border-2 border-yellow-200 rounded-xl shadow-md overflow-hidden">
+              <div className="bg-yellow-400 p-3 flex justify-between items-center text-gray-900">
+                <span className="font-extrabold text-xl">Mesa {order.table}</span>
+                <span className="font-bold">Orden #{order.orderId}</span>
+              </div>
+              <div className="p-3 text-sm border-b border-yellow-200 bg-yellow-100 flex justify-between text-gray-700">
+                <span><span className="font-semibold">Mesero:</span> {order.waiter}</span>
+                <span>{order.timestamp}</span>
+              </div>
+              
+              <div className="p-4 space-y-3">
+                {order.items.map((item, idx) => (
+                  <div key={idx} className="border-b border-yellow-200 pb-2 last:border-0 last:pb-0">
+                    <div className="flex gap-2">
+                      <span className="font-bold text-lg">{item.quantity}x</span>
+                      <span className="font-semibold text-gray-800 text-lg leading-tight">{item.name}</span>
+                    </div>
+                    {item.note && (
+                      <div className="ml-6 mt-1 flex gap-1 text-red-600 font-medium text-sm bg-red-50 p-1 rounded">
+                        <MessageSquare size={14} className="mt-0.5" /> {item.note}
+                      </div>
+                    )}
+                  </div>
+                ))}
+                
+                {order.generalNote && (
+                  <div className="mt-4 p-2 bg-orange-100 rounded border border-orange-200 text-orange-800 text-sm italic">
+                    <span className="font-bold not-italic mr-1">General:</span> {order.generalNote}
+                  </div>
+                )}
+              </div>
+              
+              <div className="p-4 pt-0">
+                <button 
+                  onClick={() => completeKitchenOrder(order.orderId)}
+                  className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg shadow transition-colors flex items-center justify-center gap-2"
+                >
+                  <CheckCircle size={20} />
+                  Marcar como Lista
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+
+  const renderCashier = () => (
+    <div className="h-full flex flex-col">
+      <div className="mb-4">
+        <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+          <Receipt className="text-green-600" /> Caja y Facturación
+        </h2>
+        <p className="text-gray-500">Órdenes pendientes de pago o anulación</p>
+      </div>
+
+      <div className="flex-1 overflow-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start">
+        {cashierOrders.length === 0 ? (
+          <div className="col-span-full flex flex-col items-center justify-center text-gray-400 mt-20">
+            <CheckCircle className="h-16 w-16 mb-4 text-green-200" />
+            <p className="text-xl">No hay cuentas pendientes por cobrar.</p>
+          </div>
+        ) : (
+          cashierOrders.map(order => (
+            <div key={order.orderId} className="bg-white border rounded-xl shadow-md overflow-hidden flex flex-col">
+              <div className="bg-gray-800 p-3 flex justify-between items-center text-white">
+                <span className="font-bold">Mesa {order.table}</span>
+                <span className="text-sm">Orden #{order.orderId}</span>
+              </div>
+              
+              <div className="p-4 flex-1">
+                <p className="text-sm text-gray-500 mb-3">Mesero: <span className="font-semibold text-gray-800">{order.waiter}</span></p>
+                
+                <div className="space-y-2 mb-4">
+                  {order.items.map((item, idx) => (
+                    <div key={idx} className="flex justify-between text-sm">
+                      <span className="text-gray-700">{item.quantity}x {item.name}</span>
+                      <span className="font-medium">{formatCurrency(item.price * item.quantity)}</span>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="border-t pt-3 mt-auto flex justify-between items-center">
+                  <span className="text-gray-600 font-bold">Total a pagar:</span>
+                  <span className="text-xl font-extrabold text-green-600">{formatCurrency(order.total)}</span>
+                </div>
+              </div>
+              
+              <div className="p-4 pt-0 flex gap-2">
+                <button 
+                  onClick={() => cancelOrder(order.orderId)}
+                  className="w-1/4 bg-red-100 hover:bg-red-200 text-red-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center"
+                  title="Anular orden por error"
+                >
+                  <X size={20} />
+                </button>
+                <button 
+                  onClick={() => payCashierOrder(order.orderId)}
+                  className="w-3/4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow transition-colors flex items-center justify-center gap-2"
+                >
+                  <Receipt size={20} />
+                  Pagar
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-100 flex flex-col font-sans">
+      <header className="bg-red-600 text-white shadow-md z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-2">
+              <span className="font-black text-2xl tracking-tighter">PERROS LA 30</span>
+              <span className="text-xs font-medium uppercase tracking-widest bg-red-800 px-2 py-0.5 rounded-full hidden sm:block">Los Originales</span>
+            </div>
+            
+            <nav className="flex space-x-1 sm:space-x-4">
+              <button 
+                onClick={() => setCurrentView('mesero')}
+                className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors ${currentView === 'mesero' ? 'bg-white text-red-600 shadow' : 'text-red-100 hover:bg-red-500'}`}
+              >
+                <Utensils size={18} /> <span className="hidden sm:inline">Tomar Orden</span>
+              </button>
+              <button 
+                onClick={() => setCurrentView('cocina')}
+                className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors relative ${currentView === 'cocina' ? 'bg-white text-red-600 shadow' : 'text-red-100 hover:bg-red-500'}`}
+              >
+                <ChefHat size={18} /> <span className="hidden sm:inline">Cocina</span>
+                {kitchenOrders.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-yellow-400 text-yellow-900 text-xs font-bold px-1.5 py-0.5 rounded-full">
+                    {kitchenOrders.length}
+                  </span>
+                )}
+              </button>
+              <button 
+                onClick={() => setCurrentView('caja')}
+                className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors relative ${currentView === 'caja' ? 'bg-white text-red-600 shadow' : 'text-red-100 hover:bg-red-500'}`}
+              >
+                <Receipt size={18} /> <span className="hidden sm:inline">Caja</span>
+                {cashierOrders.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-green-400 text-green-900 text-xs font-bold px-1.5 py-0.5 rounded-full">
+                    {cashierOrders.length}
+                  </span>
+                )}
+              </button>
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 overflow-hidden">
+        {currentView === 'mesero' && renderWaiterTerminal()}
+        {currentView === 'cocina' && renderKitchen()}
+        {currentView === 'caja' && renderCashier()}
+      </main>
+
+      {/* TOAST NOTIFICATION MEJORADA */}
+      {toast && (
+        <div className={`fixed bottom-4 right-4 text-white px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom-5 fade-in duration-300 ${toast.type === 'error' ? 'bg-red-600' : 'bg-gray-800'}`}>
+          {toast.type === 'error' ? <AlertTriangle className="text-white" size={24} /> : <CheckCircle className="text-green-400" size={24} />}
+          <span className="font-medium">{toast.message}</span>
+        </div>
+      )}
+
+      {isMapModalOpen && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-gray-900 text-white p-4 flex justify-between items-center">
+              <h3 className="text-xl font-bold flex items-center gap-2">
+                <MapIcon className="text-red-500" /> Selecciona una Mesa
+              </h3>
+              <button onClick={() => setIsMapModalOpen(false)} className="text-gray-400 hover:text-white transition-colors">
+                <X size={24} />
+              </button>
+            </div>
+            <div className="p-6 bg-gray-100 overflow-x-auto flex-1">
+              <div className="min-w-[700px] h-[400px] bg-white border-4 border-gray-300 rounded-xl relative mx-auto shadow-inner overflow-hidden">
+                 <div className="absolute top-0 left-0 w-1/4 h-[35%] border-b-4 border-r-4 border-gray-300 bg-gray-50 flex items-center justify-center">
+                    <span className="font-black text-2xl text-gray-400 tracking-widest">CAJA</span>
+                 </div>
+                 <div className="absolute top-0 left-1/4 w-[45%] h-[35%] border-b-4 border-r-4 border-gray-300 bg-gray-50 flex items-center justify-center">
+                    <span className="font-black text-3xl text-gray-400 tracking-widest">COCINA</span>
+                 </div>
+                 <div className="absolute top-[35%] left-[70%] w-1 h-[65%] bg-gray-300"></div>
+                 <div className="absolute top-[35%] left-[25%] w-1 h-[65%] bg-gray-300"></div>
+                 <div className="absolute bottom-0 left-[25%] w-32 h-10 border-t-4 border-l-4 border-r-4 border-gray-300 bg-white flex items-center justify-center z-10 translate-x-[-50%] rounded-t-lg">
+                    <span className="font-bold text-gray-500">ENTRADA</span>
+                 </div>
+
+                 {TABLE_POSITIONS.map(table => (
+                    <button
+                      key={table.id}
+                      onClick={() => { setTableNumber(table.id.toString()); setIsMapModalOpen(false); }}
+                      style={{ left: table.left, top: table.top, transform: 'translate(-50%, -50%)' }}
+                      className={`absolute w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-xl font-black text-lg shadow-md transition-all hover:scale-110 hover:shadow-lg ${
+                        tableNumber === table.id.toString()
+                          ? 'bg-red-600 text-white ring-4 ring-red-300 scale-110 z-20'
+                          : 'bg-white text-gray-800 border-2 border-gray-300 hover:border-red-500 hover:text-red-600 z-10'
+                      }`}
+                    >
+                      {table.id}
+                    </button>
+                 ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL DE ÉXITO Y SIGUIENTE ACCIÓN */}
+      {lastSubmittedOrder && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 md:p-8 max-w-sm w-full text-center shadow-2xl animate-in zoom-in-95 duration-200">
+            <CheckCircle className="text-green-500 w-20 h-20 mx-auto mb-4" />
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">¡Orden #{lastSubmittedOrder.id} Enviada!</h3>
+            <p className="text-gray-600 mb-6">¿Qué deseas hacer ahora, {waiterName}?</p>
+
+            <div className="space-y-3">
+              <button 
+                onClick={() => { 
+                  setLastSubmittedOrder(null); 
+                  // Mantiene la mesa actual
+                }} 
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors shadow-md"
+              >
+                Nueva Orden (Mesa {lastSubmittedOrder.table})
+              </button>
+              <button 
+                onClick={() => { 
+                  setLastSubmittedOrder(null); 
+                  setTableNumber(''); 
+                  setIsMapModalOpen(true); 
+                }} 
+                className="w-full bg-white border-2 border-gray-200 hover:border-red-500 text-gray-800 hover:text-red-600 font-bold py-3 rounded-xl transition-colors"
+              >
+                Atender Otra Mesa
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
