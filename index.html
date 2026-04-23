@@ -17,6 +17,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         /* Indicador de conexión */
         #connection-status { transition: all 0.3s; }
+        .table-btn.selected { background-color: #ef4444 !important; color: white !important; border-color: #ef4444 !important; }
     </style>
 </head>
 <body class="bg-gray-100 flex flex-col font-sans min-h-screen">
@@ -102,6 +103,9 @@
                 <!-- Lista de Items -->
                 <div id="cart-items" class="flex-1 overflow-y-auto p-2 space-y-2 bg-gray-50">
                     <!-- Items del carrito -->
+                    <div class="flex items-center justify-center h-full text-gray-400 italic text-sm">
+                        Agrega productos del menú
+                    </div>
                 </div>
 
                 <!-- Totales y Botón Enviar -->
@@ -113,7 +117,7 @@
                     </div>
                     <button onclick="submitOrder()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 text-lg">
                         <i data-lucide="cloud-upload" class="w-6 h-6"></i>
-                        Enviar Orden a la Nube
+                        Enviar Orden
                     </button>
                 </div>
             </div>
@@ -154,7 +158,7 @@
                     <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
                         <i data-lucide="receipt" class="text-green-600 w-8 h-8"></i> Caja y Facturación
                     </h2>
-                    <p class="text-gray-500">Órdenes pendientes de pago (Ticket completo)</p>
+                    <p class="text-gray-500">Órdenes pendientes de pago</p>
                 </div>
                 <button onclick="resetDatabase()" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 sm:px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-red-200 text-sm shadow-sm" title="Borra todo y reinicia el contador a 1">
                     <i data-lucide="alert-triangle" class="w-4 h-4"></i> <span class="hidden sm:inline">Limpiar Sistema</span>
@@ -182,7 +186,6 @@
 
     <!-- MODALES Y NOTIFICACIONES -->
     <div id="toast" class="fixed bottom-4 right-4 text-white px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-20 opacity-0 z-[100]">
-        <!-- Contenedor del icono seguro para no romper al reemplazar el SVG -->
         <div id="toast-icon-container">
             <i data-lucide="check-circle" class="w-6 h-6"></i>
         </div>
@@ -221,6 +224,7 @@
                     <div class="absolute bottom-0 left-[25%] w-32 h-10 border-t-4 border-l-4 border-r-4 border-gray-300 bg-white flex items-center justify-center z-10 translate-x-[-50%] rounded-t-lg">
                         <span class="font-bold text-gray-500">ENTRADA</span>
                     </div>
+                    <!-- Las mesas se dibujan vía JS -->
                 </div>
             </div>
         </div>
@@ -234,8 +238,11 @@
             <p id="success-subtitle" class="text-gray-600 mb-6">¿Qué deseas hacer ahora?</p>
 
             <div class="space-y-3">
+                <button onclick="printTicket(window.state.lastSubmittedOrder, 'cocina_full')" class="w-full bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="printer" class="w-5 h-5"></i> Imprimir a Cocina
+                </button>
                 <button onclick="actionNewOrderSameTable()" id="btn-same-table" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors shadow-md">
-                    Nueva Orden
+                    Nueva Orden Misma Mesa
                 </button>
                 <button onclick="actionNewOrderOtherTable()" class="w-full bg-white border-2 border-gray-200 hover:border-red-500 text-gray-800 hover:text-red-600 font-bold py-3 rounded-xl transition-colors">
                     Atender Otra Mesa
@@ -244,9 +251,8 @@
         </div>
     </div>
 
-    <!-- LÓGICA DE LA APLICACIÓN Y CONEXIÓN A FIREBASE (MÓDULO) -->
+    <!-- LÓGICA DE LA APLICACIÓN Y CONEXIÓN A FIREBASE -->
     <script type="module">
-        // Importaciones de Firebase V11.6.1
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -256,10 +262,8 @@
         // ==========================================
         let firebaseConfig;
         if (typeof __firebase_config !== 'undefined') {
-            // Para el entorno de prueba/canvas
             firebaseConfig = JSON.parse(__firebase_config);
         } else {
-            // Las llaves del usuario real
             firebaseConfig = {
                 apiKey: "AIzaSyB0651iAFAIQd3_qJmv0WkfYT2HX0M2tAM",
                 authDomain: "perros-la-30-feafb.firebaseapp.com",
@@ -348,6 +352,12 @@
             { id: 19, left: '82%', top: '58%' }, { id: 20, left: '92%', top: '58%' }
         ];
 
+        window.getStation = function(category) {
+            if (category === 'Perros') return 'perrero';
+            if (category === 'Hamburguesas') return 'hamburguesero';
+            return 'general';
+        };
+
         // --- ESTADO GLOBAL ---
         window.state = {
             currentUser: null,
@@ -359,10 +369,10 @@
             activeCategory: MENU_CATEGORIES[0],
             currentOrderItems: [],
             generalNote: '',
-            orderCounter: 1, // Sincronizado con Firebase
-            kitchenTickets: [], // Sincronizado con Firebase
-            cashierOrders: [], // Sincronizado con Firebase
-            historyOrders: [], // Nuevo: Historial sincronizado con Firebase
+            orderCounter: 1, 
+            kitchenTickets: [], 
+            cashierOrders: [], 
+            historyOrders: [], 
             lastSubmittedOrder: null
         };
 
@@ -378,7 +388,6 @@
             const iconContainer = document.getElementById('toast-icon-container');
             document.getElementById('toast-message').innerText = message;
             
-            // Reemplazamos el contenedor del icono de forma segura para no romper SVGs cacheados
             iconContainer.innerHTML = `<i data-lucide="${type === 'error' ? 'alert-triangle' : 'check-circle'}" class="w-6 h-6"></i>`;
             
             toastEl.className = `fixed bottom-4 right-4 text-white px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3 transition-all duration-300 transform z-[100] ${type === 'error' ? 'bg-red-600' : 'bg-gray-800'}`;
@@ -405,7 +414,7 @@
             } catch (error) {
                 console.error("Error de conexión:", error);
                 const statusEl = document.getElementById('connection-status');
-                statusEl.innerText = "Modo Local (Sin Nube)";
+                statusEl.innerText = "Modo Local";
                 statusEl.className = "ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1";
             }
         };
@@ -425,34 +434,27 @@
             }
         });
 
-        // Escuchar cambios en la base de datos (Sincronización en vivo)
         function setupFirebaseListeners() {
             if (!window.state.currentUser) return;
 
-            // Escuchar Contador Global de Órdenes
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), (snapshot) => {
                 if (snapshot.exists()) {
                     const cloudVal = snapshot.data().value;
-                    // Siempre actualiza al valor de la nube + 1 (el último usado + 1)
                     window.state.orderCounter = cloudVal + 1;
-                    document.getElementById('order-counter-display').innerText = window.state.orderCounter;
                 } else {
-                    // Si no existe el documento de contador en Firebase, asume que empezamos en 1
                     window.state.orderCounter = 1;
-                    document.getElementById('order-counter-display').innerText = window.state.orderCounter;
                 }
+                document.getElementById('order-counter-display').innerText = window.state.orderCounter;
             }, (error) => console.error("Error contador:", error));
 
-            // Escuchar Órdenes de Cocina
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets'), (snapshot) => {
                 window.state.kitchenTickets = [];
                 snapshot.forEach(doc => window.state.kitchenTickets.push(doc.data()));
-                window.state.kitchenTickets.sort((a,b) => a.orderId - b.orderId); // Ordenar por antiguo primero
+                window.state.kitchenTickets.sort((a,b) => a.orderId - b.orderId);
                 updateBadges();
                 if (window.state.currentView === 'cocina') renderKitchen();
             }, (error) => console.error("Error cocina:", error));
 
-            // Escuchar Órdenes de Caja
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'cashierOrders'), (snapshot) => {
                 window.state.cashierOrders = [];
                 snapshot.forEach(doc => window.state.cashierOrders.push(doc.data()));
@@ -461,19 +463,161 @@
                 if (window.state.currentView === 'caja') renderCashier();
             }, (error) => console.error("Error caja:", error));
 
-            // Escuchar Historial de Órdenes
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders'), (snapshot) => {
                 window.state.historyOrders = [];
                 snapshot.forEach(doc => window.state.historyOrders.push(doc.data()));
-                window.state.historyOrders.sort((a,b) => b.orderId - a.orderId); // Las más nuevas primero
+                window.state.historyOrders.sort((a,b) => b.orderId - a.orderId);
                 if (window.state.currentView === 'historial') renderHistory();
             }, (error) => console.error("Error historial:", error));
         }
 
+        function updateBadges() {
+            const cocinaBadge = document.getElementById('badge-cocina');
+            const cajaBadge = document.getElementById('badge-caja');
+            
+            if (window.state.kitchenTickets.length > 0) {
+                cocinaBadge.innerText = window.state.kitchenTickets.length;
+                cocinaBadge.classList.remove('hidden');
+            } else {
+                cocinaBadge.classList.add('hidden');
+            }
+
+            if (window.state.cashierOrders.length > 0) {
+                cajaBadge.innerText = window.state.cashierOrders.length;
+                cajaBadge.classList.remove('hidden');
+            } else {
+                cajaBadge.classList.add('hidden');
+            }
+        }
+
         // ==========================================
-        // FUNCIONES DE INTERFAZ EXPUESTAS GLOBALMENTE
+        // FUNCIONES DE IMPRESIÓN
         // ==========================================
-        
+        window.printTicket = function(order, type, station = null) {
+            if (!order) return;
+            
+            // Abrir una nueva ventana limpia para imprimir
+            const printWindow = window.open('', '_blank', 'width=350,height=600');
+            if (!printWindow) {
+                showToast('Habilita las ventanas emergentes para imprimir', 'error');
+                return;
+            }
+
+            const dateStr = new Date(order.timestamp).toLocaleString('es-CO');
+            let contentHtml = '';
+
+            if (type.startsWith('cocina')) {
+                // Determinar si imprimimos todas las estaciones requeridas (cocina_full) o solo una (cocina_estacion)
+                const stationsToPrint = type === 'cocina_estacion' ? [station] : [...new Set(order.items.map(i => window.getStation(i.category)))];
+                
+                stationsToPrint.forEach((st, index) => {
+                    const stItems = order.items.filter(i => window.getStation(i.category) === st);
+                    if(stItems.length === 0) return;
+                    
+                    let stItemsHtml = stItems.map(item => `
+                        <div style="margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px dashed #ccc;">
+                            <div style="font-size: 18px; font-weight: bold;">[ ${item.qty} ] x ${item.name}</div>
+                            ${item.note ? `<div style="font-size: 14px; font-style: italic; margin-top: 3px;">Nota: ${item.note}</div>` : ''}
+                        </div>
+                    `).join('');
+
+                    contentHtml += `
+                        <div class="text-center font-bold text-xl">COCINA - ${st.toUpperCase()}</div>
+                        <div class="divider"></div>
+                        <div style="font-size: 14px;"><b>Orden #:</b> ${order.orderId}</div>
+                        <div style="font-size: 16px; margin: 3px 0;"><b>Mesa:</b> <span style="font-size: 20px; font-weight: bold;">${order.tables.join(', ')}</span></div>
+                        <div style="font-size: 14px;"><b>Mesero:</b> ${order.waiter}</div>
+                        <div style="font-size: 12px;"><b>Fecha:</b> ${dateStr}</div>
+                        <div class="divider"></div>
+                        ${stItemsHtml}
+                        ${order.generalNote ? `<div class="divider"></div><div style="font-size: 14px;"><b>NOTA GENERAL:</b><br>${order.generalNote}</div>` : ''}
+                        <div class="text-center" style="margin-top: 20px; font-size: 12px;">--- FIN DE TICKET ${st.toUpperCase()} ---</div>
+                        ${index < stationsToPrint.length - 1 ? `<div style="text-align:center; margin: 30px 0; border-top: 2px dashed #000; padding-top: 10px;">✂️ CORTE AQUÍ ✂️</div>` : ''}
+                    `;
+                });
+            } else {
+                let itemsHtml = order.items.map(item => `
+                    <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 3px;">
+                        <div style="width: 70%;">${item.qty}x ${item.name}</div>
+                        <div>${formatCurrency(item.price * item.qty)}</div>
+                    </div>
+                    ${item.note ? `<div style="font-size: 12px; font-style: italic; color: #555; margin-bottom: 5px;">Nota: ${item.note}</div>` : ''}
+                `).join('');
+
+                contentHtml = `
+                    <div class="text-center font-bold text-xl">PERROS LA 30</div>
+                    <div class="text-center" style="font-size: 12px;">Los Originales</div>
+                    <div class="divider"></div>
+                    <div class="text-center font-bold text-lg">FACTURA DE VENTA</div>
+                    <div class="divider"></div>
+                    <div style="font-size: 14px;"><b>Orden #:</b> ${order.orderId}</div>
+                    <div style="font-size: 16px; margin: 3px 0;"><b>Mesa:</b> <span style="font-size: 20px; font-weight: bold;">${order.tables.join(', ')}</span></div>
+                    <div style="font-size: 14px;"><b>Mesero:</b> ${order.waiter}</div>
+                    <div style="font-size: 12px;"><b>Fecha:</b> ${dateStr}</div>
+                    <div class="divider"></div>
+                    <div class="flex-between font-bold" style="margin-bottom: 8px; font-size: 14px;">
+                        <span>Cant x Producto</span>
+                        <span>Total</span>
+                    </div>
+                    ${itemsHtml}
+                    <div class="divider"></div>
+                    <div class="flex-between font-bold text-lg">
+                        <span>TOTAL:</span>
+                        <span>${formatCurrency(order.total)}</span>
+                    </div>
+                    ${order.generalNote ? `<div class="divider"></div><div style="font-size: 14px;"><b>OBSERVACIONES GENERALES:</b><br>${order.generalNote}</div>` : ''}
+                    <div class="divider"></div>
+                    <div class="text-center" style="margin-top: 20px; font-size: 12px;">¡Gracias por su visita!</div>
+                `;
+            }
+
+            // Construir el documento final
+            const html = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Imprimir Ticket</title>
+                    <style>
+                        body {
+                            font-family: 'Courier New', Courier, monospace;
+                            width: 300px; /* Tamaño típico de impresora térmica de 80mm */
+                            margin: 0 auto;
+                            padding: 10px;
+                            color: #000;
+                        }
+                        .text-center { text-align: center; }
+                        .font-bold { font-weight: bold; }
+                        .text-xl { font-size: 24px; }
+                        .text-lg { font-size: 18px; }
+                        .divider { border-top: 1px dashed #000; margin: 10px 0; }
+                        .flex-between { display: flex; justify-content: space-between; }
+                        @media print {
+                            @page { margin: 0; }
+                            body { margin: 1cm; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${contentHtml}
+                    <script>
+                        // Imprimir automáticamente al cargar
+                        window.onload = function() { 
+                            setTimeout(function() {
+                                window.print();
+                            }, 500);
+                        };
+                    <\/script>
+                </body>
+                </html>
+            `;
+
+            printWindow.document.write(html);
+            printWindow.document.close();
+        };
+
+        // ==========================================
+        // FUNCIONES DE INTERFAZ Y VISTAS
+        // ==========================================
         window.switchView = function(view) {
             window.state.currentView = view;
             document.getElementById('view-mesero').classList.add('hidden');
@@ -510,62 +654,125 @@
             renderKitchen();
         };
 
-        window.changeCategory = function(category) {
-            window.state.activeCategory = category;
-            renderCategories();
+        // ==========================================
+        // RENDERIZADO DEL MENÚ Y CARRITO
+        // ==========================================
+        function initMenu() {
+            const catContainer = document.getElementById('categories-container');
+            catContainer.innerHTML = '';
+            MENU_CATEGORIES.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.onclick = () => {
+                    window.state.activeCategory = cat;
+                    initMenu(); // re-render para activar botón
+                    renderProducts();
+                };
+                btn.className = `px-4 py-2 rounded-lg font-bold whitespace-nowrap transition-colors ${window.state.activeCategory === cat ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-600 border hover:bg-gray-50'}`;
+                btn.innerText = cat;
+                catContainer.appendChild(btn);
+            });
             renderProducts();
+        }
+
+        function renderProducts() {
+            const prodContainer = document.getElementById('products-container');
+            prodContainer.innerHTML = '';
+            const items = FLAT_MENU.filter(item => item.category === window.state.activeCategory);
+            
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = "bg-white p-3 rounded-xl border border-gray-200 shadow-sm hover:border-red-400 hover:shadow-md cursor-pointer transition-all active:scale-95 flex flex-col justify-between h-28";
+                div.onclick = () => window.addToCart(item);
+                div.innerHTML = `
+                    <div class="font-bold text-gray-800 text-sm leading-tight">${item.name}</div>
+                    <div class="text-red-600 font-extrabold text-sm self-end">${formatCurrency(item.price)}</div>
+                `;
+                prodContainer.appendChild(div);
+            });
+        }
+
+        window.addToCart = function(item) {
+            const newItem = {
+                cartId: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                ...item,
+                qty: 1,
+                note: ''
+            };
+            window.state.currentOrderItems.push(newItem);
+            updateCartUI();
         };
 
-        window.addItemToOrder = function(productId) {
-            const product = FLAT_MENU.find(p => p.id === productId);
-            if (!product) return;
-
-            const existingIndex = window.state.currentOrderItems.findIndex(item => item.id === productId && item.note === '');
-            if (existingIndex >= 0) {
-                window.state.currentOrderItems[existingIndex].quantity += 1;
-            } else {
-                window.state.currentOrderItems.push({ ...product, quantity: 1, note: '' });
-            }
-            renderCart();
+        window.removeFromCart = function(cartId) {
+            window.state.currentOrderItems = window.state.currentOrderItems.filter(i => i.cartId !== cartId);
+            updateCartUI();
         };
 
-        window.updateItemQuantity = function(index, delta) {
-            const newQty = window.state.currentOrderItems[index].quantity + delta;
-            if (newQty > 0) {
-                window.state.currentOrderItems[index].quantity = newQty;
-            } else {
-                window.state.currentOrderItems.splice(index, 1);
-            }
-            renderCart();
-        };
-
-        window.updateItemNoteText = function(index, value, element) {
-            window.state.currentOrderItems[index].note = value;
-            element.style.height = 'auto';
-            element.style.height = element.scrollHeight + 'px';
-        };
-
-        window.removeItem = function(index) {
-            window.state.currentOrderItems.splice(index, 1);
-            renderCart();
+        window.updateItemNote = function(cartId, note) {
+            const item = window.state.currentOrderItems.find(i => i.cartId === cartId);
+            if (item) item.note = note;
         };
 
         window.clearCurrentOrder = function() {
             window.state.currentOrderItems = [];
+            window.state.selectedTables = [];
             window.state.generalNote = '';
             document.getElementById('general-note').value = '';
-            renderCart();
-            window.showToast('Orden vaciada correctamente.', 'error');
+            document.getElementById('table-selector-text').innerText = 'Seleccionar Mesa...';
+            document.getElementById('table-selector-text').classList.remove('text-red-600');
+            document.getElementById('table-selector-text').classList.add('text-gray-500');
+            document.getElementById('header-table-badge').classList.add('hidden');
+            document.getElementById('btn-clear-order').classList.add('hidden');
+            updateCartUI();
         };
 
-        // --- MAPA GLOBALS ---
+        function updateCartUI() {
+            const cartContainer = document.getElementById('cart-items');
+            const totalEl = document.getElementById('cart-total');
+            const clearBtn = document.getElementById('btn-clear-order');
+            
+            if (window.state.currentOrderItems.length === 0) {
+                cartContainer.innerHTML = '<div class="flex items-center justify-center h-full text-gray-400 italic text-sm">Agrega productos del menú</div>';
+                totalEl.innerText = '$0';
+                clearBtn.classList.add('hidden');
+                return;
+            }
+
+            clearBtn.classList.remove('hidden');
+            cartContainer.innerHTML = '';
+            let total = 0;
+
+            window.state.currentOrderItems.forEach(item => {
+                total += item.price * item.qty;
+                const div = document.createElement('div');
+                div.className = "bg-white p-3 rounded-lg shadow-sm border border-gray-100 fade-in";
+                div.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="font-bold text-gray-800 text-sm w-3/4">${item.name}</div>
+                        <div class="font-bold text-red-600 text-sm whitespace-nowrap">${formatCurrency(item.price)}</div>
+                    </div>
+                    <div class="flex justify-between items-center gap-2">
+                        <input type="text" placeholder="Notas (Ej. Sin cebolla)" value="${item.note}" onchange="updateItemNote('${item.cartId}', this.value)" class="text-xs w-full p-1.5 bg-gray-50 border rounded outline-none focus:ring-1 focus:ring-red-400">
+                        <button onclick="removeFromCart('${item.cartId}')" class="text-gray-400 hover:text-red-500 p-1 bg-gray-100 rounded transition-colors">
+                            <i data-lucide="trash" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
+                cartContainer.appendChild(div);
+            });
+
+            totalEl.innerText = formatCurrency(total);
+            lucide.createIcons();
+            
+            // Scroll to bottom
+            cartContainer.scrollTop = cartContainer.scrollHeight;
+        }
+
+        // ==========================================
+        // GESTIÓN DEL MAPA DE MESAS
+        // ==========================================
         window.openMapModal = function() {
-            window.state.isMultipleTableMode = false;
-            document.getElementById('btn-multiple-tables').classList.remove('bg-gray-700', 'text-white');
-            document.getElementById('btn-multiple-tables').innerText = 'Juntar Mesas';
-            document.getElementById('btn-confirm-tables').classList.add('hidden');
             document.getElementById('map-modal').classList.remove('hidden');
-            renderMapTables();
+            renderMap();
         };
 
         window.closeMapModal = function() {
@@ -578,525 +785,413 @@
             const confirmBtn = document.getElementById('btn-confirm-tables');
             
             if (window.state.isMultipleTableMode) {
-                btn.classList.add('bg-gray-700', 'text-white');
-                btn.innerText = "Modo: Varias Mesas";
+                btn.classList.add('bg-gray-800', 'text-white');
                 confirmBtn.classList.remove('hidden');
+                window.state.selectedTables = []; // Reset al entrar a modo múltiple
             } else {
-                btn.classList.remove('bg-gray-700', 'text-white');
-                btn.innerText = "Juntar Mesas";
+                btn.classList.remove('bg-gray-800', 'text-white');
                 confirmBtn.classList.add('hidden');
-                if(window.state.selectedTables.length > 1) {
-                    window.state.selectedTables = [window.state.selectedTables[0]];
-                    renderMapTables();
+                window.state.selectedTables = [];
+            }
+            renderMap();
+        };
+
+        window.selectTable = function(id) {
+            if (window.state.isMultipleTableMode) {
+                const index = window.state.selectedTables.indexOf(id);
+                if (index > -1) {
+                    window.state.selectedTables.splice(index, 1);
+                } else {
+                    window.state.selectedTables.push(id);
                 }
+                renderMap();
+            } else {
+                window.state.selectedTables = [id];
+                window.confirmTableSelection();
             }
         };
 
         window.confirmTableSelection = function() {
             if (window.state.selectedTables.length === 0) {
-                window.showToast("Selecciona al menos una mesa.", "error");
+                showToast("Debes seleccionar al menos una mesa", "error");
                 return;
             }
-            window.closeMapModal();
-            renderCart();
-        };
-
-        window.selectMapTable = function(id) {
-            const tableId = id.toString();
-            if (window.state.isMultipleTableMode) {
-                const index = window.state.selectedTables.indexOf(tableId);
-                if (index > -1) {
-                    window.state.selectedTables.splice(index, 1);
-                } else {
-                    window.state.selectedTables.push(tableId);
-                }
-                renderMapTables();
-            } else {
-                window.state.selectedTables = [tableId];
-                window.closeMapModal();
-                renderCart();
-            }
-        };
-
-        // ==========================================
-        // ESCRITURA EN LA NUBE (FIREBASE)
-        // ==========================================
-        window.submitOrder = async function() {
-            if (!window.state.currentUser) { window.showToast('Esperando conexión a la nube...', 'error'); return; }
-            if (!window.state.waiterName.trim()) { window.showToast('Por favor ingresa el nombre del mesero.', 'error'); return; }
-            if (window.state.selectedTables.length === 0) { window.showToast('Por favor selecciona una mesa del mapa.', 'error'); return; }
-            if (window.state.currentOrderItems.length === 0) { window.showToast('La orden está vacía. Agrega productos.', 'error'); return; }
-
-            const currentOrderId = window.state.orderCounter;
             
-            const now = new Date();
-            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const tableStr = window.state.selectedTables.join(' y ');
+            const text = "Mesa " + window.state.selectedTables.sort((a,b)=>a-b).join(' & ');
+            const selectorText = document.getElementById('table-selector-text');
+            selectorText.innerText = text;
+            selectorText.classList.remove('text-gray-500');
+            selectorText.classList.add('text-red-600');
+            
+            const badge = document.getElementById('header-table-badge');
+            badge.innerText = text;
+            badge.classList.remove('hidden');
+            
+            closeMapModal();
+        };
 
-            const preparedDrinksIds = ['b7', 'b8', 'b9', 'b10', 'b11', 'b12'];
-
-            const itemsPerrero = window.state.currentOrderItems.filter(i => i.category === 'Perros' || i.id === 'ad1');
-            const itemsHamburguesero = window.state.currentOrderItems.filter(i => i.category === 'Hamburguesas' || i.category === 'Arepas');
-            const itemsGeneral = window.state.currentOrderItems.filter(i => {
-                if (['Perros', 'Hamburguesas', 'Arepas'].includes(i.category)) return false;
-                if (i.id === 'ad1') return false;
-                if (i.category === 'Bebidas' && !preparedDrinksIds.includes(i.id)) return false;
-                return true; 
+        function renderMap() {
+            const container = document.getElementById('map-tables-container');
+            // Mantener solo las zonas estáticas (Caja, Cocina, Entrada) y limpiar las mesas previas
+            Array.from(container.children).forEach(child => {
+                if(child.classList.contains('table-btn')) child.remove();
             });
 
-            const baseOrderInfo = {
-                orderId: currentOrderId,
-                waiter: window.state.waiterName,
-                table: tableStr,
-                generalNote: window.state.generalNote,
-                timestamp: timeString
-            };
-
-            const ticketsToSave = [];
-            if (itemsPerrero.length > 0) {
-                ticketsToSave.push({ ...baseOrderInfo, ticketId: `${currentOrderId}-P`, station: 'perrero', items: JSON.parse(JSON.stringify(itemsPerrero)) });
-            }
-            if (itemsHamburguesero.length > 0) {
-                ticketsToSave.push({ ...baseOrderInfo, ticketId: `${currentOrderId}-H`, station: 'hamburguesero', items: JSON.parse(JSON.stringify(itemsHamburguesero)) });
-            }
-            if (itemsGeneral.length > 0) {
-                ticketsToSave.push({ ...baseOrderInfo, ticketId: `${currentOrderId}-G`, station: 'general', items: JSON.parse(JSON.stringify(itemsGeneral)) });
-            }
-
-            const total = window.state.currentOrderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-            const cashierOrderToSave = {
-                orderId: currentOrderId,
-                waiter: window.state.waiterName,
-                table: tableStr,
-                items: JSON.parse(JSON.stringify(window.state.currentOrderItems)),
-                total: total,
-                timestamp: timeString,
-                status: 'unpaid'
-            };
-
-            try {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), { value: currentOrderId });
-
-                for (const t of ticketsToSave) {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', t.ticketId), t);
-                }
-
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', currentOrderId.toString()), cashierOrderToSave);
-
-                window.state.lastSubmittedOrder = { id: currentOrderId, table: tableStr };
-                window.state.currentOrderItems = [];
-                window.state.generalNote = '';
-                document.getElementById('general-note').value = '';
-                
-                renderCart();
-                
-                document.getElementById('success-title').innerText = `¡Orden #${window.state.lastSubmittedOrder.id} Enviada!`;
-                document.getElementById('success-subtitle').innerText = `¿Qué deseas hacer ahora, ${window.state.waiterName}?`;
-                document.getElementById('btn-same-table').innerText = `Nueva Orden (${window.state.selectedTables.length > 1 ? 'Mesas' : 'Mesa'} ${window.state.lastSubmittedOrder.table})`;
-                document.getElementById('success-modal').classList.remove('hidden');
-
-            } catch (error) {
-                console.error("Error guardando orden:", error);
-                window.showToast("Error al subir la orden a la nube.", "error");
-            }
-        };
-
-        window.completeKitchenTicket = async function(ticketId) {
-            if (!window.state.currentUser) return;
-            try {
-                // Guardar en historial de cocina antes de borrar
-                const ticketToArchive = window.state.kitchenTickets.find(t => t.ticketId === ticketId);
-                if (ticketToArchive) {
-                    ticketToArchive.status = 'completed';
-                    ticketToArchive.completedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets', ticketId), ticketToArchive);
-                }
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', ticketId));
-            } catch (error) { console.error("Error completando ticket:", error); }
-        };
-
-        window.payCashierOrder = async function(id) {
-            if (!window.state.currentUser) return;
-            try {
-                // Guardar en historial de caja antes de borrar
-                const orderToArchive = window.state.cashierOrders.find(o => o.orderId === id);
-                if (orderToArchive) {
-                    orderToArchive.status = 'paid'; // Marcado como pagado
-                    orderToArchive.actionAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', id.toString()), orderToArchive);
-                }
-
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', id.toString()));
-                window.showToast(`Pago registrado para la orden #${id}`);
-            } catch (error) { console.error("Error pagando:", error); }
-        };
-
-        window.cancelOrder = async function(id) {
-            if (!window.state.currentUser) return;
-            try {
-                // Guardar en historial de caja antes de borrar
-                const orderToArchive = window.state.cashierOrders.find(o => o.orderId === id);
-                if (orderToArchive) {
-                    orderToArchive.status = 'cancelled'; // Marcado como anulado
-                    orderToArchive.actionAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', id.toString()), orderToArchive);
-                }
-
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', id.toString()));
-                
-                const ticketsToDelete = window.state.kitchenTickets.filter(t => t.orderId === id);
-                for (const t of ticketsToDelete) {
-                    // También marcamos los de cocina como anulados en el historial
-                    t.status = 'cancelled';
-                    t.actionAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets', t.ticketId), t);
-                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', t.ticketId));
-                }
-                window.showToast(`Orden #${id} anulada del sistema.`, 'error');
-            } catch (error) { console.error("Error anulando:", error); }
-        };
-
-        window.resetDatabase = async function() {
-            if (!window.state.currentUser) return;
-            
-            // 1. Pedir clave de seguridad
-            const claveIngresada = window.prompt("⚠️ SEGURIDAD - CIERRE DEL DÍA ⚠️\n\nPor favor, digita la clave de administrador para limpiar el sistema:");
-            
-            // Si el usuario presiona "Cancelar" en la ventana
-            if (claveIngresada === null) return; 
-
-            // Verificar si la clave es correcta
-            if (claveIngresada !== "1089607033") {
-                window.showToast("Clave incorrecta. Acción cancelada.", "error");
-                return;
-            }
-            
-            // 2. Confirmación final si la clave fue correcta
-            const confirmacion = window.confirm("✅ Clave aceptada.\n\n¿Estás COMPLETAMENTE SEGURO de querer limpiar la base de datos?\nEsto borrará todas las órdenes actuales, el historial completo y reiniciará el número a 1.");
-            if (!confirmacion) return;
-
-            window.showToast("Realizando cierre del día, por favor espera...", "success");
-
-            try {
-                // Borrar Activas
-                const kitchenQuery = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets'));
-                kitchenQuery.forEach((d) => { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', d.id)); });
-
-                const cashierQuery = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'cashierOrders'));
-                cashierQuery.forEach((d) => { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', d.id)); });
-
-                // Borrar Historiales
-                const histCashierQuery = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders'));
-                histCashierQuery.forEach((d) => { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', d.id)); });
-
-                const histKitchenQuery = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets'));
-                histKitchenQuery.forEach((d) => { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets', d.id)); });
-
-                // Reiniciar contador a 0 para que la siguiente orden (0+1) sea la 1
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), { value: 0 });
-
-                window.showToast("Cierre del día exitoso. Sistema reiniciado.", "success");
-            } catch (error) {
-                console.error("Error limpiando la BD:", error);
-                window.showToast("Ocurrió un error al limpiar el sistema.", "error");
-            }
-        };
-
-        window.actionNewOrderSameTable = function() {
-            window.state.lastSubmittedOrder = null;
-            document.getElementById('success-modal').classList.add('hidden');
-        };
-
-        window.actionNewOrderOtherTable = function() {
-            window.state.lastSubmittedOrder = null;
-            window.state.selectedTables = [];
-            document.getElementById('success-modal').classList.add('hidden');
-            renderCart();
-            window.openMapModal();
-        };
-
-        // ==========================================
-        // FUNCIONES DE RENDERIZADO INTERNAS
-        // ==========================================
-        function renderCategories() {
-            const container = document.getElementById('categories-container');
-            container.innerHTML = MENU_CATEGORIES.map(category => `
-                <button onclick="changeCategory('${category}')" class="px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${window.state.activeCategory === category ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-700 border hover:bg-red-50'}">
-                    ${category}
-                </button>
-            `).join('');
-        }
-
-        function renderProducts() {
-            const container = document.getElementById('products-container');
-            const products = MOCK_MENU[window.state.activeCategory] || [];
-            container.innerHTML = products.map(p => `
-                <button onclick="addItemToOrder('${p.id}')" class="bg-white border rounded-lg p-3 text-left shadow-sm hover:shadow-md hover:border-red-500 transition-all flex flex-col justify-between h-24 active:scale-95">
-                    <span class="font-bold text-gray-800 text-sm leading-tight line-clamp-2">${p.name}</span>
-                    <span class="text-red-600 font-semibold text-sm">${formatCurrency(p.price)}</span>
-                </button>
-            `).join('');
-        }
-
-        function renderCart() {
-            const container = document.getElementById('cart-items');
-            
-            if (window.state.currentOrderItems.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center text-gray-400 mt-10">
-                        <i data-lucide="utensils" class="mx-auto w-12 h-12 mb-2 opacity-50"></i>
-                        <p>La orden está vacía</p>
-                    </div>`;
-                document.getElementById('btn-clear-order').classList.add('hidden');
-            } else {
-                document.getElementById('btn-clear-order').classList.remove('hidden');
-                container.innerHTML = window.state.currentOrderItems.map((item, index) => `
-                    <div class="bg-white p-3 rounded-lg shadow-sm border text-sm relative group">
-                        <div class="flex justify-between items-start mb-2 pr-6">
-                            <span class="font-bold text-gray-800">${item.name}</span>
-                            <span class="font-semibold text-gray-600 whitespace-nowrap">${formatCurrency(item.price * item.quantity)}</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center space-x-3 bg-gray-100 rounded-lg p-1">
-                                <button onclick="updateItemQuantity(${index}, -1)" class="p-1 bg-white rounded shadow-sm text-red-600 hover:bg-red-50"><i data-lucide="minus" class="w-4 h-4"></i></button>
-                                <span class="font-bold w-4 text-center">${item.quantity}</span>
-                                <button onclick="updateItemQuantity(${index}, 1)" class="p-1 bg-white rounded shadow-sm text-green-600 hover:bg-green-50"><i data-lucide="plus" class="w-4 h-4"></i></button>
-                            </div>
-                        </div>
-                        <button onclick="removeItem(${index})" class="absolute top-3 right-3 text-gray-300 hover:text-red-600 transition-colors" title="Eliminar producto">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
-                        <div class="mt-3 bg-gray-50 p-2 rounded-lg border border-gray-200 flex items-start gap-2 focus-within:border-red-400 focus-within:bg-white transition-all shadow-inner">
-                            <i data-lucide="message-square" class="text-gray-400 mt-0.5 flex-shrink-0 w-4 h-4"></i>
-                            <textarea rows="1" placeholder="Especificaciones..." oninput="updateItemNoteText(${index}, this.value, this)" class="w-full text-sm bg-transparent outline-none resize-none overflow-hidden text-gray-700">${item.note}</textarea>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            
-            const total = window.state.currentOrderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-            document.getElementById('cart-total').innerText = formatCurrency(total);
-            
-            const headerBadge = document.getElementById('header-table-badge');
-            const tableStr = window.state.selectedTables.join(', ');
-            const labelStr = window.state.selectedTables.length > 1 ? 'Mesas ' : 'Mesa ';
-
-            if(window.state.selectedTables.length > 0) {
-                headerBadge.innerText = labelStr + tableStr;
-                headerBadge.classList.remove('hidden');
-            } else {
-                headerBadge.classList.add('hidden');
-            }
-
-            const tableBtn = document.getElementById('table-selector-btn');
-            const tableText = document.getElementById('table-selector-text');
-            const tableIconContainer = document.getElementById('table-selector-icon-container');
-            
-            if (tableIconContainer) {
-                if (window.state.selectedTables.length > 0) {
-                    tableBtn.className = "w-full border rounded-lg p-2 flex items-center justify-between focus:ring-2 focus:ring-red-500 outline-none transition-colors bg-red-50 border-red-200";
-                    tableText.className = "font-bold text-red-700";
-                    tableText.innerText = labelStr + tableStr;
-                    tableIconContainer.innerHTML = '<i data-lucide="map" class="text-red-600 w-5 h-5"></i>';
-                } else {
-                    tableBtn.className = "w-full border rounded-lg p-2 flex items-center justify-between focus:ring-2 focus:ring-red-500 outline-none transition-colors bg-gray-50 hover:bg-red-50";
-                    tableText.className = "font-bold text-gray-500";
-                    tableText.innerText = "Seleccionar Mesa...";
-                    tableIconContainer.innerHTML = '<i data-lucide="map" class="text-gray-400 w-5 h-5"></i>';
-                }
-            }
-            lucide.createIcons();
-        }
-
-        function renderMapTables() {
-            const container = document.getElementById('map-tables-container');
-            const oldButtons = container.querySelectorAll('.table-btn');
-            oldButtons.forEach(btn => btn.remove());
-
-            TABLE_POSITIONS.forEach(table => {
-                const isSelected = window.state.selectedTables.includes(table.id.toString());
+            TABLE_POSITIONS.forEach(pos => {
                 const btn = document.createElement('button');
-                btn.className = `table-btn absolute w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-xl font-black text-lg shadow-md transition-all hover:scale-110 hover:shadow-lg ${isSelected ? 'bg-red-600 text-white ring-4 ring-red-300 scale-110 z-20' : 'bg-white text-gray-800 border-2 border-gray-300 hover:border-red-500 hover:text-red-600 z-10'}`;
-                btn.style.left = table.left;
-                btn.style.top = table.top;
-                btn.style.transform = 'translate(-50%, -50%)';
-                btn.innerText = table.id;
-                btn.onclick = () => window.selectMapTable(table.id);
+                const isSelected = window.state.selectedTables.includes(pos.id);
+                btn.className = `table-btn absolute w-10 h-10 sm:w-12 sm:h-12 rounded-full border-4 font-bold text-sm sm:text-base transition-all flex items-center justify-center transform -translate-x-1/2 -translate-y-1/2 shadow-sm hover:scale-110 ${isSelected ? 'selected' : 'bg-white border-red-500 text-red-600 hover:bg-red-50'}`;
+                btn.style.left = pos.left;
+                btn.style.top = pos.top;
+                btn.innerText = pos.id;
+                btn.onclick = () => window.selectTable(pos.id);
                 container.appendChild(btn);
             });
         }
 
-        function updateBadges() {
-            const kb = document.getElementById('badge-cocina');
-            const cb = document.getElementById('badge-caja');
-            
-            if (window.state.kitchenTickets.length > 0) {
-                kb.innerText = window.state.kitchenTickets.length;
-                kb.classList.remove('hidden');
-            } else { kb.classList.add('hidden'); }
-
-            if (window.state.cashierOrders.length > 0) {
-                cb.innerText = window.state.cashierOrders.length;
-                cb.classList.remove('hidden');
-            } else { cb.classList.add('hidden'); }
-        }
-
-        function renderKitchen() {
-            const container = document.getElementById('kitchen-container');
-            const tickets = window.state.kitchenTickets.filter(t => t.station === window.state.kitchenStation);
-
-            if (tickets.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full flex flex-col items-center justify-center text-gray-400 mt-20">
-                        <i data-lucide="check-circle" class="w-16 h-16 mb-4 text-green-200"></i>
-                        <p class="text-xl">No hay órdenes pendientes en esta estación.</p>
-                    </div>`;
-            } else {
-                container.innerHTML = tickets.map(ticket => {
-                    let colorTheme = ticket.station === 'perrero' ? 'red' : ticket.station === 'hamburguesero' ? 'orange' : 'yellow';
-                    return `
-                    <div class="bg-${colorTheme}-50 border-2 border-${colorTheme}-200 rounded-xl shadow-md overflow-hidden relative">
-                        <div class="bg-${colorTheme}-400 p-3 flex justify-between items-center text-gray-900">
-                            <span class="font-extrabold text-xl">Mesa ${ticket.table}</span>
-                            <span class="font-bold">Orden #${ticket.orderId}</span>
-                        </div>
-                        <div class="p-3 text-sm border-b border-${colorTheme}-200 bg-${colorTheme}-100 flex justify-between text-gray-700">
-                            <span><span class="font-semibold">Mesero:</span> ${ticket.waiter}</span>
-                            <span>${ticket.timestamp}</span>
-                        </div>
-                        <div class="p-4 space-y-3">
-                            ${ticket.items.map(item => `
-                                <div class="border-b border-${colorTheme}-200 pb-2 last:border-0 last:pb-0">
-                                    <div class="flex gap-2">
-                                        <span class="font-bold text-lg">${item.quantity}x</span>
-                                        <span class="font-semibold text-gray-800 text-lg leading-tight">${item.name}</span>
-                                    </div>
-                                    ${item.note ? `
-                                        <div class="ml-6 mt-1 flex gap-1 text-red-600 font-medium text-sm bg-red-50 p-1 rounded">
-                                            <i data-lucide="message-square" class="w-4 h-4 mt-0.5 shrink-0"></i> ${item.note}
-                                        </div>
-                                    ` : ''}
-                                </div>
-                            `).join('')}
-                            ${ticket.generalNote ? `
-                                <div class="mt-4 p-2 bg-orange-100 rounded border border-orange-200 text-orange-800 text-sm italic">
-                                    <span class="font-bold not-italic mr-1">General:</span> ${ticket.generalNote}
-                                </div>
-                            ` : ''}
-                        </div>
-                        <div class="p-4 pt-0">
-                            <button onclick="completeKitchenTicket('${ticket.ticketId}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg shadow transition-colors flex items-center justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-5 h-5"></i>
-                                Terminar Parte
-                            </button>
-                        </div>
-                    </div>
-                `}).join('');
+        // ==========================================
+        // ENVÍO DE ÓRDENES Y FLUJO PRINCIPAL
+        // ==========================================
+        window.submitOrder = async function() {
+            if (!window.state.currentUser) {
+                showToast("Esperando conexión a la nube...", "error");
+                return;
             }
-            lucide.createIcons();
-        }
+            if (window.state.selectedTables.length === 0) {
+                showToast("Por favor selecciona una mesa", "error");
+                openMapModal();
+                return;
+            }
+            if (!window.state.waiterName.trim()) {
+                showToast("Por favor ingresa el nombre del mesero", "error");
+                document.getElementById('waiter-name').focus();
+                return;
+            }
+            if (window.state.currentOrderItems.length === 0) {
+                showToast("La orden está vacía", "error");
+                return;
+            }
 
-        function renderCashier() {
-            const container = document.getElementById('cashier-container');
-            if (window.state.cashierOrders.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full flex flex-col items-center justify-center text-gray-400 mt-20">
-                        <i data-lucide="check-circle" class="w-16 h-16 mb-4 text-green-200"></i>
-                        <p class="text-xl">No hay cuentas pendientes por cobrar.</p>
-                    </div>`;
-            } else {
-                container.innerHTML = window.state.cashierOrders.map(order => `
-                    <div class="bg-white border rounded-xl shadow-md overflow-hidden flex flex-col">
-                        <div class="bg-gray-800 p-3 flex justify-between items-center text-white">
-                            <span class="font-bold">Mesa ${order.table}</span>
-                            <span class="text-sm">Orden #${order.orderId}</span>
-                        </div>
-                        <div class="p-4 flex-1">
-                            <p class="text-sm text-gray-500 mb-3">Mesero: <span class="font-semibold text-gray-800">${order.waiter}</span></p>
-                            <div class="space-y-2 mb-4">
-                                ${order.items.map(item => `
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-700">${item.quantity}x ${item.name}</span>
-                                        <span class="font-medium">${formatCurrency(item.price * item.quantity)}</span>
-                                    </div>
-                                `).join('')}
-                            </div>
-                            <div class="border-t pt-3 mt-auto flex justify-between items-center">
-                                <span class="text-gray-600 font-bold">Total a pagar:</span>
-                                <span class="text-xl font-extrabold text-green-600">${formatCurrency(order.total)}</span>
-                            </div>
-                        </div>
-                        <div class="p-4 pt-0 flex gap-2">
-                            <button onclick="cancelOrder(${order.orderId})" class="w-1/4 bg-red-100 hover:bg-red-200 text-red-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Anular orden">
-                                <i data-lucide="x" class="w-5 h-5"></i>
-                            </button>
-                            <button onclick="payCashierOrder(${order.orderId})" class="w-3/4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow transition-colors flex items-center justify-center gap-2">
-                                <i data-lucide="receipt" class="w-5 h-5"></i>
-                                Pagar / Imprimir
-                            </button>
+            const total = window.state.currentOrderItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
+            
+            // Construir el objeto de la orden
+            const order = {
+                id: crypto.randomUUID(), // ID único interno
+                orderId: window.state.orderCounter, // Número legible
+                tables: window.state.selectedTables,
+                waiter: window.state.waiterName,
+                items: window.state.currentOrderItems,
+                generalNote: window.state.generalNote,
+                total: total,
+                status: 'pending',
+                completedStations: [], // Nuevo estado para controlar avance en cocina
+                timestamp: Date.now()
+            };
+
+            try {
+                // 1. Guardar en Caja (Ticket completo)
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', order.id), order);
+                
+                // 2. Guardar en Cocina
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', order.id), order);
+
+                // 3. Actualizar Contador Global
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), { value: window.state.orderCounter });
+
+                window.state.lastSubmittedOrder = order;
+
+                // Mostrar éxito
+                document.getElementById('success-modal').classList.remove('hidden');
+                lucide.createIcons();
+
+            } catch (error) {
+                console.error("Error guardando orden:", error);
+                showToast("Error al enviar la orden. Reintenta.", "error");
+            }
+        };
+
+        window.actionNewOrderSameTable = function() {
+            document.getElementById('success-modal').classList.add('hidden');
+            window.state.currentOrderItems = [];
+            window.state.generalNote = '';
+            document.getElementById('general-note').value = '';
+            updateCartUI();
+        };
+
+        window.actionNewOrderOtherTable = function() {
+            document.getElementById('success-modal').classList.add('hidden');
+            window.clearCurrentOrder();
+        };
+
+        // ==========================================
+        // VISTA: COCINA
+        // ==========================================
+        window.renderKitchen = function() {
+            const container = document.getElementById('kitchen-container');
+            container.innerHTML = '';
+            
+            if (window.state.kitchenTickets.length === 0) {
+                container.innerHTML = '<div class="col-span-full flex flex-col items-center justify-center text-gray-400 py-10"><i data-lucide="check-circle-2" class="w-16 h-16 mb-4 text-gray-300"></i><p class="text-xl font-bold">No hay órdenes pendientes en cocina</p></div>';
+                lucide.createIcons();
+                return;
+            }
+
+            const currentStation = window.state.kitchenStation;
+
+            window.state.kitchenTickets.forEach(order => {
+                const completed = order.completedStations || [];
+                if (completed.includes(currentStation)) return; // Esta estación ya completó su parte
+
+                // Filtrar ítems para mostrar solo los que pertenecen a esta estación
+                let itemsToShow = order.items.filter(item => window.getStation(item.category) === currentStation);
+                
+                if (itemsToShow.length === 0) return; // Si la orden no tiene ítems de esta estación, la ocultamos aquí
+
+                const date = new Date(order.timestamp);
+                const timeStr = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+                const diffMin = Math.floor((Date.now() - date.getTime()) / 60000);
+                
+                let timeColorClass = "bg-green-100 text-green-800 border-green-200";
+                if (diffMin > 15) timeColorClass = "bg-red-100 text-red-800 border-red-200 animate-pulse";
+                else if (diffMin > 10) timeColorClass = "bg-yellow-100 text-yellow-800 border-yellow-200";
+
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-xl shadow border border-gray-200 overflow-hidden fade-in flex flex-col";
+                
+                let itemsHtml = itemsToShow.map(item => `
+                    <div class="p-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 flex items-start gap-3">
+                        <div class="bg-gray-100 text-gray-800 font-bold px-2 py-1 rounded text-sm shrink-0">${item.qty}</div>
+                        <div class="flex-1">
+                            <div class="font-bold text-gray-800">${item.name}</div>
+                            ${item.note ? `<div class="text-sm text-red-500 font-medium italic mt-0.5"><i data-lucide="alert-circle" class="w-3 h-3 inline mr-1"></i>${item.note}</div>` : ''}
                         </div>
                     </div>
                 `).join('');
-            }
-            lucide.createIcons();
-        }
 
-        // --- NUEVO: RENDERIZAR HISTORIAL ---
-        function renderHistory() {
-            const container = document.getElementById('history-container');
-            if (window.state.historyOrders.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full flex flex-col items-center justify-center text-gray-400 mt-20">
-                        <i data-lucide="history" class="w-16 h-16 mb-4 text-blue-200"></i>
-                        <p class="text-xl">Aún no hay ventas registradas.</p>
-                    </div>`;
-            } else {
-                container.innerHTML = window.state.historyOrders.map(order => {
-                    const isPaid = order.status === 'paid';
-                    const statusColor = isPaid ? 'green' : 'red';
-                    const statusText = isPaid ? 'PAGADO' : 'ANULADO';
-                    const iconType = isPaid ? 'check-circle' : 'x-circle';
-
-                    return `
-                    <div class="bg-white border rounded-xl shadow-sm overflow-hidden flex flex-col opacity-80 hover:opacity-100 transition-opacity">
-                        <div class="bg-gray-100 border-b border-gray-200 p-3 flex justify-between items-center">
-                            <span class="font-bold text-gray-800">Orden #${order.orderId}</span>
-                            <span class="bg-${statusColor}-100 text-${statusColor}-700 text-xs font-bold px-2 py-1 rounded flex items-center gap-1">
-                                <i data-lucide="${iconType}" class="w-3 h-3"></i> ${statusText}
-                            </span>
-                        </div>
-                        <div class="p-4 flex-1">
-                            <div class="flex justify-between text-sm text-gray-500 mb-2">
-                                <span>Mesa: <b class="text-gray-700">${order.table}</b></span>
-                                <span>Hora: <b class="text-gray-700">${order.actionAt || order.timestamp}</b></span>
-                            </div>
-                            <div class="space-y-1 mb-4 mt-2">
-                                ${order.items.map(item => `
-                                    <div class="flex justify-between text-xs text-gray-500">
-                                        <span>${item.quantity}x ${item.name}</span>
-                                    </div>
-                                `).join('')}
-                            </div>
-                            <div class="border-t pt-2 mt-auto flex justify-between items-center">
-                                <span class="text-gray-600 font-semibold text-sm">Total Cobrado:</span>
-                                <span class="text-lg font-extrabold text-${statusColor}-600">${formatCurrency(order.total)}</span>
-                            </div>
-                        </div>
+                card.innerHTML = `
+                    <div class="p-3 flex justify-between items-center border-b ${timeColorClass}">
+                        <div class="font-black text-xl">#${order.orderId}</div>
+                        <div class="font-bold flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> ${timeStr} (${diffMin}m)</div>
                     </div>
-                `}).join('');
-            }
-            lucide.createIcons();
-        }
+                    <div class="p-3 bg-gray-50 border-b flex justify-between items-center text-sm font-medium">
+                        <span class="text-gray-600"><i data-lucide="user" class="w-4 h-4 inline mr-1"></i>${order.waiter}</span>
+                        <span class="bg-red-600 text-white px-2 py-0.5 rounded-full text-xs font-bold">Mesa ${order.tables.join(' & ')}</span>
+                    </div>
+                    ${order.generalNote ? `<div class="p-2 bg-yellow-50 text-yellow-800 text-sm italic border-b text-center font-medium">${order.generalNote}</div>` : ''}
+                    <div class="flex-1 bg-white">
+                        ${itemsHtml}
+                    </div>
+                    <div class="p-3 bg-gray-50 border-t flex gap-2">
+                        <button onclick="printTicket(window.state.kitchenTickets.find(o => o.id === '${order.id}'), 'cocina_estacion', '${currentStation}')" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 rounded-lg transition-colors flex items-center justify-center gap-1 text-sm">
+                            <i data-lucide="printer" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="completeKitchenOrder('${order.id}', '${currentStation}')" class="flex-[3] bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm shadow-sm">
+                            <i data-lucide="check-circle" class="w-5 h-5"></i> ¡Listo!
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
 
-        // --- ARRANQUE ---
-        window.onload = () => {
-            renderCategories();
-            renderProducts();
-            renderCart();
+            // Si no se renderizó ninguna orden para esta estación en específico
+            if (container.children.length === 0) {
+                container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center text-gray-400 py-10"><i data-lucide="check-circle-2" class="w-16 h-16 mb-4 text-gray-300"></i><p class="text-xl font-bold">No hay órdenes para la estación: ${currentStation.toUpperCase()}</p></div>`;
+            }
+
             lucide.createIcons();
-            document.getElementById('waiter-name').value = window.state.waiterName;
-            initAuth();
         };
+
+        window.completeKitchenOrder = async function(orderId, station) {
+            if (!window.state.currentUser) return;
+            const order = window.state.kitchenTickets.find(o => o.id === orderId);
+            if (!order) return;
+
+            const completed = order.completedStations || [];
+            if (!completed.includes(station)) {
+                completed.push(station);
+            }
+
+            // Calculamos qué estaciones realmente están participando en este pedido
+            const requiredStations = [...new Set(order.items.map(i => window.getStation(i.category)))];
+            const allCompleted = requiredStations.every(s => completed.includes(s));
+
+            try {
+                if (allCompleted) {
+                    // Si ya todas las estaciones del pedido hicieron su parte, eliminamos el ticket general
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', orderId));
+                    showToast("Orden completada totalmente en cocina");
+                } else {
+                    // Actualizamos en la nube que esta estación en específico ya terminó su parte
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', orderId), { completedStations: completed }, { merge: true });
+                    showToast(`Parte de ${station} marcada como lista`);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+
+        // ==========================================
+        // VISTA: CAJA
+        // ==========================================
+        window.renderCashier = function() {
+            const container = document.getElementById('cashier-container');
+            container.innerHTML = '';
+            
+            if (window.state.cashierOrders.length === 0) {
+                container.innerHTML = '<div class="col-span-full flex flex-col items-center justify-center text-gray-400 py-10"><i data-lucide="receipt" class="w-16 h-16 mb-4 text-gray-300"></i><p class="text-xl font-bold">No hay órdenes pendientes de cobro</p></div>';
+                lucide.createIcons();
+                return;
+            }
+
+            window.state.cashierOrders.forEach(order => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-xl shadow border border-gray-200 overflow-hidden fade-in flex flex-col";
+                
+                card.innerHTML = `
+                    <div class="p-3 flex justify-between items-center border-b bg-gray-900 text-white">
+                        <div class="font-black text-xl">#${order.orderId}</div>
+                        <div class="bg-green-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">Mesa ${order.tables.join(' & ')}</div>
+                    </div>
+                    <div class="p-3 bg-gray-50 border-b text-sm font-medium text-gray-600">
+                        <i data-lucide="user" class="w-4 h-4 inline mr-1"></i>Mesero: ${order.waiter}
+                    </div>
+                    <div class="flex-1 p-3 bg-white space-y-1">
+                        ${order.items.map(item => `
+                            <div class="flex justify-between text-sm">
+                                <span>${item.qty}x ${item.name}</span>
+                                <span class="font-medium">${formatCurrency(item.price * item.qty)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="p-3 bg-gray-50 border-t flex justify-between items-center font-bold text-lg">
+                        <span>Total:</span>
+                        <span class="text-green-600">${formatCurrency(order.total)}</span>
+                    </div>
+                    <div class="p-3 flex flex-wrap gap-2 border-t bg-white">
+                        <button onclick="printTicket(window.state.cashierOrders.find(o => o.id === '${order.id}'), 'caja')" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 rounded-lg transition-colors flex items-center justify-center gap-1 text-sm border">
+                            <i data-lucide="printer" class="w-4 h-4"></i> Factura
+                        </button>
+                        <button onclick="processPayment('${order.id}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm shadow-sm mt-1">
+                            <i data-lucide="dollar-sign" class="w-5 h-5"></i> Pagar Orden
+                        </button>
+                        <button onclick="cancelOrder('${order.id}')" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm border border-red-200 mt-1">
+                            <i data-lucide="x-circle" class="w-4 h-4"></i> Anular
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            lucide.createIcons();
+        };
+
+        window.processPayment = async function(orderId) {
+            if (!window.state.currentUser) return;
+            const order = window.state.cashierOrders.find(o => o.id === orderId);
+            if (!order) return;
+
+            order.status = 'Pagado';
+            order.paidAt = Date.now();
+
+            try {
+                // Mover a historial
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', orderId), order);
+                // Eliminar de caja y cocina (si seguía ahí)
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', orderId));
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', orderId));
+                showToast("Pago procesado correctamente");
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+
+        window.cancelOrder = async function(orderId) {
+            if (!window.state.currentUser) return;
+            if(!confirm("¿Estás seguro de anular esta orden?")) return;
+            
+            const order = window.state.cashierOrders.find(o => o.id === orderId);
+            if (!order) return;
+
+            order.status = 'Anulado';
+            order.canceledAt = Date.now();
+
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', orderId), order);
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', orderId));
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', orderId));
+                showToast("Orden anulada", "error");
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+
+        // ==========================================
+        // VISTA: HISTORIAL
+        // ==========================================
+        window.renderHistory = function() {
+            const container = document.getElementById('history-container');
+            container.innerHTML = '';
+            
+            if (window.state.historyOrders.length === 0) {
+                container.innerHTML = '<div class="col-span-full flex flex-col items-center justify-center text-gray-400 py-10"><i data-lucide="history" class="w-16 h-16 mb-4 text-gray-300"></i><p class="text-xl font-bold">No hay historial de órdenes</p></div>';
+                lucide.createIcons();
+                return;
+            }
+
+            window.state.historyOrders.forEach(order => {
+                const isCanceled = order.status === 'Anulado';
+                const statusColor = isCanceled ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800';
+                const date = new Date(order.paidAt || order.canceledAt || order.timestamp).toLocaleString('es-CO');
+
+                const card = document.createElement('div');
+                card.className = `bg-white rounded-xl shadow border overflow-hidden fade-in flex flex-col opacity-90 ${isCanceled ? 'border-red-300' : 'border-gray-200'}`;
+                
+                card.innerHTML = `
+                    <div class="p-3 flex justify-between items-center border-b bg-gray-50">
+                        <div class="font-bold text-gray-600">#${order.orderId} - Mesa ${order.tables.join('&')}</div>
+                        <div class="px-2 py-0.5 rounded text-xs font-bold ${statusColor}">${order.status}</div>
+                    </div>
+                    <div class="p-3 flex-1">
+                        <div class="text-xs text-gray-500 mb-2">${date} • Mesero: ${order.waiter}</div>
+                        <div class="font-bold text-gray-800 text-lg">${formatCurrency(order.total)}</div>
+                        <div class="text-xs text-gray-500 mt-2 line-clamp-2">${order.items.map(i=>i.name).join(', ')}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            lucide.createIcons();
+        };
+
+        // ==========================================
+        // UTILIDAD DE DESARROLLO (RESET)
+        // ==========================================
+        window.resetDatabase = async function() {
+            if (!window.state.currentUser) return;
+            if(!confirm("⚠️ ADVERTENCIA ⚠️\n¿Estás seguro de borrar TODAS las órdenes de caja, cocina, historial y reiniciar el contador a 1?\nEsto no se puede deshacer.")) return;
+            
+            try {
+                const deletes = [];
+                // Se tendrían que listar y borrar en un entorno real.
+                // Como Firestore web no tiene 'deleteCollection', borramos lo que tenemos en memoria mapeado a la DB.
+                window.state.kitchenTickets.forEach(o => deletes.push(deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', o.id))));
+                window.state.cashierOrders.forEach(o => deletes.push(deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', o.id))));
+                window.state.historyOrders.forEach(o => deletes.push(deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', o.id))));
+                
+                await Promise.all(deletes);
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), { value: 0 }); // El listener lo pondrá en 1
+                
+                showToast("Sistema reiniciado con éxito.");
+            } catch(err) {
+                console.error(err);
+                showToast("Error al reiniciar", "error");
+            }
+        };
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            initMenu();
+            initAuth();
+        });
 
     </script>
 </body>
