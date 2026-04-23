@@ -433,10 +433,13 @@
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), (snapshot) => {
                 if (snapshot.exists()) {
                     const cloudVal = snapshot.data().value;
-                    if (cloudVal >= window.state.orderCounter) {
-                        window.state.orderCounter = cloudVal + 1;
-                        document.getElementById('order-counter-display').innerText = window.state.orderCounter;
-                    }
+                    // Siempre actualiza al valor de la nube + 1 (el último usado + 1)
+                    window.state.orderCounter = cloudVal + 1;
+                    document.getElementById('order-counter-display').innerText = window.state.orderCounter;
+                } else {
+                    // Si no existe el documento de contador en Firebase, asume que empezamos en 1
+                    window.state.orderCounter = 1;
+                    document.getElementById('order-counter-display').innerText = window.state.orderCounter;
                 }
             }, (error) => console.error("Error contador:", error));
 
@@ -458,7 +461,7 @@
                 if (window.state.currentView === 'caja') renderCashier();
             }, (error) => console.error("Error caja:", error));
 
-            // Escuchar Historial de Órdenes (Nuevo)
+            // Escuchar Historial de Órdenes
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders'), (snapshot) => {
                 window.state.historyOrders = [];
                 snapshot.forEach(doc => window.state.historyOrders.push(doc.data()));
@@ -476,7 +479,7 @@
             document.getElementById('view-mesero').classList.add('hidden');
             document.getElementById('view-cocina').classList.add('hidden');
             document.getElementById('view-caja').classList.add('hidden');
-            document.getElementById('view-historial').classList.add('hidden'); // Nuevo
+            document.getElementById('view-historial').classList.add('hidden');
             
             document.getElementById(`view-${view}`).classList.remove('hidden');
 
@@ -491,7 +494,7 @@
             
             if(view === 'cocina') renderKitchen();
             if(view === 'caja') renderCashier();
-            if(view === 'historial') renderHistory(); // Nuevo
+            if(view === 'historial') renderHistory(); 
         };
 
         window.setKitchenStation = function(station) {
@@ -698,7 +701,6 @@
             }
         };
 
-        // --- ACTUALIZADO: MOVIMIENTO A HISTORIAL ---
         window.completeKitchenTicket = async function(ticketId) {
             if (!window.state.currentUser) return;
             try {
@@ -757,7 +759,20 @@
         window.resetDatabase = async function() {
             if (!window.state.currentUser) return;
             
-            const confirmacion = window.confirm("⚠️ ATENCIÓN ⚠️\n\n¿Estás seguro de que quieres limpiar toda la base de datos para el Cierre del Día?\n\nEsto borrará las órdenes actuales, el historial completo y reiniciará el número a 1.");
+            // 1. Pedir clave de seguridad
+            const claveIngresada = window.prompt("⚠️ SEGURIDAD - CIERRE DEL DÍA ⚠️\n\nPor favor, digita la clave de administrador para limpiar el sistema:");
+            
+            // Si el usuario presiona "Cancelar" en la ventana
+            if (claveIngresada === null) return; 
+
+            // Verificar si la clave es correcta
+            if (claveIngresada !== "1089607033") {
+                window.showToast("Clave incorrecta. Acción cancelada.", "error");
+                return;
+            }
+            
+            // 2. Confirmación final si la clave fue correcta
+            const confirmacion = window.confirm("✅ Clave aceptada.\n\n¿Estás COMPLETAMENTE SEGURO de querer limpiar la base de datos?\nEsto borrará todas las órdenes actuales, el historial completo y reiniciará el número a 1.");
             if (!confirmacion) return;
 
             window.showToast("Realizando cierre del día, por favor espera...", "success");
@@ -777,8 +792,8 @@
                 const histKitchenQuery = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets'));
                 histKitchenQuery.forEach((d) => { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets', d.id)); });
 
-                // Reiniciar contador
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), { value: 1 });
+                // Reiniciar contador a 0 para que la siguiente orden (0+1) sea la 1
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), { value: 0 });
 
                 window.showToast("Cierre del día exitoso. Sistema reiniciado.", "success");
             } catch (error) {
