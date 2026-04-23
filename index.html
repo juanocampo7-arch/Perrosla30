@@ -146,11 +146,16 @@
 
         <!-- VISTA CAJA -->
         <div id="view-caja" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
-            <div class="mb-4 shrink-0">
-                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                    <i data-lucide="receipt" class="text-green-600 w-8 h-8"></i> Caja y Facturación
-                </h2>
-                <p class="text-gray-500">Órdenes pendientes de pago (Ticket completo)</p>
+            <div class="mb-4 shrink-0 flex justify-between items-start gap-2">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                        <i data-lucide="receipt" class="text-green-600 w-8 h-8"></i> Caja y Facturación
+                    </h2>
+                    <p class="text-gray-500">Órdenes pendientes de pago (Ticket completo)</p>
+                </div>
+                <button onclick="resetDatabase()" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 sm:px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-red-200 text-sm shadow-sm" title="Borra todo y reinicia el contador a 1">
+                    <i data-lucide="alert-triangle" class="w-4 h-4"></i> <span class="hidden sm:inline">Limpiar Sistema</span>
+                </button>
             </div>
             <div id="cashier-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start pb-6 content-start">
                 <!-- Tarjetas de caja -->
@@ -228,7 +233,7 @@
         // Importaciones de Firebase V11.6.1
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // ==========================================
         // CONFIGURACIÓN DE BASE DE DATOS (FIREBASE)
@@ -238,19 +243,16 @@
             // Para el entorno de prueba/canvas
             firebaseConfig = JSON.parse(__firebase_config);
         } else {
-            // ******************************************************************************
-            // ATENCIÓN: Cuando subas esto a GitHub Pages, debes reemplazar todo esto
-            // por la configuración de tu propia cuenta gratuita de Firebase.
-            // ******************************************************************************
+            // Las llaves del usuario real
             firebaseConfig = {
-  apiKey: "AIzaSyB0651iAFAIQd3_qJmv0WkfYT2HX0M2tAM",
-  authDomain: "perros-la-30-feafb.firebaseapp.com",
-  projectId: "perros-la-30-feafb",
-  storageBucket: "perros-la-30-feafb.firebasestorage.app",
-  messagingSenderId: "446218476554",
-  appId: "1:446218476554:web:8269ce66f17501c94153f3",
-  measurementId: "G-9TEHNKXVYT"
-};
+                apiKey: "AIzaSyB0651iAFAIQd3_qJmv0WkfYT2HX0M2tAM",
+                authDomain: "perros-la-30-feafb.firebaseapp.com",
+                projectId: "perros-la-30-feafb",
+                storageBucket: "perros-la-30-feafb.firebasestorage.app",
+                messagingSenderId: "446218476554",
+                appId: "1:446218476554:web:8269ce66f17501c94153f3",
+                measurementId: "G-9TEHNKXVYT"
+            };
         }
 
         const app = initializeApp(firebaseConfig);
@@ -602,9 +604,21 @@
             const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const tableStr = window.state.selectedTables.join(' y ');
 
+            // Ids de bebidas preparadas que deben ir a cocina
+            const preparedDrinksIds = ['b7', 'b8', 'b9', 'b10', 'b11', 'b12'];
+
             const itemsPerrero = window.state.currentOrderItems.filter(i => i.category === 'Perros' || i.id === 'ad1');
             const itemsHamburguesero = window.state.currentOrderItems.filter(i => i.category === 'Hamburguesas' || i.category === 'Arepas');
-            const itemsGeneral = window.state.currentOrderItems.filter(i => !['Perros', 'Hamburguesas', 'Arepas', 'Bebidas'].includes(i.category) && i.id !== 'ad1');
+            const itemsGeneral = window.state.currentOrderItems.filter(i => {
+                // Si es Perro, Hamburguesa o Arepa, no va a General
+                if (['Perros', 'Hamburguesas', 'Arepas'].includes(i.category)) return false;
+                // Si es la porción de huevo (ad1), va al perrero, no a General
+                if (i.id === 'ad1') return false;
+                // Si es Bebida, SOLO pasa si es una bebida preparada (limonadas/jarras)
+                if (i.category === 'Bebidas' && !preparedDrinksIds.includes(i.id)) return false;
+                
+                return true; // Todo lo demás (Asados, Salchipapas, Desgranados, Adicionales, Bebidas preparadas) pasa a General
+            });
 
             const baseOrderInfo = {
                 orderId: currentOrderId,
@@ -696,6 +710,39 @@
                 }
                 window.showToast(`Orden #${id} anulada del sistema.`, 'error');
             } catch (error) { console.error("Error anulando:", error); }
+        };
+
+        window.resetDatabase = async function() {
+            if (!window.state.currentUser) return;
+            
+            // Confirmación de seguridad
+            const confirmacion = window.confirm("⚠️ ATENCIÓN ⚠️\n\n¿Estás seguro de que quieres limpiar toda la base de datos?\n\nEsto borrará TODAS las órdenes actuales de cocina y caja, y reiniciará el número de la siguiente orden a 1.\n\nÚsalo SOLO al finalizar el turno o la noche.");
+            
+            if (!confirmacion) return;
+
+            window.showToast("Limpiando sistema, por favor espera...", "success");
+
+            try {
+                // 1. Borrar todas las ordenes de cocina
+                const kitchenQuery = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets'));
+                kitchenQuery.forEach((d) => {
+                    deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', d.id));
+                });
+
+                // 2. Borrar todas las ordenes de caja
+                const cashierQuery = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'cashierOrders'));
+                cashierQuery.forEach((d) => {
+                    deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', d.id));
+                });
+
+                // 3. Reiniciar el contador a 1
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), { value: 1 });
+
+                window.showToast("Sistema reiniciado exitosamente para el siguiente turno.", "success");
+            } catch (error) {
+                console.error("Error limpiando la BD:", error);
+                window.showToast("Ocurrió un error al limpiar el sistema.", "error");
+            }
         };
 
         window.actionNewOrderSameTable = function() {
