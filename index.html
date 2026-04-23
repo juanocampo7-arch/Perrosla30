@@ -89,7 +89,9 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Mesa</label>
                         <button onclick="openMapModal()" id="table-selector-btn" class="w-full border rounded-lg p-2 flex items-center justify-between focus:ring-2 focus:ring-red-500 outline-none transition-colors bg-gray-50 hover:bg-red-50">
                             <span id="table-selector-text" class="font-bold text-gray-500">Seleccionar Mesa...</span>
-                            <i data-lucide="map" id="table-selector-icon" class="text-gray-400 w-5 h-5"></i>
+                            <span id="table-selector-icon-container">
+                                <i data-lucide="map" class="text-gray-400 w-5 h-5"></i>
+                            </span>
                         </button>
                     </div>
                 </div>
@@ -241,13 +243,14 @@
             // por la configuración de tu propia cuenta gratuita de Firebase.
             // ******************************************************************************
             firebaseConfig = {
-                apiKey: "AQUI_TU_API_KEY",
-                authDomain: "AQUI_TU_DOMINIO.firebaseapp.com",
-                projectId: "AQUI_TU_PROJECT_ID",
-                storageBucket: "AQUI_TU_BUCKET.appspot.com",
-                messagingSenderId: "AQUI_SENDER",
-                appId: "AQUI_APP_ID"
-            };
+  apiKey: "AIzaSyB0651iAFAIQd3_qJmv0WkfYT2HX0M2tAM",
+  authDomain: "perros-la-30-feafb.firebaseapp.com",
+  projectId: "perros-la-30-feafb",
+  storageBucket: "perros-la-30-feafb.firebasestorage.app",
+  messagingSenderId: "446218476554",
+  appId: "1:446218476554:web:8269ce66f17501c94153f3",
+  measurementId: "G-9TEHNKXVYT"
+};
         }
 
         const app = initializeApp(firebaseConfig);
@@ -783,20 +786,19 @@
 
             const tableBtn = document.getElementById('table-selector-btn');
             const tableText = document.getElementById('table-selector-text');
-            const tableIcon = document.getElementById('table-selector-icon');
+            const tableIconContainer = document.getElementById('table-selector-icon-container');
             
-            if (tableIcon) {
+            if (tableIconContainer) {
                 if (window.state.selectedTables.length > 0) {
                     tableBtn.className = "w-full border rounded-lg p-2 flex items-center justify-between focus:ring-2 focus:ring-red-500 outline-none transition-colors bg-red-50 border-red-200";
                     tableText.className = "font-bold text-red-700";
                     tableText.innerText = labelStr + tableStr;
-                    // Corrección importante: Se usa setAttribute en lugar de .className para evitar errores del DOM en SVG
-                    tableIcon.setAttribute('class', "text-red-600 w-5 h-5 lucide lucide-map");
+                    tableIconContainer.innerHTML = '<i data-lucide="map" class="text-red-600 w-5 h-5"></i>';
                 } else {
                     tableBtn.className = "w-full border rounded-lg p-2 flex items-center justify-between focus:ring-2 focus:ring-red-500 outline-none transition-colors bg-gray-50 hover:bg-red-50";
                     tableText.className = "font-bold text-gray-500";
                     tableText.innerText = "Seleccionar Mesa...";
-                    tableIcon.setAttribute('class', "text-gray-400 w-5 h-5 lucide lucide-map");
+                    tableIconContainer.innerHTML = '<i data-lucide="map" class="text-gray-400 w-5 h-5"></i>';
                 }
             }
             lucide.createIcons();
