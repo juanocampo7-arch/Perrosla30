@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perros La 30 - Sistema de Órdenes</title>
-    <!-- Tailwind CSS (Estilos) -->
+    <title>Perros La 30 - Sistema de Órdenes (Cloud)</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons (Iconos) -->
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Pequeños ajustes para la barra de desplazamiento y animaciones */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         .fade-in { animation: fadeIn 0.2s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        /* Indicador de conexión */
+        #connection-status { transition: all 0.3s; }
     </style>
 </head>
 <body class="bg-gray-100 flex flex-col font-sans min-h-screen">
@@ -27,6 +28,10 @@
                 <div class="flex items-center gap-2">
                     <span class="font-black text-2xl tracking-tighter">PERROS LA 30</span>
                     <span class="text-xs font-medium uppercase tracking-widest bg-red-800 px-2 py-0.5 rounded-full hidden sm:block">Los Originales</span>
+                    <!-- Indicador de Nube -->
+                    <div id="connection-status" class="ml-2 bg-yellow-500 text-yellow-900 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 animate-pulse">
+                        Conectando...
+                    </div>
                 </div>
                 
                 <nav class="flex space-x-1 sm:space-x-4">
@@ -66,7 +71,7 @@
             <!-- Ticket / Resumen de Orden -->
             <div class="w-full lg:w-[400px] shrink-0 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col h-[70vh] lg:h-full overflow-hidden">
                 <div class="p-4 bg-gray-900 text-white rounded-t-xl flex justify-between items-center shrink-0">
-                    <h2 class="text-xl font-bold">Orden #<span id="order-counter-display">1</span></h2>
+                    <h2 class="text-xl font-bold">Orden #<span id="order-counter-display">...</span></h2>
                     <div class="flex items-center gap-3">
                         <button onclick="clearCurrentOrder()" id="btn-clear-order" class="hidden text-gray-400 hover:text-red-400 p-1.5 bg-gray-800 rounded-full transition-colors flex items-center justify-center" title="Vaciar Orden">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
@@ -78,7 +83,7 @@
                 <div class="p-4 border-b space-y-3 shrink-0">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Mesero</label>
-                        <input type="text" id="waiter-name" oninput="state.waiterName = this.value" placeholder="Ej. Carlos" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-red-500 outline-none">
+                        <input type="text" id="waiter-name" oninput="window.state.waiterName = this.value" placeholder="Ej. Carlos" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-red-500 outline-none">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Mesa</label>
@@ -96,14 +101,14 @@
 
                 <!-- Totales y Botón Enviar -->
                 <div class="p-4 border-t bg-white rounded-b-xl shrink-0">
-                    <input type="text" id="general-note" oninput="state.generalNote = this.value" placeholder="Observaciones generales..." class="w-full border rounded-lg p-2 mb-4 text-sm focus:ring-2 focus:ring-red-500 outline-none">
+                    <input type="text" id="general-note" oninput="window.state.generalNote = this.value" placeholder="Observaciones generales..." class="w-full border rounded-lg p-2 mb-4 text-sm focus:ring-2 focus:ring-red-500 outline-none">
                     <div class="flex justify-between items-center mb-4 text-lg">
                         <span class="font-bold text-gray-600">Total:</span>
                         <span id="cart-total" class="font-extrabold text-2xl text-red-600">$0</span>
                     </div>
                     <button onclick="submitOrder()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 text-lg">
-                        <i data-lucide="clipboard-list" class="w-6 h-6"></i>
-                        Enviar Orden
+                        <i data-lucide="cloud-upload" class="w-6 h-6"></i>
+                        Enviar Orden a la Nube
                     </button>
                 </div>
             </div>
@@ -111,12 +116,27 @@
 
         <!-- VISTA COCINA -->
         <div id="view-cocina" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
-            <div class="mb-4 shrink-0">
-                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                    <i data-lucide="chef-hat" class="text-orange-500 w-8 h-8"></i> Monitor de Cocina
-                </h2>
-                <p class="text-gray-500">Órdenes pendientes de preparación</p>
+            <div class="mb-4 shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                        <i data-lucide="chef-hat" class="text-orange-500 w-8 h-8"></i> Monitor de Cocina
+                    </h2>
+                    <p class="text-gray-500">Órdenes separadas por estación</p>
+                </div>
+                
+                <div class="flex space-x-1 sm:space-x-2 bg-gray-200 p-1.5 rounded-xl overflow-x-auto">
+                    <button onclick="setKitchenStation('perrero')" id="tab-station-perrero" class="px-4 py-2 bg-white font-bold text-red-600 rounded-lg shadow transition-all whitespace-nowrap">
+                        Perrero
+                    </button>
+                    <button onclick="setKitchenStation('hamburguesero')" id="tab-station-hamburguesero" class="px-4 py-2 font-bold text-gray-600 hover:text-gray-800 rounded-lg transition-all whitespace-nowrap">
+                        Hamburguesero
+                    </button>
+                    <button onclick="setKitchenStation('general')" id="tab-station-general" class="px-4 py-2 font-bold text-gray-600 hover:text-gray-800 rounded-lg transition-all whitespace-nowrap">
+                        Otras Prep.
+                    </button>
+                </div>
             </div>
+            
             <div id="kitchen-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start pb-6 content-start">
                 <!-- Tarjetas de cocina -->
             </div>
@@ -128,7 +148,7 @@
                 <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
                     <i data-lucide="receipt" class="text-green-600 w-8 h-8"></i> Caja y Facturación
                 </h2>
-                <p class="text-gray-500">Órdenes pendientes de pago o anulación</p>
+                <p class="text-gray-500">Órdenes pendientes de pago (Ticket completo)</p>
             </div>
             <div id="cashier-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start pb-6 content-start">
                 <!-- Tarjetas de caja -->
@@ -138,48 +158,53 @@
     </main>
 
     <!-- MODALES Y NOTIFICACIONES -->
-
-    <!-- TOAST NOTIFICATION -->
-    <div id="toast" class="fixed bottom-4 right-4 text-white px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-20 opacity-0 z-50">
-        <i id="toast-icon" data-lucide="check-circle" class="w-6 h-6"></i>
+    <div id="toast" class="fixed bottom-4 right-4 text-white px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-20 opacity-0 z-[100]">
+        <!-- Contenedor del icono seguro para no romper al reemplazar el SVG -->
+        <div id="toast-icon-container">
+            <i data-lucide="check-circle" class="w-6 h-6"></i>
+        </div>
         <span id="toast-message" class="font-medium">Mensaje</span>
     </div>
 
     <!-- MAPA MODAL -->
-    <div id="map-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
+    <div id="map-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col h-[80vh] sm:h-auto">
             <div class="bg-gray-900 text-white p-4 flex justify-between items-center shrink-0">
                 <h3 class="text-xl font-bold flex items-center gap-2">
                     <i data-lucide="map" class="text-red-500"></i> Selecciona una Mesa
                 </h3>
-                <button onclick="closeMapModal()" class="text-gray-400 hover:text-white transition-colors">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <button onclick="toggleMultipleTables()" id="btn-multiple-tables" class="text-xs sm:text-sm px-2 sm:px-3 py-1 rounded border border-gray-500 text-gray-200 hover:bg-gray-800 transition-colors">
+                        Juntar Mesas
+                    </button>
+                    <button onclick="confirmTableSelection()" id="btn-confirm-tables" class="hidden text-xs sm:text-sm px-2 sm:px-3 py-1 rounded bg-red-600 hover:bg-red-700 font-bold transition-colors">
+                        Confirmar
+                    </button>
+                    <button onclick="closeMapModal()" class="text-gray-400 hover:text-white transition-colors ml-2">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
             </div>
             <div class="p-6 bg-gray-100 overflow-auto flex-1 relative">
                 <div class="min-w-[700px] h-[450px] bg-white border-4 border-gray-300 rounded-xl relative mx-auto shadow-inner overflow-hidden" id="map-tables-container">
-                    <!-- Zonas Base -->
                     <div class="absolute top-0 left-0 w-1/4 h-[35%] border-b-4 border-r-4 border-gray-300 bg-gray-50 flex items-center justify-center">
                         <span class="font-black text-2xl text-gray-400 tracking-widest">CAJA</span>
                     </div>
                     <div class="absolute top-0 left-1/4 w-[45%] h-[35%] border-b-4 border-r-4 border-gray-300 bg-gray-50 flex items-center justify-center">
                         <span class="font-black text-3xl text-gray-400 tracking-widest">COCINA</span>
                     </div>
-                    <!-- Líneas -->
                     <div class="absolute top-[35%] left-[70%] w-1 h-[65%] bg-gray-300"></div>
                     <div class="absolute top-[35%] left-[25%] w-1 h-[65%] bg-gray-300"></div>
-                    <!-- Entrada -->
                     <div class="absolute bottom-0 left-[25%] w-32 h-10 border-t-4 border-l-4 border-r-4 border-gray-300 bg-white flex items-center justify-center z-10 translate-x-[-50%] rounded-t-lg">
                         <span class="font-bold text-gray-500">ENTRADA</span>
                     </div>
-                    <!-- Mesas renderizadas por JS -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DE ÉXITO Y SIGUIENTE ACCIÓN -->
-    <div id="success-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
+    <!-- MODAL DE ÉXITO -->
+    <div id="success-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
         <div class="bg-white rounded-2xl p-6 md:p-8 max-w-sm w-full text-center shadow-2xl">
             <i data-lucide="check-circle" class="text-green-500 w-20 h-20 mx-auto mb-4"></i>
             <h3 id="success-title" class="text-2xl font-bold text-gray-800 mb-2">¡Orden Enviada!</h3>
@@ -196,87 +221,98 @@
         </div>
     </div>
 
-    <!-- LOGICA DE LA APLICACIÓN (VANILLA JS) -->
-    <script>
-        // --- BASE DE DATOS MOCK ---
+    <!-- LÓGICA DE LA APLICACIÓN Y CONEXIÓN A FIREBASE (MÓDULO) -->
+    <script type="module">
+        // Importaciones de Firebase V11.6.1
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // ==========================================
+        // CONFIGURACIÓN DE BASE DE DATOS (FIREBASE)
+        // ==========================================
+        let firebaseConfig;
+        if (typeof __firebase_config !== 'undefined') {
+            // Para el entorno de prueba/canvas
+            firebaseConfig = JSON.parse(__firebase_config);
+        } else {
+            // ******************************************************************************
+            // ATENCIÓN: Cuando subas esto a GitHub Pages, debes reemplazar todo esto
+            // por la configuración de tu propia cuenta gratuita de Firebase.
+            // ******************************************************************************
+            firebaseConfig = {
+                apiKey: "AQUI_TU_API_KEY",
+                authDomain: "AQUI_TU_DOMINIO.firebaseapp.com",
+                projectId: "AQUI_TU_PROJECT_ID",
+                storageBucket: "AQUI_TU_BUCKET.appspot.com",
+                messagingSenderId: "AQUI_SENDER",
+                appId: "AQUI_APP_ID"
+            };
+        }
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'perros-la-30-prod';
+        
+        // --- BASE DE DATOS MOCK (Menú) ---
         const MENU_CATEGORIES = ['Perros', 'Hamburguesas', 'Arepas', 'Asados', 'Salchipapas', 'Desgranados', 'Bebidas', 'Adicionales'];
 
         const MOCK_MENU = {
             'Perros': [
-                { id: 'p1', name: 'Perro Sencillo', price: 18000 },
-                { id: 'p2', name: 'Perro Doble', price: 21000 },
-                { id: 'p3', name: 'Perro Triple', price: 24000 },
-                { id: 'p4', name: 'Choriperro', price: 21000 },
-                { id: 'p5', name: 'Perra', price: 21000 },
-                { id: 'p6', name: 'Chow Chow Instagram', price: 25000 },
-                { id: 'p7', name: 'San Bernardo', price: 36000 },
-                { id: 'p8', name: 'Perro con Salchicha Ranchera', price: 21000 },
-                { id: 'p9', name: 'Perro Super Ranchero', price: 33000 },
-                { id: 'p10', name: 'Perro con Salchicha Americana', price: 21000 },
+                { id: 'p1', name: 'Perro Sencillo', price: 18000 }, { id: 'p2', name: 'Perro Doble', price: 21000 },
+                { id: 'p3', name: 'Perro Triple', price: 24000 }, { id: 'p4', name: 'Choriperro', price: 21000 },
+                { id: 'p5', name: 'Perra', price: 21000 }, { id: 'p6', name: 'Chow Chow Instagram', price: 25000 },
+                { id: 'p7', name: 'San Bernardo', price: 36000 }, { id: 'p8', name: 'Perro con Salchicha Ranchera', price: 21000 },
+                { id: 'p9', name: 'Perro Super Ranchero', price: 33000 }, { id: 'p10', name: 'Perro con Salchicha Americana', price: 21000 },
                 { id: 'p11', name: 'Perro Vegano', price: 19000 },
+                { id: 'p12', name: 'COMBO PS', price: 20000 }, { id: 'p13', name: 'COMBO PT', price: 25000 },
             ],
             'Hamburguesas': [
-                { id: 'h1', name: 'Hamburguesa Sencilla', price: 19000 },
-                { id: 'h2', name: 'Hamburguesa Doble', price: 23000 },
-                { id: 'h3', name: 'Hamburguesa Triple', price: 27000 },
-                { id: 'h4', name: 'Hamburguesa Filete de Pollo', price: 22000 },
-                { id: 'h5', name: 'Hamburguesa de Lomo de Cerdo', price: 22000 },
-                { id: 'h6', name: 'Hamburguesa Vegetariana', price: 20000 },
-                { id: 'h7', name: 'Hamburguesa Mixta', price: 28000 },
-                { id: 'h8', name: 'Reina de la Casa', price: 35000 },
+                { id: 'h1', name: 'Hamburguesa Sencilla', price: 19000 }, { id: 'h2', name: 'Hamburguesa Doble', price: 23000 },
+                { id: 'h3', name: 'Hamburguesa Triple', price: 27000 }, { id: 'h4', name: 'Hamburguesa Filete de Pollo', price: 22000 },
+                { id: 'h5', name: 'Hamburguesa de Lomo de Cerdo', price: 22000 }, { id: 'h6', name: 'Hamburguesa Vegetariana', price: 20000 },
+                { id: 'h7', name: 'Hamburguesa Mixta', price: 28000 }, { id: 'h8', name: 'Reina de la Casa', price: 35000 },
+                { id: 'h9', name: 'COMBO HS', price: 20000 }, { id: 'h10', name: 'COMBO HT', price: 25000 },
             ],
             'Arepas': [
-                { id: 'ar1', name: 'Arepa Burguer', price: 19000 },
-                { id: 'ar2', name: 'Arepa Mixta', price: 28000 },
+                { id: 'ar1', name: 'Arepa Burguer', price: 19000 }, { id: 'ar2', name: 'Arepa Mixta', price: 28000 },
             ],
             'Asados': [
-                { id: 'as1', name: 'Chuzo de Pollo', price: 23000 },
-                { id: 'as2', name: 'Chuzo de Cerdo', price: 23000 },
-                { id: 'as3', name: 'Chuzo de Res', price: 27000 },
-                { id: 'as4', name: 'Costillas BBQ', price: 32000 },
-                { id: 'as5', name: 'Picada', price: 56000 },
-                { id: 'as6', name: 'Chorizo Santarrosano X2', price: 26000 },
+                { id: 'as1', name: 'Chuzo de Pollo', price: 23000 }, { id: 'as2', name: 'Chuzo de Cerdo', price: 23000 },
+                { id: 'as3', name: 'Chuzo de Res', price: 27000 }, { id: 'as4', name: 'Costillas BBQ', price: 32000 },
+                { id: 'as5', name: 'Picada', price: 56000 }, { id: 'as6', name: 'Chorizo Santarrosano X2', price: 26000 },
             ],
             'Salchipapas': [
-                { id: 's1', name: 'Salchipapa Pequeña', price: 19000 },
-                { id: 's2', name: 'Salchipapa Mediana', price: 23000 },
-                { id: 's3', name: 'Salchipapa Megafamiliar', price: 50000 },
-                { id: 's4', name: 'Salchipapa Americana Pequeña', price: 24000 },
-                { id: 's5', name: 'Salchipapa Americana Mediana', price: 28000 },
-                { id: 's6', name: 'Salchipapa Americana Familiar', price: 62000 },
-                { id: 's7', name: 'Choripapa Pequeña', price: 23000 },
-                { id: 's8', name: 'Choripapa Mediana', price: 27000 },
+                { id: 's1', name: 'Salchipapa Pequeña', price: 19000 }, { id: 's2', name: 'Salchipapa Mediana', price: 23000 },
+                { id: 's3', name: 'Salchipapa Megafamiliar', price: 50000 }, { id: 's4', name: 'Salchipapa Americana Pequeña', price: 24000 },
+                { id: 's5', name: 'Salchipapa Americana Mediana', price: 28000 }, { id: 's6', name: 'Salchipapa Americana Familiar', price: 62000 },
+                { id: 's7', name: 'Choripapa Pequeña', price: 23000 }, { id: 's8', name: 'Choripapa Mediana', price: 27000 },
             ],
             'Desgranados': [
-                { id: 'd1', name: 'Desgranado Gratinado', price: 25000 },
-                { id: 'd2', name: 'Desgranado', price: 25000 },
+                { id: 'd1', name: 'Desgranado Gratinado', price: 25000 }, { id: 'd2', name: 'Desgranado', price: 25000 },
                 { id: 'd3', name: 'Coctel de Huevo', price: 20000 },
             ],
             'Bebidas': [
-                { id: 'b1', name: 'Power', price: 5000 },
-                { id: 'b2', name: 'Gaseosa 400 ML', price: 5000 },
-                { id: 'b3', name: 'Agua Sin Gas', price: 5000 },
-                { id: 'b4', name: 'Agua Con Gas', price: 5000 },
-                { id: 'b5', name: 'Gaseosa 1.5L', price: 8000 },
-                { id: 'b6', name: 'Gaseosa Gopack', price: 5000 },
-                { id: 'b7', name: 'Jarra de Limonada', price: 8000 },
-                { id: 'b8', name: 'Jarra de Jugo', price: 11000 },
-                { id: 'b9', name: 'Limonada de Coco', price: 11000 },
-                { id: 'b10', name: 'Limonada Cherry', price: 11000 },
-                { id: 'b11', name: 'Limonada de Mango Biche', price: 11000 },
-                { id: 'b12', name: 'Limonada de Hierba Buena', price: 11000 },
+                { id: 'b1', name: 'Power', price: 5000 }, { id: 'b2', name: 'Gaseosa 400 ML', price: 5000 },
+                { id: 'b3', name: 'Agua Sin Gas', price: 5000 }, { id: 'b4', name: 'Agua Con Gas', price: 5000 },
+                { id: 'b5', name: 'Gaseosa 1.5L', price: 8000 }, { id: 'b6', name: 'Gaseosa Gopack', price: 5000 },
+                { id: 'b7', name: 'Jarra de Limonada', price: 8000 }, { id: 'b8', name: 'Jarra de Jugo', price: 11000 },
+                { id: 'b9', name: 'Limonada de Coco', price: 11000 }, { id: 'b10', name: 'Limonada Cherry', price: 11000 },
+                { id: 'b11', name: 'Limonada de Mango Biche', price: 11000 }, { id: 'b12', name: 'Limonada de Hierba Buena', price: 11000 },
+                { id: 'b13', name: 'Gaseosa Mini', price: 2000 },
             ],
             'Adicionales': [
-                { id: 'ad1', name: 'Porción de Huevo', price: 10000 },
-                { id: 'ad2', name: 'Porción de Tocineta', price: 7000 },
-                { id: 'ad3', name: 'Porción de Maíz', price: 4000 },
-                { id: 'ad4', name: 'Piña Calada', price: 4000 },
-                { id: 'ad5', name: 'Queso', price: 6000 },
-                { id: 'ad6', name: 'Porción Papa 250 GRM', price: 10000 },
+                { id: 'ad1', name: 'Porción de Huevo', price: 10000 }, { id: 'ad2', name: 'Porción de Tocineta', price: 7000 },
+                { id: 'ad3', name: 'Porción de Maíz', price: 4000 }, { id: 'ad4', name: 'Piña Calada', price: 4000 },
+                { id: 'ad5', name: 'Queso', price: 6000 }, { id: 'ad6', name: 'Porción Papa 250 GRM', price: 10000 },
             ]
         };
 
-        const FLAT_MENU = Object.values(MOCK_MENU).flat();
+        const FLAT_MENU = [];
+        for (const category in MOCK_MENU) {
+            MOCK_MENU[category].forEach(item => { FLAT_MENU.push({ ...item, category: category }); });
+        }
 
         const TABLE_POSITIONS = [
             { id: 1, left: '8%', top: '55%' }, { id: 2, left: '18%', top: '55%' },
@@ -291,17 +327,20 @@
             { id: 19, left: '82%', top: '58%' }, { id: 20, left: '92%', top: '58%' }
         ];
 
-        // --- ESTADO GLOBAL (Sustituye a useState) ---
-        const state = {
+        // --- ESTADO GLOBAL ---
+        window.state = {
+            currentUser: null,
             currentView: 'mesero',
+            kitchenStation: 'perrero',
             waiterName: '',
-            tableNumber: '',
+            selectedTables: [],
+            isMultipleTableMode: false,
             activeCategory: MENU_CATEGORIES[0],
             currentOrderItems: [],
             generalNote: '',
-            orderCounter: 1,
-            kitchenOrders: [],
-            cashierOrders: [],
+            orderCounter: 1, // Sincronizado con Firebase
+            kitchenTickets: [], // Sincronizado con Firebase
+            cashierOrders: [], // Sincronizado con Firebase
             lastSubmittedOrder: null
         };
 
@@ -312,16 +351,17 @@
             return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(amount);
         };
 
-        function showToast(message, type = 'success') {
+        window.showToast = function(message, type = 'success') {
             const toastEl = document.getElementById('toast');
-            const iconEl = document.getElementById('toast-icon');
+            const iconContainer = document.getElementById('toast-icon-container');
             document.getElementById('toast-message').innerText = message;
             
+            // Reemplazamos el contenedor del icono de forma segura para no romper SVGs cacheados
+            iconContainer.innerHTML = `<i data-lucide="${type === 'error' ? 'alert-triangle' : 'check-circle'}" class="w-6 h-6"></i>`;
+            
             toastEl.className = `fixed bottom-4 right-4 text-white px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3 transition-all duration-300 transform z-[100] ${type === 'error' ? 'bg-red-600' : 'bg-gray-800'}`;
-            iconEl.setAttribute('data-lucide', type === 'error' ? 'alert-triangle' : 'check-circle');
             lucide.createIcons();
             
-            // Animación de entrada
             setTimeout(() => { toastEl.classList.remove('translate-y-20', 'opacity-0'); }, 10);
 
             if (toastTimeout) clearTimeout(toastTimeout);
@@ -330,16 +370,85 @@
             }, 3000);
         }
 
-        // --- NAVEGACIÓN DE VISTAS ---
-        function switchView(view) {
-            state.currentView = view;
+        // ==========================================
+        // AUTENTICACIÓN Y CONEXIÓN EN TIEMPO REAL
+        // ==========================================
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Error de conexión:", error);
+                const statusEl = document.getElementById('connection-status');
+                statusEl.innerText = "Modo Local (Sin Nube)";
+                statusEl.className = "ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1";
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            window.state.currentUser = user;
+            const statusEl = document.getElementById('connection-status');
+            
+            if (user) {
+                statusEl.innerText = "Nube Conectada";
+                statusEl.className = "ml-2 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1";
+                statusEl.classList.remove('animate-pulse');
+                setupFirebaseListeners();
+            } else {
+                statusEl.innerText = "Desconectado";
+                statusEl.className = "ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1";
+            }
+        });
+
+        // Escuchar cambios en la base de datos (Sincronización en vivo)
+        function setupFirebaseListeners() {
+            if (!window.state.currentUser) return;
+
+            // Escuchar Contador Global de Órdenes
+            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), (snapshot) => {
+                if (snapshot.exists()) {
+                    const cloudVal = snapshot.data().value;
+                    if (cloudVal >= window.state.orderCounter) {
+                        window.state.orderCounter = cloudVal + 1;
+                        document.getElementById('order-counter-display').innerText = window.state.orderCounter;
+                    }
+                }
+            }, (error) => console.error("Error contador:", error));
+
+            // Escuchar Órdenes de Cocina
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets'), (snapshot) => {
+                window.state.kitchenTickets = [];
+                snapshot.forEach(doc => window.state.kitchenTickets.push(doc.data()));
+                window.state.kitchenTickets.sort((a,b) => a.orderId - b.orderId); // Ordenar por antiguo primero
+                updateBadges();
+                if (window.state.currentView === 'cocina') renderKitchen();
+            }, (error) => console.error("Error cocina:", error));
+
+            // Escuchar Órdenes de Caja
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'cashierOrders'), (snapshot) => {
+                window.state.cashierOrders = [];
+                snapshot.forEach(doc => window.state.cashierOrders.push(doc.data()));
+                window.state.cashierOrders.sort((a,b) => a.orderId - b.orderId);
+                updateBadges();
+                if (window.state.currentView === 'caja') renderCashier();
+            }, (error) => console.error("Error caja:", error));
+        }
+
+        // ==========================================
+        // FUNCIONES DE INTERFAZ EXPUESTAS GLOBALMENTE
+        // ==========================================
+        
+        window.switchView = function(view) {
+            window.state.currentView = view;
             document.getElementById('view-mesero').classList.add('hidden');
             document.getElementById('view-cocina').classList.add('hidden');
             document.getElementById('view-caja').classList.add('hidden');
             
             document.getElementById(`view-${view}`).classList.remove('hidden');
 
-            // Actualizar pestañas superiores
             ['mesero', 'cocina', 'caja'].forEach(v => {
                 const tab = document.getElementById(`tab-${v}`);
                 if (v === view) {
@@ -351,27 +460,269 @@
             
             if(view === 'cocina') renderKitchen();
             if(view === 'caja') renderCashier();
-        }
+        };
 
-        // --- RENDERIZADO VISTA MESERO ---
+        window.setKitchenStation = function(station) {
+            window.state.kitchenStation = station;
+            ['perrero', 'hamburguesero', 'general'].forEach(s => {
+                const btn = document.getElementById(`tab-station-${s}`);
+                if (s === station) {
+                    btn.className = "px-4 py-2 bg-white font-bold text-red-600 rounded-lg shadow transition-all whitespace-nowrap";
+                } else {
+                    btn.className = "px-4 py-2 font-bold text-gray-600 hover:text-gray-800 rounded-lg transition-all whitespace-nowrap";
+                }
+            });
+            renderKitchen();
+        };
+
+        window.changeCategory = function(category) {
+            window.state.activeCategory = category;
+            renderCategories();
+            renderProducts();
+        };
+
+        window.addItemToOrder = function(productId) {
+            const product = FLAT_MENU.find(p => p.id === productId);
+            if (!product) return;
+
+            const existingIndex = window.state.currentOrderItems.findIndex(item => item.id === productId && item.note === '');
+            if (existingIndex >= 0) {
+                window.state.currentOrderItems[existingIndex].quantity += 1;
+            } else {
+                window.state.currentOrderItems.push({ ...product, quantity: 1, note: '' });
+            }
+            renderCart();
+        };
+
+        window.updateItemQuantity = function(index, delta) {
+            const newQty = window.state.currentOrderItems[index].quantity + delta;
+            if (newQty > 0) {
+                window.state.currentOrderItems[index].quantity = newQty;
+            } else {
+                window.state.currentOrderItems.splice(index, 1);
+            }
+            renderCart();
+        };
+
+        window.updateItemNoteText = function(index, value, element) {
+            window.state.currentOrderItems[index].note = value;
+            element.style.height = 'auto';
+            element.style.height = element.scrollHeight + 'px';
+        };
+
+        window.removeItem = function(index) {
+            window.state.currentOrderItems.splice(index, 1);
+            renderCart();
+        };
+
+        window.clearCurrentOrder = function() {
+            window.state.currentOrderItems = [];
+            window.state.generalNote = '';
+            document.getElementById('general-note').value = '';
+            renderCart();
+            window.showToast('Orden vaciada correctamente.', 'error');
+        };
+
+        // --- MAPA GLOBALS ---
+        window.openMapModal = function() {
+            window.state.isMultipleTableMode = false;
+            document.getElementById('btn-multiple-tables').classList.remove('bg-gray-700', 'text-white');
+            document.getElementById('btn-multiple-tables').innerText = 'Juntar Mesas';
+            document.getElementById('btn-confirm-tables').classList.add('hidden');
+            document.getElementById('map-modal').classList.remove('hidden');
+            renderMapTables();
+        };
+
+        window.closeMapModal = function() {
+            document.getElementById('map-modal').classList.add('hidden');
+        };
+
+        window.toggleMultipleTables = function() {
+            window.state.isMultipleTableMode = !window.state.isMultipleTableMode;
+            const btn = document.getElementById('btn-multiple-tables');
+            const confirmBtn = document.getElementById('btn-confirm-tables');
+            
+            if (window.state.isMultipleTableMode) {
+                btn.classList.add('bg-gray-700', 'text-white');
+                btn.innerText = "Modo: Varias Mesas";
+                confirmBtn.classList.remove('hidden');
+            } else {
+                btn.classList.remove('bg-gray-700', 'text-white');
+                btn.innerText = "Juntar Mesas";
+                confirmBtn.classList.add('hidden');
+                if(window.state.selectedTables.length > 1) {
+                    window.state.selectedTables = [window.state.selectedTables[0]];
+                    renderMapTables();
+                }
+            }
+        };
+
+        window.confirmTableSelection = function() {
+            if (window.state.selectedTables.length === 0) {
+                window.showToast("Selecciona al menos una mesa.", "error");
+                return;
+            }
+            window.closeMapModal();
+            renderCart();
+        };
+
+        window.selectMapTable = function(id) {
+            const tableId = id.toString();
+            if (window.state.isMultipleTableMode) {
+                const index = window.state.selectedTables.indexOf(tableId);
+                if (index > -1) {
+                    window.state.selectedTables.splice(index, 1);
+                } else {
+                    window.state.selectedTables.push(tableId);
+                }
+                renderMapTables();
+            } else {
+                window.state.selectedTables = [tableId];
+                window.closeMapModal();
+                renderCart();
+            }
+        };
+
+        // ==========================================
+        // ESCRITURA EN LA NUBE (FIREBASE)
+        // ==========================================
+        window.submitOrder = async function() {
+            if (!window.state.currentUser) { window.showToast('Esperando conexión a la nube...', 'error'); return; }
+            if (!window.state.waiterName.trim()) { window.showToast('Por favor ingresa el nombre del mesero.', 'error'); return; }
+            if (window.state.selectedTables.length === 0) { window.showToast('Por favor selecciona una mesa del mapa.', 'error'); return; }
+            if (window.state.currentOrderItems.length === 0) { window.showToast('La orden está vacía. Agrega productos.', 'error'); return; }
+
+            // Guardamos el ID actual que vamos a usar y luego sumamos
+            const currentOrderId = window.state.orderCounter;
+            
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const tableStr = window.state.selectedTables.join(' y ');
+
+            const itemsPerrero = window.state.currentOrderItems.filter(i => i.category === 'Perros' || i.id === 'ad1');
+            const itemsHamburguesero = window.state.currentOrderItems.filter(i => i.category === 'Hamburguesas' || i.category === 'Arepas');
+            const itemsGeneral = window.state.currentOrderItems.filter(i => !['Perros', 'Hamburguesas', 'Arepas', 'Bebidas'].includes(i.category) && i.id !== 'ad1');
+
+            const baseOrderInfo = {
+                orderId: currentOrderId,
+                waiter: window.state.waiterName,
+                table: tableStr,
+                generalNote: window.state.generalNote,
+                timestamp: timeString
+            };
+
+            const ticketsToSave = [];
+            if (itemsPerrero.length > 0) {
+                ticketsToSave.push({ ...baseOrderInfo, ticketId: `${currentOrderId}-P`, station: 'perrero', items: JSON.parse(JSON.stringify(itemsPerrero)) });
+            }
+            if (itemsHamburguesero.length > 0) {
+                ticketsToSave.push({ ...baseOrderInfo, ticketId: `${currentOrderId}-H`, station: 'hamburguesero', items: JSON.parse(JSON.stringify(itemsHamburguesero)) });
+            }
+            if (itemsGeneral.length > 0) {
+                ticketsToSave.push({ ...baseOrderInfo, ticketId: `${currentOrderId}-G`, station: 'general', items: JSON.parse(JSON.stringify(itemsGeneral)) });
+            }
+
+            const total = window.state.currentOrderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+            const cashierOrderToSave = {
+                orderId: currentOrderId,
+                waiter: window.state.waiterName,
+                table: tableStr,
+                items: JSON.parse(JSON.stringify(window.state.currentOrderItems)),
+                total: total,
+                timestamp: timeString,
+                status: 'unpaid'
+            };
+
+            // Enviamos todo a la nube simultáneamente
+            try {
+                // 1. Actualizar el contador global para todos los meseros
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), { value: currentOrderId });
+
+                // 2. Guardar los tickets de cocina
+                for (const t of ticketsToSave) {
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', t.ticketId), t);
+                }
+
+                // 3. Guardar orden de caja
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', currentOrderId.toString()), cashierOrderToSave);
+
+                // Éxito: Limpiar localmente
+                window.state.lastSubmittedOrder = { id: currentOrderId, table: tableStr };
+                window.state.currentOrderItems = [];
+                window.state.generalNote = '';
+                document.getElementById('general-note').value = '';
+                
+                renderCart();
+                
+                document.getElementById('success-title').innerText = `¡Orden #${window.state.lastSubmittedOrder.id} Enviada!`;
+                document.getElementById('success-subtitle').innerText = `¿Qué deseas hacer ahora, ${window.state.waiterName}?`;
+                document.getElementById('btn-same-table').innerText = `Nueva Orden (${window.state.selectedTables.length > 1 ? 'Mesas' : 'Mesa'} ${window.state.lastSubmittedOrder.table})`;
+                document.getElementById('success-modal').classList.remove('hidden');
+
+            } catch (error) {
+                console.error("Error guardando orden:", error);
+                window.showToast("Error al subir la orden a la nube.", "error");
+            }
+        };
+
+        window.completeKitchenTicket = async function(ticketId) {
+            if (!window.state.currentUser) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', ticketId));
+            } catch (error) { console.error("Error completando ticket:", error); }
+        };
+
+        window.payCashierOrder = async function(id) {
+            if (!window.state.currentUser) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', id.toString()));
+                window.showToast(`Pago registrado para la orden #${id}`);
+                // En la vida real, aquí guardarías esto en una colección de "ordenes_pagadas" para el cierre de caja.
+            } catch (error) { console.error("Error pagando:", error); }
+        };
+
+        window.cancelOrder = async function(id) {
+            if (!window.state.currentUser) return;
+            try {
+                // Borrar de caja
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', id.toString()));
+                // Buscar y borrar todos los tickets de cocina con este orderId
+                const ticketsToDelete = window.state.kitchenTickets.filter(t => t.orderId === id);
+                for (const t of ticketsToDelete) {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', t.ticketId));
+                }
+                window.showToast(`Orden #${id} anulada del sistema.`, 'error');
+            } catch (error) { console.error("Error anulando:", error); }
+        };
+
+        window.actionNewOrderSameTable = function() {
+            window.state.lastSubmittedOrder = null;
+            document.getElementById('success-modal').classList.add('hidden');
+        };
+
+        window.actionNewOrderOtherTable = function() {
+            window.state.lastSubmittedOrder = null;
+            window.state.selectedTables = [];
+            document.getElementById('success-modal').classList.add('hidden');
+            renderCart();
+            window.openMapModal();
+        };
+
+        // ==========================================
+        // FUNCIONES DE RENDERIZADO INTERNAS
+        // ==========================================
         function renderCategories() {
             const container = document.getElementById('categories-container');
             container.innerHTML = MENU_CATEGORIES.map(category => `
-                <button onclick="changeCategory('${category}')" class="px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${state.activeCategory === category ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-700 border hover:bg-red-50'}">
+                <button onclick="changeCategory('${category}')" class="px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${window.state.activeCategory === category ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-700 border hover:bg-red-50'}">
                     ${category}
                 </button>
             `).join('');
         }
 
-        function changeCategory(category) {
-            state.activeCategory = category;
-            renderCategories();
-            renderProducts();
-        }
-
         function renderProducts() {
             const container = document.getElementById('products-container');
-            const products = MOCK_MENU[state.activeCategory] || [];
+            const products = MOCK_MENU[window.state.activeCategory] || [];
             container.innerHTML = products.map(p => `
                 <button onclick="addItemToOrder('${p.id}')" class="bg-white border rounded-lg p-3 text-left shadow-sm hover:shadow-md hover:border-red-500 transition-all flex flex-col justify-between h-24 active:scale-95">
                     <span class="font-bold text-gray-800 text-sm leading-tight line-clamp-2">${p.name}</span>
@@ -380,54 +731,10 @@
             `).join('');
         }
 
-        // --- LÓGICA DEL CARRITO ---
-        function addItemToOrder(productId) {
-            const product = FLAT_MENU.find(p => p.id === productId);
-            if (!product) return;
-
-            const existingIndex = state.currentOrderItems.findIndex(item => item.id === productId && item.note === '');
-            if (existingIndex >= 0) {
-                state.currentOrderItems[existingIndex].quantity += 1;
-            } else {
-                state.currentOrderItems.push({ ...product, quantity: 1, note: '' });
-            }
-            renderCart();
-        }
-
-        function updateItemQuantity(index, delta) {
-            const newQty = state.currentOrderItems[index].quantity + delta;
-            if (newQty > 0) {
-                state.currentOrderItems[index].quantity = newQty;
-            } else {
-                state.currentOrderItems.splice(index, 1);
-            }
-            renderCart();
-        }
-
-        function updateItemNoteText(index, value, element) {
-            state.currentOrderItems[index].note = value;
-            // Auto-resize textarea
-            element.style.height = 'auto';
-            element.style.height = element.scrollHeight + 'px';
-        }
-
-        function removeItem(index) {
-            state.currentOrderItems.splice(index, 1);
-            renderCart();
-        }
-
-        function clearCurrentOrder() {
-            state.currentOrderItems = [];
-            state.generalNote = '';
-            document.getElementById('general-note').value = '';
-            renderCart();
-            showToast('Orden vaciada correctamente.', 'error');
-        }
-
         function renderCart() {
             const container = document.getElementById('cart-items');
             
-            if (state.currentOrderItems.length === 0) {
+            if (window.state.currentOrderItems.length === 0) {
                 container.innerHTML = `
                     <div class="text-center text-gray-400 mt-10">
                         <i data-lucide="utensils" class="mx-auto w-12 h-12 mb-2 opacity-50"></i>
@@ -436,7 +743,7 @@
                 document.getElementById('btn-clear-order').classList.add('hidden');
             } else {
                 document.getElementById('btn-clear-order').classList.remove('hidden');
-                container.innerHTML = state.currentOrderItems.map((item, index) => `
+                container.innerHTML = window.state.currentOrderItems.map((item, index) => `
                     <div class="bg-white p-3 rounded-lg shadow-sm border text-sm relative group">
                         <div class="flex justify-between items-start mb-2 pr-6">
                             <span class="font-bold text-gray-800">${item.name}</span>
@@ -460,172 +767,100 @@
                 `).join('');
             }
             
-            // Actualizar total
-            const total = state.currentOrderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+            const total = window.state.currentOrderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
             document.getElementById('cart-total').innerText = formatCurrency(total);
             
-            // Actualizar Mesa Header
             const headerBadge = document.getElementById('header-table-badge');
-            if(state.tableNumber) {
-                headerBadge.innerText = 'Mesa ' + state.tableNumber;
+            const tableStr = window.state.selectedTables.join(', ');
+            const labelStr = window.state.selectedTables.length > 1 ? 'Mesas ' : 'Mesa ';
+
+            if(window.state.selectedTables.length > 0) {
+                headerBadge.innerText = labelStr + tableStr;
                 headerBadge.classList.remove('hidden');
             } else {
                 headerBadge.classList.add('hidden');
             }
 
-            // Actualizar Botón de mesa
             const tableBtn = document.getElementById('table-selector-btn');
             const tableText = document.getElementById('table-selector-text');
             const tableIcon = document.getElementById('table-selector-icon');
             
-            if (state.tableNumber) {
-                tableBtn.className = "w-full border rounded-lg p-2 flex items-center justify-between focus:ring-2 focus:ring-red-500 outline-none transition-colors bg-red-50 border-red-200";
-                tableText.className = "font-bold text-red-700";
-                tableText.innerText = "Mesa " + state.tableNumber;
-                tableIcon.className = "text-red-600 w-5 h-5";
-            } else {
-                tableBtn.className = "w-full border rounded-lg p-2 flex items-center justify-between focus:ring-2 focus:ring-red-500 outline-none transition-colors bg-gray-50 hover:bg-red-50";
-                tableText.className = "font-bold text-gray-500";
-                tableText.innerText = "Seleccionar Mesa...";
-                tableIcon.className = "text-gray-400 w-5 h-5";
+            if (tableIcon) {
+                if (window.state.selectedTables.length > 0) {
+                    tableBtn.className = "w-full border rounded-lg p-2 flex items-center justify-between focus:ring-2 focus:ring-red-500 outline-none transition-colors bg-red-50 border-red-200";
+                    tableText.className = "font-bold text-red-700";
+                    tableText.innerText = labelStr + tableStr;
+                    // Corrección importante: Se usa setAttribute en lugar de .className para evitar errores del DOM en SVG
+                    tableIcon.setAttribute('class', "text-red-600 w-5 h-5 lucide lucide-map");
+                } else {
+                    tableBtn.className = "w-full border rounded-lg p-2 flex items-center justify-between focus:ring-2 focus:ring-red-500 outline-none transition-colors bg-gray-50 hover:bg-red-50";
+                    tableText.className = "font-bold text-gray-500";
+                    tableText.innerText = "Seleccionar Mesa...";
+                    tableIcon.setAttribute('class', "text-gray-400 w-5 h-5 lucide lucide-map");
+                }
             }
-
             lucide.createIcons();
-        }
-
-        // --- MAPA ---
-        function openMapModal() {
-            document.getElementById('map-modal').classList.remove('hidden');
-            renderMapTables();
-        }
-
-        function closeMapModal() {
-            document.getElementById('map-modal').classList.add('hidden');
-        }
-
-        function selectMapTable(id) {
-            state.tableNumber = id.toString();
-            closeMapModal();
-            renderCart();
         }
 
         function renderMapTables() {
             const container = document.getElementById('map-tables-container');
-            // Eliminar botones anteriores para no duplicar (excepto las zonas base)
             const oldButtons = container.querySelectorAll('.table-btn');
             oldButtons.forEach(btn => btn.remove());
 
             TABLE_POSITIONS.forEach(table => {
-                const isSelected = state.tableNumber === table.id.toString();
+                const isSelected = window.state.selectedTables.includes(table.id.toString());
                 const btn = document.createElement('button');
                 btn.className = `table-btn absolute w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-xl font-black text-lg shadow-md transition-all hover:scale-110 hover:shadow-lg ${isSelected ? 'bg-red-600 text-white ring-4 ring-red-300 scale-110 z-20' : 'bg-white text-gray-800 border-2 border-gray-300 hover:border-red-500 hover:text-red-600 z-10'}`;
                 btn.style.left = table.left;
                 btn.style.top = table.top;
                 btn.style.transform = 'translate(-50%, -50%)';
                 btn.innerText = table.id;
-                btn.onclick = () => selectMapTable(table.id);
+                btn.onclick = () => window.selectMapTable(table.id);
                 container.appendChild(btn);
             });
-        }
-
-        // --- LÓGICA DE ENVÍO DE ORDEN ---
-        function submitOrder() {
-            if (!state.waiterName.trim()) { showToast('Por favor ingresa el nombre del mesero.', 'error'); return; }
-            if (!state.tableNumber) { showToast('Por favor selecciona una mesa del mapa.', 'error'); return; }
-            if (state.currentOrderItems.length === 0) { showToast('La orden está vacía. Agrega productos.', 'error'); return; }
-
-            const total = state.currentOrderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-            const now = new Date();
-            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            const newOrder = {
-                orderId: state.orderCounter,
-                waiter: state.waiterName,
-                table: state.tableNumber,
-                items: JSON.parse(JSON.stringify(state.currentOrderItems)), // Clone
-                generalNote: state.generalNote,
-                total: total,
-                timestamp: timeString,
-                status: 'pending'
-            };
-
-            state.kitchenOrders.push({ ...newOrder });
-            state.cashierOrders.push({ ...newOrder, status: 'unpaid' });
-            
-            state.lastSubmittedOrder = { id: state.orderCounter, table: state.tableNumber };
-            
-            // Incrementar contador y limpiar
-            state.orderCounter++;
-            document.getElementById('order-counter-display').innerText = state.orderCounter;
-            state.currentOrderItems = [];
-            state.generalNote = '';
-            document.getElementById('general-note').value = '';
-            
-            renderCart();
-            updateBadges();
-            
-            // Mostrar modal de éxito
-            document.getElementById('success-title').innerText = `¡Orden #${state.lastSubmittedOrder.id} Enviada!`;
-            document.getElementById('success-subtitle').innerText = `¿Qué deseas hacer ahora, ${state.waiterName}?`;
-            document.getElementById('btn-same-table').innerText = `Nueva Orden (Mesa ${state.lastSubmittedOrder.table})`;
-            document.getElementById('success-modal').classList.remove('hidden');
-        }
-
-        function actionNewOrderSameTable() {
-            state.lastSubmittedOrder = null;
-            document.getElementById('success-modal').classList.add('hidden');
-        }
-
-        function actionNewOrderOtherTable() {
-            state.lastSubmittedOrder = null;
-            state.tableNumber = '';
-            document.getElementById('success-modal').classList.add('hidden');
-            renderCart();
-            openMapModal();
         }
 
         function updateBadges() {
             const kb = document.getElementById('badge-cocina');
             const cb = document.getElementById('badge-caja');
             
-            if (state.kitchenOrders.length > 0) {
-                kb.innerText = state.kitchenOrders.length;
+            if (window.state.kitchenTickets.length > 0) {
+                kb.innerText = window.state.kitchenTickets.length;
                 kb.classList.remove('hidden');
-            } else {
-                kb.classList.add('hidden');
-            }
+            } else { kb.classList.add('hidden'); }
 
-            if (state.cashierOrders.length > 0) {
-                cb.innerText = state.cashierOrders.length;
+            if (window.state.cashierOrders.length > 0) {
+                cb.innerText = window.state.cashierOrders.length;
                 cb.classList.remove('hidden');
-            } else {
-                cb.classList.add('hidden');
-            }
+            } else { cb.classList.add('hidden'); }
         }
 
-        // --- RENDERIZAR COCINA ---
         function renderKitchen() {
             const container = document.getElementById('kitchen-container');
-            if (state.kitchenOrders.length === 0) {
+            const tickets = window.state.kitchenTickets.filter(t => t.station === window.state.kitchenStation);
+
+            if (tickets.length === 0) {
                 container.innerHTML = `
                     <div class="col-span-full flex flex-col items-center justify-center text-gray-400 mt-20">
                         <i data-lucide="check-circle" class="w-16 h-16 mb-4 text-green-200"></i>
-                        <p class="text-xl">No hay órdenes pendientes en cocina.</p>
+                        <p class="text-xl">No hay órdenes pendientes en esta estación.</p>
                     </div>`;
             } else {
-                container.innerHTML = state.kitchenOrders.map(order => `
-                    <div class="bg-yellow-50 border-2 border-yellow-200 rounded-xl shadow-md overflow-hidden">
-                        <div class="bg-yellow-400 p-3 flex justify-between items-center text-gray-900">
-                            <span class="font-extrabold text-xl">Mesa ${order.table}</span>
-                            <span class="font-bold">Orden #${order.orderId}</span>
+                container.innerHTML = tickets.map(ticket => {
+                    let colorTheme = ticket.station === 'perrero' ? 'red' : ticket.station === 'hamburguesero' ? 'orange' : 'yellow';
+                    return `
+                    <div class="bg-${colorTheme}-50 border-2 border-${colorTheme}-200 rounded-xl shadow-md overflow-hidden relative">
+                        <div class="bg-${colorTheme}-400 p-3 flex justify-between items-center text-gray-900">
+                            <span class="font-extrabold text-xl">Mesa ${ticket.table}</span>
+                            <span class="font-bold">Orden #${ticket.orderId}</span>
                         </div>
-                        <div class="p-3 text-sm border-b border-yellow-200 bg-yellow-100 flex justify-between text-gray-700">
-                            <span><span class="font-semibold">Mesero:</span> ${order.waiter}</span>
-                            <span>${order.timestamp}</span>
+                        <div class="p-3 text-sm border-b border-${colorTheme}-200 bg-${colorTheme}-100 flex justify-between text-gray-700">
+                            <span><span class="font-semibold">Mesero:</span> ${ticket.waiter}</span>
+                            <span>${ticket.timestamp}</span>
                         </div>
                         <div class="p-4 space-y-3">
-                            ${order.items.map(item => `
-                                <div class="border-b border-yellow-200 pb-2 last:border-0 last:pb-0">
+                            ${ticket.items.map(item => `
+                                <div class="border-b border-${colorTheme}-200 pb-2 last:border-0 last:pb-0">
                                     <div class="flex gap-2">
                                         <span class="font-bold text-lg">${item.quantity}x</span>
                                         <span class="font-semibold text-gray-800 text-lg leading-tight">${item.name}</span>
@@ -637,41 +872,34 @@
                                     ` : ''}
                                 </div>
                             `).join('')}
-                            ${order.generalNote ? `
+                            ${ticket.generalNote ? `
                                 <div class="mt-4 p-2 bg-orange-100 rounded border border-orange-200 text-orange-800 text-sm italic">
-                                    <span class="font-bold not-italic mr-1">General:</span> ${order.generalNote}
+                                    <span class="font-bold not-italic mr-1">General:</span> ${ticket.generalNote}
                                 </div>
                             ` : ''}
                         </div>
                         <div class="p-4 pt-0">
-                            <button onclick="completeKitchenOrder(${order.orderId})" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg shadow transition-colors flex items-center justify-center gap-2">
+                            <button onclick="completeKitchenTicket('${ticket.ticketId}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg shadow transition-colors flex items-center justify-center gap-2">
                                 <i data-lucide="check-circle" class="w-5 h-5"></i>
-                                Marcar como Lista
+                                Terminar Parte
                             </button>
                         </div>
                     </div>
-                `).join('');
+                `}).join('');
             }
             lucide.createIcons();
         }
 
-        function completeKitchenOrder(id) {
-            state.kitchenOrders = state.kitchenOrders.filter(o => o.orderId !== id);
-            updateBadges();
-            renderKitchen();
-        }
-
-        // --- RENDERIZAR CAJA ---
         function renderCashier() {
             const container = document.getElementById('cashier-container');
-            if (state.cashierOrders.length === 0) {
+            if (window.state.cashierOrders.length === 0) {
                 container.innerHTML = `
                     <div class="col-span-full flex flex-col items-center justify-center text-gray-400 mt-20">
                         <i data-lucide="check-circle" class="w-16 h-16 mb-4 text-green-200"></i>
                         <p class="text-xl">No hay cuentas pendientes por cobrar.</p>
                     </div>`;
             } else {
-                container.innerHTML = state.cashierOrders.map(order => `
+                container.innerHTML = window.state.cashierOrders.map(order => `
                     <div class="bg-white border rounded-xl shadow-md overflow-hidden flex flex-col">
                         <div class="bg-gray-800 p-3 flex justify-between items-center text-white">
                             <span class="font-bold">Mesa ${order.table}</span>
@@ -698,7 +926,7 @@
                             </button>
                             <button onclick="payCashierOrder(${order.orderId})" class="w-3/4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow transition-colors flex items-center justify-center gap-2">
                                 <i data-lucide="receipt" class="w-5 h-5"></i>
-                                Pagar
+                                Pagar / Imprimir
                             </button>
                         </div>
                     </div>
@@ -707,29 +935,14 @@
             lucide.createIcons();
         }
 
-        function payCashierOrder(id) {
-            state.cashierOrders = state.cashierOrders.filter(o => o.orderId !== id);
-            updateBadges();
-            renderCashier();
-            showToast(`Pago registrado para la orden #${id}`);
-        }
-
-        function cancelOrder(id) {
-            state.kitchenOrders = state.kitchenOrders.filter(o => o.orderId !== id);
-            state.cashierOrders = state.cashierOrders.filter(o => o.orderId !== id);
-            updateBadges();
-            if (state.currentView === 'cocina') renderKitchen();
-            if (state.currentView === 'caja') renderCashier();
-            showToast(`Orden #${id} anulada del sistema.`, 'error');
-        }
-
-        // --- INICIALIZACIÓN ---
+        // --- ARRANQUE ---
         window.onload = () => {
             renderCategories();
             renderProducts();
             renderCart();
             lucide.createIcons();
-            document.getElementById('waiter-name').value = state.waiterName;
+            document.getElementById('waiter-name').value = window.state.waiterName;
+            initAuth();
         };
 
     </script>
