@@ -1168,6 +1168,13 @@
             if (!window.state.currentUser) return;
             if(!confirm("⚠️ ADVERTENCIA ⚠️\n¿Estás seguro de borrar TODAS las órdenes de caja, cocina, historial y reiniciar el contador a 1?\nEsto no se puede deshacer.")) return;
             
+            // Solicitar clave de seguridad
+            const clave = prompt("Ingrese la clave de administrador para continuar:");
+            if (clave !== "1089607033") {
+                showToast("Clave incorrecta. Operación cancelada.", "error");
+                return;
+            }
+
             try {
                 const deletes = [];
                 // Se tendrían que listar y borrar en un entorno real.
