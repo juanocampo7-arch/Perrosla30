@@ -17,6 +17,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         /* Indicador de conexión */
         #connection-status { transition: all 0.3s; }
+        .ticket-container { page-break-after: always; padding-bottom: 20px; }
     </style>
 </head>
 <body class="bg-gray-100 flex flex-col font-sans min-h-screen">
@@ -34,7 +35,7 @@
                     </div>
                 </div>
                 
-                <nav class="flex space-x-1 sm:space-x-2 md:space-x-4 overflow-x-auto pr-2">
+                <nav class="flex space-x-1 sm:space-x-2 md:space-x-4 overflow-x-auto pr-2 pb-1 sm:pb-0">
                     <button onclick="switchView('mesero')" id="tab-mesero" class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors bg-white text-red-600 shadow whitespace-nowrap">
                         <i data-lucide="utensils" class="w-5 h-5"></i> <span class="hidden md:inline">Tomar Orden</span>
                     </button>
@@ -48,6 +49,9 @@
                     </button>
                     <button onclick="switchView('historial')" id="tab-historial" class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors relative text-red-100 hover:bg-red-500 whitespace-nowrap">
                         <i data-lucide="history" class="w-5 h-5"></i> <span class="hidden md:inline">Historial</span>
+                    </button>
+                    <button onclick="switchView('inventario')" id="tab-inventario" class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors relative text-red-100 hover:bg-red-500 whitespace-nowrap">
+                        <i data-lucide="boxes" class="w-5 h-5"></i> <span class="hidden md:inline">Inventario</span>
                     </button>
                 </nav>
             </div>
@@ -149,16 +153,21 @@
 
         <!-- VISTA CAJA -->
         <div id="view-caja" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
-            <div class="mb-4 shrink-0 flex justify-between items-start gap-2">
+            <div class="mb-4 shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
                         <i data-lucide="receipt" class="text-green-600 w-8 h-8"></i> Caja y Facturación
                     </h2>
                     <p class="text-gray-500">Órdenes pendientes de pago (Ticket completo)</p>
                 </div>
-                <button onclick="resetDatabase()" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 sm:px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-red-200 text-sm shadow-sm" title="Borra todo y reinicia el contador a 1">
-                    <i data-lucide="alert-triangle" class="w-4 h-4"></i> <span class="hidden sm:inline">Limpiar Sistema</span>
-                </button>
+                <div class="flex gap-2">
+                    <button onclick="generateReporteZ()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 sm:px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-blue-200 text-sm shadow-sm whitespace-nowrap" title="Ver totales del día">
+                        <i data-lucide="calculator" class="w-4 h-4"></i> <span class="hidden sm:inline">Reporte Z</span>
+                    </button>
+                    <button onclick="openSecurityModal()" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 sm:px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-red-200 text-sm shadow-sm whitespace-nowrap" title="Cierre de caja y limpieza">
+                        <i data-lucide="lock" class="w-4 h-4"></i> <span class="hidden sm:inline">Limpiar Sistema</span>
+                    </button>
+                </div>
             </div>
             <div id="cashier-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start pb-6 content-start">
                 <!-- Tarjetas de caja -->
@@ -175,6 +184,27 @@
             </div>
             <div id="history-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start pb-6 content-start">
                 <!-- Tarjetas de historial -->
+            </div>
+        </div>
+
+        <!-- VISTA INVENTARIO -->
+        <div id="view-inventario" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
+            <div class="mb-4 shrink-0">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                    <i data-lucide="boxes" class="text-purple-600 w-8 h-8"></i> Control de Inventario
+                </h2>
+                <p class="text-gray-500">Stock de ingredientes y productos terminados. Se descuentan automáticamente al Pagar.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex-1 overflow-hidden flex flex-col">
+                <div class="p-4 bg-gray-50 border-b flex justify-between items-center shrink-0">
+                    <h3 class="font-bold text-gray-700">Artículos Registrados</h3>
+                    <span class="text-xs text-gray-500 italic">*Cantidades se actualizan en vivo</span>
+                </div>
+                <div class="flex-1 overflow-y-auto p-4">
+                    <div id="inventory-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <!-- Items de inventario -->
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -234,7 +264,6 @@
             <p id="success-subtitle" class="text-gray-600 mb-6">¿Qué deseas hacer ahora?</p>
 
             <div class="space-y-3">
-                <!-- Nuevos botones de impresión rápida para el Mesero -->
                 <div class="flex gap-2">
                     <button onclick="printTicket('last-cocina')" class="flex-1 bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-2 rounded-xl transition-colors border border-orange-200 flex flex-col items-center justify-center gap-1 text-xs shadow-sm">
                         <i data-lucide="chef-hat" class="w-5 h-5"></i>
@@ -257,9 +286,86 @@
         </div>
     </div>
 
+    <!-- MODAL REPORTE Z -->
+    <div id="reportez-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-blue-600 text-white p-4 flex justify-between items-center shrink-0">
+                <h3 class="text-xl font-bold flex items-center gap-2">
+                    <i data-lucide="calculator" class="w-6 h-6"></i> Reporte Z (Cierre del Día)
+                </h3>
+                <button onclick="closeReporteZ()" class="text-blue-200 hover:text-white transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <div class="p-5 overflow-y-auto bg-gray-50 flex-1">
+                <div class="mb-4 pb-4 border-b border-gray-300">
+                    <h4 class="font-bold text-gray-500 text-xs uppercase tracking-wider mb-2">Resumen de Ventas (Cantidades)</h4>
+                    <div id="reportez-items" class="space-y-2">
+                        <!-- Las cantidades se llenan por JS -->
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex justify-between items-center">
+                    <span class="font-bold text-blue-900">Total Recaudado:</span>
+                    <span id="reportez-total" class="font-extrabold text-2xl text-blue-700">$0</span>
+                </div>
+            </div>
+
+            <div class="p-4 bg-white border-t flex gap-2 shrink-0">
+                <button onclick="closeReporteZ()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-lg transition-colors">
+                    Cerrar
+                </button>
+                <button onclick="printReporteZ()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md flex items-center justify-center gap-2 transition-colors">
+                    <i data-lucide="printer" class="w-5 h-5"></i> Imprimir Z
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL SEGURIDAD PIN -->
+    <div id="security-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center">
+            <div class="mx-auto w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4">
+                <i data-lucide="lock" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Seguridad Requerida</h3>
+            <p class="text-sm text-gray-500 mb-6">Por favor ingresa la clave de administrador para limpiar las ventas del día. (El inventario NO se borrará).</p>
+            
+            <input type="password" id="security-pin" placeholder="Clave secreta..." class="w-full border-2 border-gray-300 rounded-xl p-3 text-center text-xl tracking-widest focus:border-red-500 focus:outline-none mb-6">
+            
+            <div class="flex gap-2">
+                <button onclick="closeSecurityModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
+                <button onclick="confirmSecurityAndReset()" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-md transition-colors">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR INVENTARIO -->
+    <div id="inventory-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center">
+            <div class="mx-auto w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mb-4">
+                <i data-lucide="package-plus" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-1">Ajustar Stock</h3>
+            <p id="inv-modal-item-name" class="text-sm text-gray-500 mb-6 font-semibold">Cargando...</p>
+            
+            <div class="flex items-center justify-center gap-4 mb-6">
+                <button onclick="adjInvInput(-1)" class="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xl flex items-center justify-center transition-colors"><i data-lucide="minus" class="w-5 h-5"></i></button>
+                <input type="number" id="inv-modal-input" class="w-24 border-2 border-gray-300 rounded-xl p-2 text-center text-xl font-bold focus:border-purple-500 focus:outline-none appearance-none">
+                <button onclick="adjInvInput(1)" class="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xl flex items-center justify-center transition-colors"><i data-lucide="plus" class="w-5 h-5"></i></button>
+            </div>
+            
+            <div class="flex gap-2">
+                <button onclick="closeInventoryModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
+                <button onclick="saveInventoryStock()" class="flex-1 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow-md transition-colors">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+
     <!-- LÓGICA DE LA APLICACIÓN Y CONEXIÓN A FIREBASE (MÓDULO) -->
     <script type="module">
-        // Importaciones de Firebase V11.6.1
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -269,7 +375,6 @@
         // ==========================================
         let firebaseConfig;
         if (typeof __firebase_config !== 'undefined') {
-            // Para el entorno de prueba/canvas
             firebaseConfig = JSON.parse(__firebase_config);
         } else {
             // Las llaves del usuario real
@@ -324,22 +429,24 @@
                 { id: 's7', name: 'Choripapa Pequeña', price: 23000 }, { id: 's8', name: 'Choripapa Mediana', price: 27000 },
             ],
             'Desgranados': [
-                { id: 'd1', name: 'Desgranado Gratinado', price: 25000 }, { id: 'd2', name: 'Desgranado', price: 25000 },
+                { id: 'd2', name: 'Desgranado', price: 25000 },
                 { id: 'd3', name: 'Coctel de Huevo', price: 20000 },
             ],
             'Bebidas': [
-                { id: 'b1', name: 'Power', price: 5000 }, { id: 'b2', name: 'Gaseosa 400 ML', price: 5000 },
-                { id: 'b3', name: 'Agua Sin Gas', price: 5000 }, { id: 'b4', name: 'Agua Con Gas', price: 5000 },
                 { id: 'b5', name: 'Gaseosa 1.5L', price: 8000 }, { id: 'b6', name: 'Gaseosa Gopack', price: 5000 },
-                { id: 'b7', name: 'Jarra de Limonada', price: 8000 }, { id: 'b8', name: 'Jarra de Jugo', price: 11000 },
-                { id: 'b9', name: 'Limonada de Coco', price: 11000 }, { id: 'b10', name: 'Limonada Cherry', price: 11000 },
+                { id: 'b13', name: 'Gaseosa Mini', price: 2000 }, { id: 'b14', name: 'Jugo 1L', price: 7000 },
+                { id: 'b7', name: 'Jarra de Limonada', price: 8000 }, { id: 'b8', name: 'Jarra de Jugo', price: 11000 }, 
+                { id: 'b9', name: 'Limonada de Coco', price: 11000 }, { id: 'b10', name: 'Limonada Cherry', price: 11000 }, 
                 { id: 'b11', name: 'Limonada de Mango Biche', price: 11000 }, { id: 'b12', name: 'Limonada de Hierba Buena', price: 11000 },
-                { id: 'b13', name: 'Gaseosa Mini', price: 2000 },
             ],
             'Adicionales': [
                 { id: 'ad1', name: 'Porción de Huevo', price: 10000 }, { id: 'ad2', name: 'Porción de Tocineta', price: 7000 },
                 { id: 'ad3', name: 'Porción de Maíz', price: 4000 }, { id: 'ad4', name: 'Piña Calada', price: 4000 },
-                { id: 'ad5', name: 'Queso', price: 6000 }, { id: 'ad6', name: 'Porción Papa 250 GRM', price: 10000 },
+                { id: 'ad5', name: 'Queso', price: 4000 }, { id: 'ad6', name: 'Porción Papa 250 GRM', price: 10000 },
+                { id: 'ad7', name: 'Carne de Res (Hamb)', price: 4000 }, { id: 'ad8', name: 'Carne de Pollo (Hamb)', price: 7000 },
+                { id: 'ad9', name: 'Carne de Cerdo (Hamb)', price: 7000 }, { id: 'ad10', name: 'Salchicha Tradicional', price: 3000 },
+                { id: 'ad11', name: 'Salchicha Ranchera', price: 6000 }, { id: 'ad12', name: 'Salchicha Americana', price: 6000 },
+                { id: 'ad13', name: 'Chorizo', price: 6000 }
             ]
         };
 
@@ -361,6 +468,127 @@
             { id: 19, left: '82%', top: '58%' }, { id: 20, left: '92%', top: '58%' }
         ];
 
+        // ==========================================
+        // DICCIONARIO DE INVENTARIO Y FICHAS TÉCNICAS (RECETAS)
+        // ==========================================
+        const INVENTORY_DICT = {
+            'pan_perro': 'Pan de Perro',
+            'salchicha': 'Salchicha Tradicional',
+            'salchicha_ranchera': 'Salchicha Ranchera',
+            'salchicha_americana': 'Salchicha Americana',
+            'pan_san_bernardo': 'Pan San Bernardo',
+            'pan_hamburguesa': 'Pan de Hamburguesa',
+            'carne_res': 'Carne de Res (Hamb)',
+            'carne_pollo': 'Carne de Pollo (Hamb)',
+            'carne_cerdo': 'Carne de Cerdo (Hamb)',
+            'arepa': 'Arepa Base',
+            'queso': 'Porción de Queso',
+            'papa_mini': 'Porción Papa Mini (100g)',
+            'bebida_1_5l': 'Gaseosa 1.5L',
+            'bebida_mini': 'Gaseosa Mini',
+            'bebida_gopack': 'Gaseosa Gopack',
+            'jugo_1l': 'Jugo 1L (Botella)',
+            'pulpa_jugo': 'Pulpa de Fruta (Jugos)',
+            'pulpa_coco': 'Pulpa Limonada de Coco',
+            'pulpa_cherry': 'Pulpa Limonada Cherry',
+            'pulpa_mango_biche': 'Pulpa Limonada Mango Biche',
+            'pulpa_hierbabuena': 'Pulpa Limonada Hierbabuena',
+            'chuzo_pollo': 'Chuzo de Pollo (Unidad)',
+            'chuzo_cerdo': 'Chuzo de Cerdo (Unidad)',
+            'chuzo_res': 'Chuzo de Res (Unidad)',
+            'costillas_bbq': 'Costillas BBQ (Porción)',
+            'picada': 'Picada (Unidad)',
+            'chorizo_santarrosano': 'Chorizo Santarrosano X2',
+            'salchipapa_pequena': 'Salchipapa Pequeña (Bolsa)',
+            'salchipapa_mediana': 'Salchipapa Mediana (Bolsa)',
+            'salchipapa_megafamiliar': 'Salchipapa Megafamiliar (Bolsa)',
+            'salchipapa_amer_peq': 'Salchipapa Americana Peq. (Bolsa)',
+            'salchipapa_amer_med': 'Salchipapa Americana Med. (Bolsa)',
+            'salchipapa_amer_fam': 'Salchipapa Americana Fam. (Bolsa)',
+            'choripapa_peq': 'Choripapa Pequeña (Bolsa)',
+            'choripapa_med': 'Choripapa Mediana (Bolsa)',
+            'desgranado': 'Desgranado (Unidad)',
+            'coctel_huevo': 'Coctel de Huevo (Unidad)'
+        };
+
+        const RECIPES = {
+            // Perros
+            'p1': { pan_perro: 1, salchicha: 1 },
+            'p2': { pan_perro: 1, salchicha: 2 },
+            'p3': { pan_perro: 1, salchicha: 3 },
+            'p4': { pan_perro: 1, chorizo_santarrosano: 1 }, // Choriperro
+            'p5': { pan_perro: 1 }, // Perra (no descuenta salchicha, solo pan y sus adiciones)
+            'p6': { pan_perro: 1, salchicha: 2 }, // Chow Chow Instagram
+            'p7': { pan_san_bernardo: 1, salchicha: 5 }, // San Bernardo
+            'p8': { pan_perro: 1, salchicha_ranchera: 1 }, // Perro con Salchicha Ranchera
+            'p9': { pan_perro: 1, salchicha_ranchera: 2 }, // Perro Super Ranchero (Descuenta 2)
+            'p10': { pan_perro: 1, salchicha_americana: 1 }, // Perro con Salchicha Americana
+            'p11': { pan_perro: 1 }, // Perro Vegano
+            'p12': { pan_perro: 1, salchicha: 1, papa_mini: 1, bebida_mini: 1 }, // COMBO PS
+            'p13': { pan_perro: 1, salchicha: 3, papa_mini: 1, bebida_mini: 1 }, // COMBO PT
+            
+            // Hamburguesas
+            'h1': { pan_hamburguesa: 1, carne_res: 1 },
+            'h2': { pan_hamburguesa: 1, carne_res: 2 },
+            'h3': { pan_hamburguesa: 1, carne_res: 3 },
+            'h4': { pan_hamburguesa: 1, carne_pollo: 1 },
+            'h5': { pan_hamburguesa: 1, carne_cerdo: 1 },
+            'h6': { pan_hamburguesa: 1 }, // Vegetariana
+            'h7': { pan_hamburguesa: 1, carne_pollo: 1, carne_cerdo: 1 }, // Mixta
+            'h8': { pan_hamburguesa: 1, carne_res: 1, carne_pollo: 1, carne_cerdo: 1 }, // Reina de la casa (Placeholder)
+            'h9': { pan_hamburguesa: 1, carne_res: 1, papa_mini: 1, bebida_mini: 1 }, // Combo HS
+            'h10': { pan_hamburguesa: 1, carne_res: 3, papa_mini: 1, bebida_mini: 1 }, // Combo HT
+            
+            // Arepas
+            'ar1': { arepa: 1, carne_res: 1 },
+            'ar2': { arepa: 1, carne_pollo: 1, carne_cerdo: 1 }, // Arepa Mixta
+            
+            // Asados
+            'as1': { chuzo_pollo: 1 },
+            'as2': { chuzo_cerdo: 1 },
+            'as3': { chuzo_res: 1 },
+            'as4': { costillas_bbq: 1 },
+            'as5': { picada: 1 },
+            'as6': { chorizo_santarrosano: 1 },
+            
+            // Salchipapas
+            's1': { salchipapa_pequena: 1 },
+            's2': { salchipapa_mediana: 1 },
+            's3': { salchipapa_megafamiliar: 1 },
+            's4': { salchipapa_amer_peq: 1 },
+            's5': { salchipapa_amer_med: 1 },
+            's6': { salchipapa_amer_fam: 1 },
+            's7': { choripapa_peq: 1 },
+            's8': { choripapa_med: 1 },
+            
+            // Desgranados
+            'd2': { desgranado: 1 },
+            'd3': { coctel_huevo: 1 },
+            
+            // Bebidas
+            'b5': { bebida_1_5l: 1 }, // Gaseosa 1.5L
+            'b6': { bebida_gopack: 1 }, // Gopack
+            'b13': { bebida_mini: 1 },  // Mini
+            'b14': { jugo_1l: 1 }, // Jugo 1L (Botella comercial)
+            'b8': { pulpa_jugo: 1 }, // Jarra de Jugo descuenta pulpa de fruta
+            'b9': { pulpa_coco: 1 }, // Limonada de Coco
+            'b10': { pulpa_cherry: 1 }, // Limonada Cherry
+            'b11': { pulpa_mango_biche: 1 }, // Limonada Mango Biche
+            'b12': { pulpa_hierbabuena: 1 }, // Limonada Hierbabuena
+            // b7 Jarra Limonada NO ESTÁ AQUÍ a propósito para que no descuente nada
+            
+            // Adicionales (Para que descuenten del inventario si se venden por separado)
+            'ad5': { queso: 1 },
+            'ad7': { carne_res: 1 },
+            'ad8': { carne_pollo: 1 },
+            'ad9': { carne_cerdo: 1 },
+            'ad10': { salchicha: 1 },
+            'ad11': { salchicha_ranchera: 1 },
+            'ad12': { salchicha_americana: 1 },
+            'ad13': { chorizo_santarrosano: 1 }
+        };
+
+
         // --- ESTADO GLOBAL ---
         window.state = {
             currentUser: null,
@@ -372,11 +600,14 @@
             activeCategory: MENU_CATEGORIES[0],
             currentOrderItems: [],
             generalNote: '',
-            orderCounter: 1, // Sincronizado con Firebase
-            kitchenTickets: [], // Sincronizado con Firebase
-            cashierOrders: [], // Sincronizado con Firebase
-            historyOrders: [], // Historial sincronizado con Firebase
-            lastSubmittedOrder: null // Guardará toda la info de la orden enviada para poder imprimirla al instante
+            orderCounter: 1, 
+            kitchenTickets: [], 
+            cashierOrders: [], 
+            historyOrders: [], 
+            inventory: {}, // Estado del inventario local
+            lastSubmittedOrder: null,
+            zReportData: null,
+            editingInvId: null // Referencia para el modal de inventario
         };
 
         let toastTimeout;
@@ -410,7 +641,6 @@
         window.printTicket = function(type, id) {
             let dataList = [];
             
-            // Buscar la información dependiendo del tipo de impresión que se solicitó
             if (type === 'caja') {
                 const d = window.state.cashierOrders.find(o => o.orderId.toString() === id.toString()) || 
                           window.state.historyOrders.find(o => o.orderId.toString() === id.toString());
@@ -419,11 +649,9 @@
                 const d = window.state.kitchenTickets.find(t => t.ticketId === id);
                 if (d) dataList.push({ format: 'cocina', data: d });
             } else if (type === 'last-caja') {
-                // Imprimir el ticket de caja de la orden que el mesero acaba de tomar
                 const d = window.state.lastSubmittedOrder?.cashier;
                 if (d) dataList.push({ format: 'caja', data: d });
             } else if (type === 'last-cocina') {
-                // Imprimir TODOS los tickets de cocina generados en la orden que el mesero acaba de tomar
                 const tickets = window.state.lastSubmittedOrder?.kitchen;
                 if (tickets && tickets.length > 0) {
                     tickets.forEach(t => dataList.push({ format: 'cocina', data: t }));
@@ -438,18 +666,16 @@
                 return;
             }
 
-            // Crear ventana invisible temporal para generar el diseño de impresión
             const printWindow = window.open('', '_blank', 'width=400,height=600');
             
             let html = `
             <html>
             <head>
                 <style>
-                    /* Diseño especial para impresoras térmicas (58mm - 80mm) */
                     @page { margin: 0; size: auto; }
                     body { 
                         font-family: 'Courier New', Courier, monospace; 
-                        width: 280px; /* Ancho típico 80mm */
+                        width: 280px; 
                         margin: 0; 
                         padding: 10px; 
                         font-size: 14px; 
@@ -457,7 +683,6 @@
                     }
                     h1, h2, h3, p { margin: 0; padding: 2px 0; text-align: center; }
                     .divider { border-top: 1px dashed #000; margin: 8px 0; }
-                    .flex-row { display: flex; justify-content: space-between; }
                     .item-row { display: flex; justify-content: space-between; margin-bottom: 4px; align-items: flex-start;}
                     .item-qty { font-weight: bold; padding-right: 5px; }
                     .item-name { flex: 1; text-align: left; }
@@ -467,18 +692,14 @@
                     .header-title { font-size: 22px; font-weight: bold; text-align: center; }
                     .station-title { font-size: 20px; font-weight: bold; border: 2px solid #000; padding: 5px; margin-bottom: 10px; text-transform: uppercase; text-align: center; }
                     .info-text { text-align: left; font-size: 14px; margin-bottom: 2px; }
-                    
-                    /* Si se mandan a imprimir varios tickets de cocina a la vez, esta clase hace que la impresora los corte / separe */
                     .ticket-container { page-break-after: always; padding-bottom: 20px; }
                 </style>
             </head>
             <body>`;
 
-            // Construir el diseño HTML para cada ticket en la lista
             dataList.forEach(({format, data}) => {
                 html += `<div class="ticket-container">`;
                 
-                // DISEÑO CAJA (Cuenta con precios)
                 if (format === 'caja') {
                     html += `
                         <div class="header-title">PERROS LA 30</div>
@@ -509,7 +730,6 @@
                         <p style="margin-top: 15px; font-size: 12px;">¡Gracias por su compra!</p>
                     `;
                 } 
-                // DISEÑO COCINA (Comanda grande sin precios)
                 else if (format === 'cocina') {
                     html += `
                         <div class="station-title">${data.station}</div>
@@ -556,6 +776,121 @@
             </body>
             </html>`;
 
+            printWindow.document.write(html);
+            printWindow.document.close();
+        };
+
+        // ==========================================
+        // REPORTE Z
+        // ==========================================
+        window.generateReporteZ = function() {
+            if (window.state.historyOrders.length === 0) {
+                window.showToast("No hay ventas registradas hoy para hacer el Reporte Z.", "error");
+                return;
+            }
+
+            let totalRecaudado = 0;
+            const itemsVendidos = {};
+
+            window.state.historyOrders.forEach(order => {
+                if (order.status === 'paid') {
+                    totalRecaudado += order.total;
+                    order.items.forEach(item => {
+                        if (!itemsVendidos[item.name]) itemsVendidos[item.name] = { qty: 0, revenue: 0 };
+                        itemsVendidos[item.name].qty += item.quantity;
+                        itemsVendidos[item.name].revenue += (item.price * item.quantity);
+                    });
+                }
+            });
+
+            if (totalRecaudado === 0) {
+                window.showToast("Aún no hay órdenes pagadas (recaudadas).", "error");
+                return;
+            }
+
+            const sortedItems = Object.keys(itemsVendidos).map(name => {
+                return { name, qty: itemsVendidos[name].qty, revenue: itemsVendidos[name].revenue };
+            }).sort((a, b) => b.qty - a.qty);
+
+            window.state.zReportData = {
+                date: new Date().toLocaleDateString('es-CO'),
+                time: new Date().toLocaleTimeString('es-CO'),
+                total: totalRecaudado,
+                items: sortedItems
+            };
+
+            const container = document.getElementById('reportez-items');
+            container.innerHTML = sortedItems.map(i => `
+                <div class="flex justify-between items-center bg-white p-2 rounded border border-gray-200 text-sm">
+                    <span class="font-semibold text-gray-700 flex-1">${i.name}</span>
+                    <div class="flex gap-4 items-center">
+                        <span class="text-gray-500 font-medium">${formatCurrency(i.revenue)}</span>
+                        <span class="bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-md min-w-[2rem] text-center">${i.qty}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('reportez-total').innerText = formatCurrency(totalRecaudado);
+            document.getElementById('reportez-modal').classList.remove('hidden');
+        };
+
+        window.closeReporteZ = function() {
+            document.getElementById('reportez-modal').classList.add('hidden');
+        };
+
+        window.printReporteZ = function() {
+            const data = window.state.zReportData;
+            if (!data) return;
+
+            const printWindow = window.open('', '_blank', 'width=400,height=600');
+            
+            let html = `
+            <html>
+            <head>
+                <style>
+                    @page { margin: 0; size: auto; }
+                    body { font-family: 'Courier New', Courier, monospace; width: 280px; margin: 0; padding: 10px; font-size: 14px; color: #000; }
+                    h1, p { margin: 0; padding: 2px 0; text-align: center; }
+                    .divider { border-top: 1px dashed #000; margin: 8px 0; }
+                    .item-row { display: flex; justify-content: space-between; margin-bottom: 2px; align-items: flex-start; font-size: 13px;}
+                    .item-qty { font-weight: bold; width: 30px; text-align: left; }
+                    .item-name { flex: 1; text-align: left; padding-right: 5px; }
+                    .item-price { font-weight: bold; text-align: right; }
+                    .totals { margin-top: 10px; font-weight: bold; font-size: 18px; text-align: right; }
+                    .header-title { font-size: 20px; font-weight: bold; text-align: center; }
+                </style>
+            </head>
+            <body>
+                <div class="header-title">PERROS LA 30</div>
+                <p>REPORTE Z (CIERRE DIARIO)</p>
+                <div class="divider"></div>
+                <p style="text-align: left; font-size: 12px;"><b>Fecha:</b> ${data.date}</p>
+                <p style="text-align: left; font-size: 12px;"><b>Hora:</b> ${data.time}</p>
+                <div class="divider"></div>
+                <div style="margin-bottom: 5px; font-weight: bold; display: flex; font-size: 12px;">
+                    <span style="width: 30px;">CANT</span><span style="flex: 1;">PRODUCTO</span><span>TOTAL</span>
+                </div>
+                <div class="divider"></div>
+            `;
+
+            data.items.forEach(item => {
+                html += `
+                    <div class="item-row">
+                        <span class="item-qty">${item.qty}x</span>
+                        <span class="item-name">${item.name}</span>
+                        <span class="item-price">${formatCurrency(item.revenue)}</span>
+                    </div>
+                `;
+            });
+
+            html += `
+                <div class="divider"></div>
+                <div class="totals">RECAUDO TOTAL: <br>${formatCurrency(data.total)}</div>
+                <div class="divider"></div>
+                <p style="font-size: 12px; margin-top: 20px;">Fin del Reporte</p>
+                <script>window.onload = function() { window.print(); setTimeout(function(){ window.close(); }, 500); }<\/script>
+            </body>
+            </html>`;
             printWindow.document.write(html);
             printWindow.document.close();
         };
@@ -613,7 +948,7 @@
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets'), (snapshot) => {
                 window.state.kitchenTickets = [];
                 snapshot.forEach(doc => window.state.kitchenTickets.push(doc.data()));
-                window.state.kitchenTickets.sort((a,b) => a.orderId - b.orderId); // Ordenar por antiguo primero
+                window.state.kitchenTickets.sort((a,b) => a.orderId - b.orderId);
                 updateBadges();
                 if (window.state.currentView === 'cocina') renderKitchen();
             }, (error) => console.error("Error cocina:", error));
@@ -631,9 +966,18 @@
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders'), (snapshot) => {
                 window.state.historyOrders = [];
                 snapshot.forEach(doc => window.state.historyOrders.push(doc.data()));
-                window.state.historyOrders.sort((a,b) => b.orderId - a.orderId); // Las más nuevas primero
+                window.state.historyOrders.sort((a,b) => b.orderId - a.orderId);
                 if (window.state.currentView === 'historial') renderHistory();
             }, (error) => console.error("Error historial:", error));
+
+            // Escuchar Inventario
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'inventory'), (snapshot) => {
+                window.state.inventory = {};
+                snapshot.forEach(doc => {
+                    window.state.inventory[doc.id] = doc.data();
+                });
+                if (window.state.currentView === 'inventario') renderInventory();
+            }, (error) => console.error("Error inventario:", error));
         }
 
         // ==========================================
@@ -642,14 +986,8 @@
         
         window.switchView = function(view) {
             window.state.currentView = view;
-            document.getElementById('view-mesero').classList.add('hidden');
-            document.getElementById('view-cocina').classList.add('hidden');
-            document.getElementById('view-caja').classList.add('hidden');
-            document.getElementById('view-historial').classList.add('hidden');
-            
-            document.getElementById(`view-${view}`).classList.remove('hidden');
-
-            ['mesero', 'cocina', 'caja', 'historial'].forEach(v => {
+            ['mesero', 'cocina', 'caja', 'historial', 'inventario'].forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hidden');
                 const tab = document.getElementById(`tab-${v}`);
                 if (v === view) {
                     tab.className = "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors bg-white text-red-600 shadow whitespace-nowrap";
@@ -658,9 +996,12 @@
                 }
             });
             
+            document.getElementById(`view-${view}`).classList.remove('hidden');
+            
             if(view === 'cocina') renderKitchen();
             if(view === 'caja') renderCashier();
             if(view === 'historial') renderHistory(); 
+            if(view === 'inventario') renderInventory(); 
         };
 
         window.setKitchenStation = function(station) {
@@ -850,7 +1191,6 @@
 
                 await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', currentOrderId.toString()), cashierOrderToSave);
 
-                // ACTUALIZACIÓN: Guardamos absolutamente todo el detalle de la orden para que los botones de impresión rápida puedan leerlo al instante
                 window.state.lastSubmittedOrder = { 
                     id: currentOrderId, 
                     table: tableStr,
@@ -868,7 +1208,6 @@
                 document.getElementById('success-subtitle').innerText = `¿Qué deseas hacer ahora, ${window.state.waiterName}?`;
                 document.getElementById('btn-same-table').innerText = `Nueva Orden (${window.state.selectedTables.length > 1 ? 'Mesas' : 'Mesa'} ${window.state.lastSubmittedOrder.table})`;
                 document.getElementById('success-modal').classList.remove('hidden');
-                // Inicializa los nuevos íconos agregados en el modal si es la primera vez
                 lucide.createIcons();
 
             } catch (error) {
@@ -880,7 +1219,6 @@
         window.completeKitchenTicket = async function(ticketId) {
             if (!window.state.currentUser) return;
             try {
-                // Guardar en historial de cocina antes de borrar
                 const ticketToArchive = window.state.kitchenTickets.find(t => t.ticketId === ticketId);
                 if (ticketToArchive) {
                     ticketToArchive.status = 'completed';
@@ -891,29 +1229,54 @@
             } catch (error) { console.error("Error completando ticket:", error); }
         };
 
+        // --- ACTUALIZADO: DEDUCCIÓN DE INVENTARIO ---
         window.payCashierOrder = async function(id) {
             if (!window.state.currentUser) return;
             try {
-                // Guardar en historial de caja antes de borrar
                 const orderToArchive = window.state.cashierOrders.find(o => o.orderId === id);
-                if (orderToArchive) {
-                    orderToArchive.status = 'paid'; // Marcado como pagado
-                    orderToArchive.actionAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', id.toString()), orderToArchive);
+                if (!orderToArchive) return;
+
+                // 1. Calcular Descuentos de Inventario (Fichas Técnicas)
+                const updates = {};
+                orderToArchive.items.forEach(item => {
+                    const recipe = RECIPES[item.id];
+                    if (recipe) {
+                        for (const [invId, qtyNeeded] of Object.entries(recipe)) {
+                            if (!updates[invId]) updates[invId] = 0;
+                            updates[invId] += (qtyNeeded * item.quantity);
+                        }
+                    }
+                });
+
+                // 2. Guardar en Base de Datos (Inventario y Caja)
+                // Se resta el inventario
+                for (const [invId, deductedQty] of Object.entries(updates)) {
+                    let currentStock = window.state.inventory[invId]?.stock || 0;
+                    let newStock = currentStock - deductedQty;
+                    const name = INVENTORY_DICT[invId] || invId;
+                    
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', invId), {
+                        name: name,
+                        stock: newStock
+                    }, { merge: true });
                 }
 
+                // Archivar y cobrar la orden
+                orderToArchive.status = 'paid'; 
+                orderToArchive.actionAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', id.toString()), orderToArchive);
                 await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', id.toString()));
-                window.showToast(`Pago registrado para la orden #${id}`);
+                
+                window.showToast(`Pago e Inventario registrado (Orden #${id})`);
             } catch (error) { console.error("Error pagando:", error); }
         };
 
         window.cancelOrder = async function(id) {
             if (!window.state.currentUser) return;
             try {
-                // Guardar en historial de caja antes de borrar
                 const orderToArchive = window.state.cashierOrders.find(o => o.orderId === id);
                 if (orderToArchive) {
-                    orderToArchive.status = 'cancelled'; // Marcado como anulado
+                    orderToArchive.status = 'cancelled';
                     orderToArchive.actionAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                     await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', id.toString()), orderToArchive);
                 }
@@ -922,35 +1285,34 @@
                 
                 const ticketsToDelete = window.state.kitchenTickets.filter(t => t.orderId === id);
                 for (const t of ticketsToDelete) {
-                    // También marcamos los de cocina como anulados en el historial
                     t.status = 'cancelled';
                     t.actionAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                     await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets', t.ticketId), t);
                     await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', t.ticketId));
                 }
+                // Nota: Las ordenes canceladas NO descuentan inventario.
                 window.showToast(`Orden #${id} anulada del sistema.`, 'error');
             } catch (error) { console.error("Error anulando:", error); }
         };
 
-        window.resetDatabase = async function() {
-            if (!window.state.currentUser) return;
-            
-            // 1. Pedir clave de seguridad
-            const claveIngresada = window.prompt("⚠️ SEGURIDAD - CIERRE DEL DÍA ⚠️\n\nPor favor, digita la clave de administrador para limpiar el sistema:");
-            
-            // Si el usuario presiona "Cancelar" en la ventana
-            if (claveIngresada === null) return; 
+        // --- MANEJO DE MODALES PERSONALIZADOS DE SEGURIDAD ---
+        window.openSecurityModal = function() {
+            document.getElementById('security-pin').value = '';
+            document.getElementById('security-modal').classList.remove('hidden');
+        };
 
-            // Verificar si la clave es correcta
-            if (claveIngresada !== "1089607033") {
-                window.showToast("Clave incorrecta. Acción cancelada.", "error");
+        window.closeSecurityModal = function() {
+            document.getElementById('security-modal').classList.add('hidden');
+        };
+
+        window.confirmSecurityAndReset = async function() {
+            const pin = document.getElementById('security-pin').value;
+            if (pin !== '1089607033') {
+                window.showToast("Clave incorrecta. Acción denegada.", "error");
                 return;
             }
-            
-            // 2. Confirmación final si la clave fue correcta
-            const confirmacion = window.confirm("✅ Clave aceptada.\n\n¿Estás COMPLETAMENTE SEGURO de querer limpiar la base de datos?\nEsto borrará todas las órdenes actuales, el historial completo y reiniciará el número a 1.");
-            if (!confirmacion) return;
 
+            document.getElementById('security-modal').classList.add('hidden');
             window.showToast("Realizando cierre del día, por favor espera...", "success");
 
             try {
@@ -968,10 +1330,10 @@
                 const histKitchenQuery = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets'));
                 histKitchenQuery.forEach((d) => { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets', d.id)); });
 
-                // Reiniciar contador a 0 para que la siguiente orden (0+1) sea la 1
+                // Reiniciar contador a 0
                 await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), { value: 0 });
 
-                window.showToast("Cierre del día exitoso. Sistema reiniciado.", "success");
+                window.showToast("Cierre exitoso. El inventario se ha conservado intacto.", "success");
             } catch (error) {
                 console.error("Error limpiando la BD:", error);
                 window.showToast("Ocurrió un error al limpiar el sistema.", "error");
@@ -1225,7 +1587,7 @@
             lucide.createIcons();
         }
 
-        // --- NUEVO: RENDERIZAR HISTORIAL ---
+        // --- RENDERIZAR HISTORIAL ---
         function renderHistory() {
             const container = document.getElementById('history-container');
             if (window.state.historyOrders.length === 0) {
@@ -1274,6 +1636,82 @@
                     </div>
                 `}).join('');
             }
+            lucide.createIcons();
+        }
+
+        // --- RENDERIZAR INVENTARIO ---
+        window.openInventoryModal = function(invId) {
+            window.state.editingInvId = invId;
+            const name = INVENTORY_DICT[invId] || invId;
+            const currentStock = window.state.inventory[invId]?.stock || 0;
+            
+            document.getElementById('inv-modal-item-name').innerText = name;
+            document.getElementById('inv-modal-input').value = currentStock;
+            document.getElementById('inventory-modal').classList.remove('hidden');
+        };
+
+        window.closeInventoryModal = function() {
+            document.getElementById('inventory-modal').classList.add('hidden');
+        };
+
+        window.adjInvInput = function(delta) {
+            const input = document.getElementById('inv-modal-input');
+            let val = parseInt(input.value) || 0;
+            val += delta;
+            input.value = val;
+        };
+
+        window.saveInventoryStock = async function() {
+            const invId = window.state.editingInvId;
+            const input = document.getElementById('inv-modal-input');
+            let newStock = parseInt(input.value);
+            if (isNaN(newStock)) newStock = 0;
+
+            try {
+                const name = INVENTORY_DICT[invId] || invId;
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', invId), {
+                    name: name,
+                    stock: newStock
+                }, { merge: true });
+                
+                window.closeInventoryModal();
+                window.showToast("Stock ajustado correctamente");
+            } catch (e) {
+                console.error(e);
+                window.showToast("Error ajustando stock", "error");
+            }
+        };
+
+        function renderInventory() {
+            const container = document.getElementById('inventory-list');
+            
+            // Generar la lista basada en el INVENTORY_DICT
+            const invList = Object.keys(INVENTORY_DICT).map(id => {
+                const stockInfo = window.state.inventory[id];
+                const stock = stockInfo ? stockInfo.stock : 0;
+                return { id, name: INVENTORY_DICT[id], stock };
+            });
+
+            // Ordenar alfabéticamente
+            invList.sort((a,b) => a.name.localeCompare(b.name));
+
+            container.innerHTML = invList.map(item => {
+                const stockColor = item.stock <= 5 ? (item.stock <= 0 ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') : 'bg-purple-100 text-purple-800';
+                return `
+                <div class="bg-white border border-gray-200 rounded-lg p-3 flex justify-between items-center shadow-sm">
+                    <div class="flex-1">
+                        <h4 class="font-bold text-gray-800 text-sm leading-tight">${item.name}</h4>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="${stockColor} font-black px-3 py-1 rounded-lg text-lg min-w-[3rem] text-center">
+                            ${item.stock}
+                        </div>
+                        <button onclick="openInventoryModal('${item.id}')" class="p-2 bg-gray-100 hover:bg-purple-50 text-gray-600 hover:text-purple-600 rounded-lg transition-colors border border-gray-200">
+                            <i data-lucide="edit-3" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            `}).join('');
             lucide.createIcons();
         }
 
