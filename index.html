@@ -35,25 +35,30 @@
                     </div>
                 </div>
                 
-                <nav class="flex space-x-1 sm:space-x-2 md:space-x-4 overflow-x-auto pr-2 pb-1 sm:pb-0">
-                    <button onclick="switchView('mesero')" id="tab-mesero" class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors bg-white text-red-600 shadow whitespace-nowrap">
-                        <i data-lucide="utensils" class="w-5 h-5"></i> <span class="hidden md:inline">Tomar Orden</span>
-                    </button>
-                    <button onclick="switchView('cocina')" id="tab-cocina" class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors relative text-red-100 hover:bg-red-500 whitespace-nowrap">
-                        <i data-lucide="chef-hat" class="w-5 h-5"></i> <span class="hidden md:inline">Cocina</span>
-                        <span id="badge-cocina" class="hidden absolute -top-1 -right-1 bg-yellow-400 text-yellow-900 text-xs font-bold px-1.5 py-0.5 rounded-full">0</span>
-                    </button>
-                    <button onclick="switchView('caja')" id="tab-caja" class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors relative text-red-100 hover:bg-red-500 whitespace-nowrap">
-                        <i data-lucide="receipt" class="w-5 h-5"></i> <span class="hidden md:inline">Caja</span>
-                        <span id="badge-caja" class="hidden absolute -top-1 -right-1 bg-green-400 text-green-900 text-xs font-bold px-1.5 py-0.5 rounded-full">0</span>
-                    </button>
-                    <button onclick="switchView('historial')" id="tab-historial" class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors relative text-red-100 hover:bg-red-500 whitespace-nowrap">
-                        <i data-lucide="history" class="w-5 h-5"></i> <span class="hidden md:inline">Historial</span>
-                    </button>
-                    <button onclick="switchView('inventario')" id="tab-inventario" class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors relative text-red-100 hover:bg-red-500 whitespace-nowrap">
-                        <i data-lucide="boxes" class="w-5 h-5"></i> <span class="hidden md:inline">Inventario</span>
-                    </button>
-                </nav>
+                <div class="flex items-center gap-4">
+                    <span id="admin-unlocked-badge" class="hidden items-center gap-1 bg-green-500 text-white px-2 py-1 rounded text-xs font-bold shadow-inner">
+                        <i data-lucide="unlock" class="w-3 h-3"></i> Admin Desbloqueado
+                    </span>
+                    <nav class="flex space-x-1 sm:space-x-2 md:space-x-4 overflow-x-auto pr-2 pb-1 sm:pb-0">
+                        <button onclick="switchView('mesero')" id="tab-mesero" class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors bg-white text-red-600 shadow whitespace-nowrap">
+                            <i data-lucide="utensils" class="w-5 h-5"></i> <span class="hidden md:inline">Tomar Orden</span>
+                        </button>
+                        <button onclick="switchView('cocina')" id="tab-cocina" class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors relative text-red-100 hover:bg-red-500 whitespace-nowrap">
+                            <i data-lucide="chef-hat" class="w-5 h-5"></i> <span class="hidden md:inline">Cocina</span>
+                            <span id="badge-cocina" class="hidden absolute -top-1 -right-1 bg-yellow-400 text-yellow-900 text-xs font-bold px-1.5 py-0.5 rounded-full">0</span>
+                        </button>
+                        <button onclick="attemptSwitchView('caja')" id="tab-caja" class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors relative text-red-100 hover:bg-red-500 whitespace-nowrap">
+                            <i data-lucide="receipt" class="w-5 h-5"></i> <span class="hidden md:inline">Caja</span>
+                            <span id="badge-caja" class="hidden absolute -top-1 -right-1 bg-green-400 text-green-900 text-xs font-bold px-1.5 py-0.5 rounded-full">0</span>
+                        </button>
+                        <button onclick="attemptSwitchView('historial')" id="tab-historial" class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors relative text-red-100 hover:bg-red-500 whitespace-nowrap">
+                            <i data-lucide="history" class="w-5 h-5"></i> <span class="hidden md:inline">Historial</span>
+                        </button>
+                        <button onclick="attemptSwitchView('inventario')" id="tab-inventario" class="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors relative text-red-100 hover:bg-red-500 whitespace-nowrap">
+                            <i data-lucide="boxes" class="w-5 h-5"></i> <span class="hidden md:inline">Inventario</span>
+                        </button>
+                    </nav>
+                </div>
             </div>
         </div>
     </header>
@@ -164,7 +169,7 @@
                     <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
                         <i data-lucide="receipt" class="text-green-600 w-8 h-8"></i> Caja y Facturación
                     </h2>
-                    <p class="text-gray-500">Órdenes pendientes de pago (Ticket completo)</p>
+                    <p class="text-gray-500">Órdenes pendientes de pago y finanzas</p>
                 </div>
                 <div class="flex gap-2">
                     <button onclick="generateReporteZ()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 sm:px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-blue-200 text-sm shadow-sm whitespace-nowrap" title="Ver totales del día">
@@ -175,6 +180,29 @@
                     </button>
                 </div>
             </div>
+
+            <!-- NUEVO: Panel de Finanzas (Base y Gastos) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 shrink-0">
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex justify-between items-center">
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Base de Caja Inicial</p>
+                        <h3 id="finance-base-display" class="text-2xl font-black text-green-600">$0</h3>
+                    </div>
+                    <button onclick="openFinanceModal('base')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+                        <i data-lucide="edit-2" class="w-4 h-4"></i> Ajustar Base
+                    </button>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex justify-between items-center">
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Gastos del Día</p>
+                        <h3 id="finance-expenses-display" class="text-2xl font-black text-red-600">$0</h3>
+                    </div>
+                    <button onclick="openFinanceModal('gasto')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Registrar Gasto
+                    </button>
+                </div>
+            </div>
+
             <div id="cashier-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start pb-6 content-start">
                 <!-- Tarjetas de caja -->
             </div>
@@ -188,7 +216,6 @@
                 </h2>
                 <p class="text-gray-500">Registro de todas las ventas y órdenes anuladas del día</p>
             </div>
-            <!-- MEJORA: Diseño con gap-6 y columnas más amplias -->
             <div id="history-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start pb-6 content-start">
                 <!-- Tarjetas de historial -->
             </div>
@@ -292,6 +319,73 @@
         </div>
     </div>
 
+    <!-- NUEVO: MODAL MÉTODO DE PAGO -->
+    <div id="pay-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center">
+            <h3 class="text-xl font-bold text-gray-800 mb-1">Registrar Pago</h3>
+            <p class="text-sm text-gray-500 mb-4">Selecciona el método de pago para la orden</p>
+            
+            <div class="bg-gray-100 p-4 rounded-xl mb-6">
+                <p class="text-xs font-bold text-gray-500 uppercase">Total a Cobrar</p>
+                <h2 id="pay-modal-total" class="text-3xl font-black text-green-600">$0</h2>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-2 mb-4">
+                <button onclick="setPaymentMethod('efectivo')" id="btn-pay-efectivo" class="border-2 border-green-500 bg-green-50 text-green-700 font-bold py-2 rounded-xl transition-colors">
+                    💵 Efectivo
+                </button>
+                <button onclick="setPaymentMethod('transferencia')" id="btn-pay-transferencia" class="border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-gray-600 font-bold py-2 rounded-xl transition-colors">
+                    📱 Nequi / Transf.
+                </button>
+            </div>
+            <button onclick="setPaymentMethod('dividido')" id="btn-pay-dividido" class="w-full border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 text-gray-600 font-bold py-2 rounded-xl transition-colors mb-4">
+                ⚖️ Pago Mixto / Dividido
+            </button>
+
+            <!-- Sección pago dividido oculta por defecto -->
+            <div id="pay-mixed-section" class="hidden bg-blue-50 p-4 rounded-xl mb-6 border border-blue-200">
+                <div class="flex items-center justify-between mb-3">
+                    <label class="text-sm font-bold text-blue-900">Efectivo recibido:</label>
+                    <input type="number" id="mixed-cash-input" oninput="updateMixedTransfer()" placeholder="$" class="w-24 text-right border border-gray-300 rounded p-1 font-bold">
+                </div>
+                <div class="flex items-center justify-between pt-2 border-t border-blue-200">
+                    <label class="text-sm font-bold text-purple-800">Restante en Nequi:</label>
+                    <span id="mixed-transfer-display" class="font-black text-lg text-purple-700">$0</span>
+                </div>
+            </div>
+            
+            <div class="flex gap-2">
+                <button onclick="closePayModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
+                <button onclick="confirmPayment()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-colors flex justify-center items-center gap-2">
+                    <i data-lucide="check" class="w-5 h-5"></i> Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NUEVO: MODAL FINANZAS (Base / Gastos) -->
+    <div id="finance-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center">
+            <h3 id="finance-modal-title" class="text-xl font-bold text-gray-800 mb-1">Registrar Gasto</h3>
+            <p id="finance-modal-subtitle" class="text-sm text-gray-500 mb-4">Detalles del movimiento de caja</p>
+            
+            <div class="mb-4">
+                <label class="block text-left text-sm font-bold text-gray-700 mb-1">Monto ($)</label>
+                <input type="number" id="finance-amount" placeholder="Ej: 15000" class="w-full border-2 border-gray-300 rounded-xl p-3 text-lg font-bold focus:border-blue-500 outline-none">
+            </div>
+            
+            <div id="finance-desc-container" class="mb-6">
+                <label class="block text-left text-sm font-bold text-gray-700 mb-1">Motivo / Descripción</label>
+                <input type="text" id="finance-desc" placeholder="Ej: Compra de hielo..." class="w-full border-2 border-gray-300 rounded-xl p-3 text-sm focus:border-blue-500 outline-none">
+            </div>
+            
+            <div class="flex gap-2">
+                <button onclick="closeFinanceModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
+                <button onclick="saveFinance()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-colors">Guardar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL REPORTE Z -->
     <div id="reportez-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
@@ -305,16 +399,30 @@
             </div>
             
             <div class="p-5 overflow-y-auto bg-gray-50 flex-1">
-                <div class="mb-4 pb-4 border-b border-gray-300">
-                    <h4 class="font-bold text-gray-500 text-xs uppercase tracking-wider mb-2">Resumen de Ventas (Cantidades)</h4>
+                <!-- Resumen Financiero -->
+                <div class="bg-white border border-gray-200 rounded-xl p-4 mb-5 shadow-sm">
+                    <h4 class="font-bold text-gray-500 text-xs uppercase tracking-wider mb-3 border-b pb-2">Cuadre de Caja</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between text-gray-600"><span>Ventas Efectivo:</span> <span id="z-ventas-efectivo" class="font-semibold">$0</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Ventas Nequi/Transf:</span> <span id="z-ventas-transf" class="font-semibold">$0</span></div>
+                        <div class="flex justify-between text-gray-600 pt-1 border-t border-gray-100"><span>Base Inicial:</span> <span id="z-base" class="font-semibold text-green-600">+$0</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Salidas/Gastos:</span> <span id="z-gastos" class="font-semibold text-red-600">-$0</span></div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex justify-between items-center mb-5">
+                    <div>
+                        <span class="block font-bold text-blue-900 leading-tight">Efectivo en Cajón:</span>
+                        <span class="text-[10px] text-blue-600 uppercase font-bold">(Ventas Efec. + Base - Gastos)</span>
+                    </div>
+                    <span id="z-efectivo-neto" class="font-extrabold text-2xl text-blue-700">$0</span>
+                </div>
+
+                <div class="mb-4 pb-4">
+                    <h4 class="font-bold text-gray-500 text-xs uppercase tracking-wider mb-2">Resumen de Productos Vendidos</h4>
                     <div id="reportez-items" class="space-y-2">
                         <!-- Las cantidades se llenan por JS -->
                     </div>
-                </div>
-                
-                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex justify-between items-center">
-                    <span class="font-bold text-blue-900">Total Recaudado:</span>
-                    <span id="reportez-total" class="font-extrabold text-2xl text-blue-700">$0</span>
                 </div>
             </div>
 
@@ -329,20 +437,38 @@
         </div>
     </div>
 
-    <!-- MODAL SEGURIDAD PIN -->
+    <!-- MODAL SEGURIDAD TABS / PIN ADMIN -->
+    <div id="tab-security-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center">
+            <div class="mx-auto w-16 h-16 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center mb-4">
+                <i data-lucide="lock" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Acceso Administrativo</h3>
+            <p class="text-sm text-gray-500 mb-6">Ingresa el PIN para desbloquear Caja, Historial e Inventario para esta sesión.</p>
+            
+            <input type="password" id="tab-security-pin" placeholder="PIN..." class="w-full border-2 border-gray-300 rounded-xl p-3 text-center text-xl tracking-widest focus:border-red-500 focus:outline-none mb-6">
+            
+            <div class="flex gap-2">
+                <button onclick="closeTabSecurityModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
+                <button onclick="confirmTabSecurity()" class="flex-1 py-3 bg-gray-800 hover:bg-gray-900 text-white font-bold rounded-xl shadow-md transition-colors">Desbloquear</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL SEGURIDAD PIN CIERRE -->
     <div id="security-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center">
             <div class="mx-auto w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4">
-                <i data-lucide="lock" class="w-8 h-8"></i>
+                <i data-lucide="alert-triangle" class="w-8 h-8"></i>
             </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Seguridad Requerida</h3>
-            <p class="text-sm text-gray-500 mb-6">Por favor ingresa la clave de administrador para limpiar las ventas del día. (El inventario NO se borrará).</p>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Cierre de Caja</h3>
+            <p class="text-sm text-gray-500 mb-6">Por favor ingresa la clave para limpiar el sistema. (El inventario NO se borrará).</p>
             
             <input type="password" id="security-pin" placeholder="Clave secreta..." class="w-full border-2 border-gray-300 rounded-xl p-3 text-center text-xl tracking-widest focus:border-red-500 focus:outline-none mb-6">
             
             <div class="flex gap-2">
                 <button onclick="closeSecurityModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
-                <button onclick="confirmSecurityAndReset()" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-md transition-colors">Confirmar</button>
+                <button onclick="confirmSecurityAndReset()" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-md transition-colors">Limpiar Todo</button>
             </div>
         </div>
     </div>
@@ -600,12 +726,17 @@
             cashierOrders: [], 
             historyOrders: [], 
             inventory: {}, 
+            finances: { base: 0, expenses: [] }, // NUEVO: Estado Financiero
             lastSubmittedOrder: null,
             zReportData: null,
             editingInvId: null,
+            editingOrderId: null,
             
-            // NUEVO: Bandera para saber si estamos editando una orden existente
-            editingOrderId: null 
+            isAdminUnlocked: false, // NUEVO: Candado Sesión
+            pendingView: null,      // Para saber a qué pestaña ir tras desbloquear
+            pendingPayOrder: null,  // Para Modal de Pagos
+            financeType: 'gasto',   // 'base' o 'gasto'
+            paymentMethod: 'efectivo' // 'efectivo', 'transferencia', 'dividido'
         };
 
         let toastTimeout;
@@ -657,7 +788,11 @@
                 if (format === 'caja') {
                     html += `<div class="header-title">PERROS LA 30</div><p>Los Originales</p><p style="font-size:12px;margin-bottom:10px;">Ticket de Venta</p><div class="info-text"><b>Orden #:</b> ${data.orderId}</div><div class="info-text"><b>Mesa:</b> ${data.table}</div><div class="info-text"><b>Mesero:</b> ${data.waiter}</div><div class="info-text"><b>Fecha:</b> ${data.timestamp}</div><div class="divider"></div>`;
                     data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.quantity}</span><span class="item-name">${item.name}</span><span class="item-price">${formatCurrency(item.price * item.quantity)}</span></div>`; });
-                    html += `<div class="divider"></div><div class="totals">TOTAL: ${formatCurrency(data.total)}</div><div class="divider"></div><p style="margin-top:15px;font-size:12px;">¡Gracias por su compra!</p>`;
+                    html += `<div class="divider"></div><div class="totals">TOTAL: ${formatCurrency(data.total)}</div><div class="divider"></div>`;
+                    if(data.payment) {
+                        html += `<p style="text-align:right;font-size:12px;">Efectivo: ${formatCurrency(data.payment.cashAmount)}<br>Nequi/Transf: ${formatCurrency(data.payment.transferAmount)}</p>`;
+                    }
+                    html += `<p style="margin-top:15px;font-size:12px;">¡Gracias por su compra!</p>`;
                 } else if (format === 'cocina') {
                     html += `<div class="station-title">${data.station}</div><div class="info-text" style="font-size:18px;"><b>Mesa:</b> ${data.table}</div><div class="info-text" style="font-size:16px;"><b>Orden #:</b> ${data.orderId}</div><div class="info-text"><b>Mesero:</b> ${data.waiter}</div><div class="info-text"><b>Hora:</b> ${data.timestamp}</div><div class="divider" style="border-top:2px solid #000;"></div>`;
                     data.items.forEach(item => {
@@ -673,12 +808,25 @@
             printWindow.document.close();
         };
 
+        // --- LÓGICA DE REPORTE Z MEJORADA ---
         window.generateReporteZ = function() {
-            if (window.state.historyOrders.length === 0) { window.showToast("No hay ventas para Reporte Z.", "error"); return; }
-            let totalRecaudado = 0; const itemsVendidos = {};
+            if (window.state.historyOrders.length === 0 && window.state.finances.expenses.length === 0) { 
+                window.showToast("No hay movimientos para generar Reporte Z.", "error"); return; 
+            }
+            
+            let totalRecaudado = 0; 
+            let totalEfectivo = 0;
+            let totalTransf = 0;
+            const itemsVendidos = {};
+
             window.state.historyOrders.forEach(order => {
                 if (order.status === 'paid') {
                     totalRecaudado += order.total;
+                    totalEfectivo += order.payment?.cashAmount || 0;
+                    totalTransf += order.payment?.transferAmount || 0;
+                    // Fallback para ordenes viejas que se pagaron antes de esta actualizacion
+                    if(!order.payment) totalEfectivo += order.total; 
+
                     order.items.forEach(item => {
                         if (!itemsVendidos[item.name]) itemsVendidos[item.name] = { qty: 0, revenue: 0 };
                         itemsVendidos[item.name].qty += item.quantity;
@@ -686,13 +834,33 @@
                     });
                 }
             });
-            if (totalRecaudado === 0) { window.showToast("No hay órdenes recaudadas.", "error"); return; }
+
+            const base = window.state.finances.base || 0;
+            const totalGastos = window.state.finances.expenses.reduce((sum, e) => sum + e.amount, 0);
+            const efectivoNeto = base + totalEfectivo - totalGastos;
 
             const sortedItems = Object.keys(itemsVendidos).map(name => ({ name, qty: itemsVendidos[name].qty, revenue: itemsVendidos[name].revenue })).sort((a, b) => b.qty - a.qty);
-            window.state.zReportData = { date: new Date().toLocaleDateString('es-CO'), time: new Date().toLocaleTimeString('es-CO'), total: totalRecaudado, items: sortedItems };
             
-            document.getElementById('reportez-items').innerHTML = sortedItems.map(i => `<div class="flex justify-between items-center bg-white p-2 rounded border text-sm"><span class="font-semibold flex-1">${i.name}</span><div class="flex gap-4 items-center"><span class="text-gray-500">${formatCurrency(i.revenue)}</span><span class="bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-md">${i.qty}</span></div></div>`).join('');
-            document.getElementById('reportez-total').innerText = formatCurrency(totalRecaudado);
+            window.state.zReportData = { 
+                date: new Date().toLocaleDateString('es-CO'), 
+                time: new Date().toLocaleTimeString('es-CO'), 
+                total: totalRecaudado, 
+                efectivo: totalEfectivo,
+                transferencia: totalTransf,
+                base: base,
+                gastos: totalGastos,
+                efectivoNeto: efectivoNeto,
+                items: sortedItems 
+            };
+            
+            // Actualizar UI del Modal Z
+            document.getElementById('z-ventas-efectivo').innerText = formatCurrency(totalEfectivo);
+            document.getElementById('z-ventas-transf').innerText = formatCurrency(totalTransf);
+            document.getElementById('z-base').innerText = "+" + formatCurrency(base);
+            document.getElementById('z-gastos').innerText = "-" + formatCurrency(totalGastos);
+            document.getElementById('z-efectivo-neto').innerText = formatCurrency(efectivoNeto);
+            
+            document.getElementById('reportez-items').innerHTML = sortedItems.map(i => `<div class="flex justify-between items-center bg-white p-2 rounded border text-sm"><span class="font-semibold flex-1 text-gray-700">${i.name}</span><div class="flex gap-4 items-center"><span class="text-gray-500 font-medium">${formatCurrency(i.revenue)}</span><span class="bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-md min-w-[2rem] text-center">${i.qty}</span></div></div>`).join('');
             document.getElementById('reportez-modal').classList.remove('hidden');
         };
 
@@ -701,9 +869,23 @@
         window.printReporteZ = function() {
             const data = window.state.zReportData; if (!data) return;
             const printWindow = window.open('', '_blank', 'width=400,height=600');
-            let html = `<html><head><style>@page{margin:0;size:auto;} body{font-family:'Courier New',Courier,monospace;width:280px;margin:0;padding:10px;font-size:14px;} h1,p{margin:0;padding:2px 0;text-align:center;} .divider{border-top:1px dashed #000;margin:8px 0;} .item-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;} .item-qty{font-weight:bold;width:30px;} .item-name{flex:1;} .item-price{font-weight:bold;text-align:right;} .totals{margin-top:10px;font-weight:bold;font-size:18px;text-align:right;} .header-title{font-size:20px;font-weight:bold;text-align:center;}</style></head><body><div class="header-title">PERROS LA 30</div><p>REPORTE Z (CIERRE DIARIO)</p><div class="divider"></div><p style="text-align:left;font-size:12px;"><b>Fecha:</b> ${data.date}</p><p style="text-align:left;font-size:12px;"><b>Hora:</b> ${data.time}</p><div class="divider"></div><div style="font-weight:bold;display:flex;font-size:12px;"><span style="width:30px;">CANT</span><span style="flex:1;">PRODUCTO</span><span>TOTAL</span></div><div class="divider"></div>`;
+            let html = `<html><head><style>@page{margin:0;size:auto;} body{font-family:'Courier New',Courier,monospace;width:280px;margin:0;padding:10px;font-size:14px;} h1,p{margin:0;padding:2px 0;text-align:center;} .divider{border-top:1px dashed #000;margin:8px 0;} .item-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;} .item-qty{font-weight:bold;width:30px;} .item-name{flex:1;} .item-price{font-weight:bold;text-align:right;} .totals{margin-top:10px;font-weight:bold;font-size:16px;text-align:right;} .header-title{font-size:20px;font-weight:bold;text-align:center;} .summary-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;}</style></head><body><div class="header-title">PERROS LA 30</div><p>REPORTE Z (CIERRE DIARIO)</p><div class="divider"></div><p style="text-align:left;font-size:12px;"><b>Fecha:</b> ${data.date}</p><p style="text-align:left;font-size:12px;"><b>Hora:</b> ${data.time}</p><div class="divider"></div>`;
+            
+            // Sección Financiera Impresa
+            html += `<div class="summary-row"><span>Total Ventas:</span><b>${formatCurrency(data.total)}</b></div>`;
+            html += `<div class="summary-row"><span>Ventas Efectivo:</span><span>${formatCurrency(data.efectivo)}</span></div>`;
+            html += `<div class="summary-row"><span>Ventas Transf:</span><span>${formatCurrency(data.transferencia)}</span></div>`;
+            html += `<div class="summary-row"><span>Base Inicial:</span><span>+${formatCurrency(data.base)}</span></div>`;
+            html += `<div class="summary-row"><span>Gastos/Salidas:</span><span>-${formatCurrency(data.gastos)}</span></div>`;
+            html += `<div class="divider"></div>`;
+            html += `<div class="totals">EFECTIVO EN CAJA:<br>${formatCurrency(data.efectivoNeto)}</div>`;
+            html += `<div class="divider"></div>`;
+
+            // Productos
+            html += `<div style="margin-bottom:5px;font-weight:bold;display:flex;font-size:12px;"><span style="width:30px;">CANT</span><span style="flex:1;">PRODUCTO</span><span>TOTAL</span></div><div class="divider"></div>`;
             data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.qty}x</span><span class="item-name">${item.name}</span><span class="item-price">${formatCurrency(item.revenue)}</span></div>`; });
-            html += `<div class="divider"></div><div class="totals">RECAUDO TOTAL:<br>${formatCurrency(data.total)}</div><div class="divider"></div><p style="font-size:12px;margin-top:20px;">Fin del Reporte</p><script>window.onload=function(){window.print();setTimeout(function(){window.close();},500);}<\/script></body></html>`;
+            
+            html += `<div class="divider"></div><p style="font-size:12px;margin-top:20px;">Fin del Reporte</p><script>window.onload=function(){window.print();setTimeout(function(){window.close();},500);}<\/script></body></html>`;
             printWindow.document.write(html); printWindow.document.close();
         };
 
@@ -769,7 +951,47 @@
                 snapshot.forEach(doc => { window.state.inventory[doc.id] = doc.data(); });
                 if (window.state.currentView === 'inventario') renderInventory();
             }, (e) => console.error(e));
+
+            // NUEVO: Escuchar finanzas
+            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'finances'), (snapshot) => {
+                if(snapshot.exists()) {
+                    window.state.finances = snapshot.data();
+                } else {
+                    window.state.finances = { base: 0, expenses: [] };
+                }
+                renderFinances();
+            }, (e) => console.error(e));
         }
+
+        // --- SISTEMA DE SEGURIDAD (TABS) ---
+        window.attemptSwitchView = function(view) {
+            if (window.state.isAdminUnlocked) {
+                switchView(view);
+            } else {
+                window.state.pendingView = view;
+                document.getElementById('tab-security-pin').value = '';
+                document.getElementById('tab-security-modal').classList.remove('hidden');
+            }
+        };
+
+        window.closeTabSecurityModal = function() {
+            document.getElementById('tab-security-modal').classList.add('hidden');
+            window.state.pendingView = null;
+        };
+
+        window.confirmTabSecurity = function() {
+            const pin = document.getElementById('tab-security-pin').value;
+            if (pin === '1089607033') {
+                window.state.isAdminUnlocked = true;
+                document.getElementById('tab-security-modal').classList.add('hidden');
+                document.getElementById('admin-unlocked-badge').classList.remove('hidden');
+                document.getElementById('admin-unlocked-badge').classList.add('flex');
+                if (window.state.pendingView) switchView(window.state.pendingView);
+                window.showToast("Sesión de Administrador Desbloqueada");
+            } else {
+                window.showToast("PIN Incorrecto", "error");
+            }
+        };
         
         window.switchView = function(view) {
             window.state.currentView = view;
@@ -877,17 +1099,15 @@
             }
         };
 
-        // --- NUEVO: EDITAR ÓRDENES ---
+        // --- EDITAR ÓRDENES ---
         window.editOrder = function(orderId) {
             const order = window.state.cashierOrders.find(o => o.orderId === orderId);
             if(!order) return;
             
-            // Cargar datos a la vista del mesero
             window.state.editingOrderId = orderId;
             window.state.currentOrderItems = JSON.parse(JSON.stringify(order.items));
             window.state.waiterName = order.waiter;
             
-            // Reconstruir selección de mesas desde el string
             const mesasArr = order.table.split(' y ');
             window.state.selectedTables = mesasArr;
             
@@ -895,7 +1115,6 @@
             document.getElementById('waiter-name').value = order.waiter;
             document.getElementById('general-note').value = window.state.generalNote;
             
-            // Actualizar botones y textos
             document.getElementById('order-counter-display').innerText = orderId;
             document.getElementById('badge-editing').classList.remove('hidden');
             document.getElementById('btn-cancel-edit').classList.remove('hidden');
@@ -928,7 +1147,6 @@
             if (window.state.selectedTables.length === 0) { window.showToast('Selecciona una mesa.', 'error'); return; }
             if (window.state.currentOrderItems.length === 0) { window.showToast('La orden está vacía.', 'error'); return; }
 
-            // Si estamos editando, usamos ese ID, si no, el contador global nuevo.
             const currentOrderId = window.state.editingOrderId ? window.state.editingOrderId : window.state.orderCounter;
             const now = new Date();
             const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -957,18 +1175,15 @@
             };
 
             try {
-                // Si es orden nueva, subimos el contador
                 if (!window.state.editingOrderId) {
                     await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), { value: currentOrderId });
                 } else {
-                    // Si estamos editando, primero borramos los tickets de cocina Viejos para no duplicarlos
                     const oldTickets = window.state.kitchenTickets.filter(t => t.orderId === currentOrderId);
                     for (const t of oldTickets) {
                         await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', t.ticketId));
                     }
                 }
 
-                // Guardar Tickets Nuevos / Actualizados
                 for (const t of ticketsToSave) {
                     await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', t.ticketId), t);
                 }
@@ -976,12 +1191,10 @@
 
                 window.state.lastSubmittedOrder = { id: currentOrderId, table: tableStr, cashier: cashierOrderToSave, kitchen: ticketsToSave };
                 
-                // Limpiar todo después de enviar
                 window.state.currentOrderItems = [];
                 window.state.generalNote = '';
                 document.getElementById('general-note').value = '';
                 
-                // Si estaba editando, restauramos la UI
                 const wasEditing = window.state.editingOrderId !== null;
                 if (wasEditing) {
                     window.cancelEditMode();
@@ -1011,13 +1224,90 @@
             } catch (error) { console.error("Error completando ticket:", error); }
         };
 
-        // --- DEDUCCIÓN DE INVENTARIO AL PAGAR ---
-        window.payCashierOrder = async function(id) {
+        // --- SISTEMA DE PAGO Y MÉTODOS ---
+        window.openPayModal = function(orderId) {
+            const order = window.state.cashierOrders.find(o => o.orderId === orderId);
+            if (!order) return;
+            window.state.pendingPayOrder = order;
+            document.getElementById('pay-modal-total').innerText = formatCurrency(order.total);
+            window.setPaymentMethod('efectivo'); 
+            document.getElementById('pay-modal').classList.remove('hidden');
+        };
+
+        window.closePayModal = function() {
+            window.state.pendingPayOrder = null;
+            document.getElementById('pay-modal').classList.add('hidden');
+        };
+
+        window.setPaymentMethod = function(method) {
+            window.state.paymentMethod = method;
+            const btnEfectivo = document.getElementById('btn-pay-efectivo');
+            const btnTransf = document.getElementById('btn-pay-transferencia');
+            const btnMixto = document.getElementById('btn-pay-dividido');
+            const mixedSection = document.getElementById('pay-mixed-section');
+
+            // Reset estilos
+            btnEfectivo.className = "border-2 border-gray-200 hover:border-green-500 hover:bg-green-50 text-gray-600 font-bold py-2 rounded-xl transition-colors";
+            btnTransf.className = "border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-gray-600 font-bold py-2 rounded-xl transition-colors";
+            btnMixto.className = "w-full border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 text-gray-600 font-bold py-2 rounded-xl transition-colors mb-4";
+            mixedSection.classList.add('hidden');
+
+            if (method === 'efectivo') {
+                btnEfectivo.className = "border-2 border-green-500 bg-green-50 text-green-700 font-bold py-2 rounded-xl transition-colors";
+            } else if (method === 'transferencia') {
+                btnTransf.className = "border-2 border-purple-500 bg-purple-50 text-purple-700 font-bold py-2 rounded-xl transition-colors";
+            } else if (method === 'dividido') {
+                btnMixto.className = "w-full border-2 border-blue-500 bg-blue-50 text-blue-700 font-bold py-2 rounded-xl transition-colors mb-4";
+                mixedSection.classList.remove('hidden');
+                document.getElementById('mixed-cash-input').value = '';
+                document.getElementById('mixed-transfer-display').innerText = formatCurrency(window.state.pendingPayOrder.total);
+            }
+        };
+
+        window.updateMixedTransfer = function() {
+            if (!window.state.pendingPayOrder) return;
+            const total = window.state.pendingPayOrder.total;
+            const cash = parseInt(document.getElementById('mixed-cash-input').value) || 0;
+            const transfer = total - cash;
+            document.getElementById('mixed-transfer-display').innerText = formatCurrency(transfer > 0 ? transfer : 0);
+        };
+
+        window.confirmPayment = async function() {
+            const order = window.state.pendingPayOrder;
+            const method = window.state.paymentMethod;
+            if (!order) return;
+
+            let cashAmount = 0;
+            let transferAmount = 0;
+
+            if (method === 'efectivo') {
+                cashAmount = order.total;
+            } else if (method === 'transferencia') {
+                transferAmount = order.total;
+            } else if (method === 'dividido') {
+                cashAmount = parseInt(document.getElementById('mixed-cash-input').value) || 0;
+                transferAmount = order.total - cashAmount;
+                if(transferAmount < 0) transferAmount = 0;
+            }
+
+            const paymentData = {
+                method: method,
+                cashAmount: cashAmount,
+                transferAmount: transferAmount
+            };
+
+            await processPayOrder(order.orderId, paymentData);
+            window.closePayModal();
+        };
+
+        // Función interna que procesa el pago tras configurar el método
+        async function processPayOrder(id, paymentData) {
             if (!window.state.currentUser) return;
             try {
                 const orderToArchive = window.state.cashierOrders.find(o => o.orderId === id);
                 if (!orderToArchive) return;
 
+                // 1. Inventario
                 const updates = {};
                 orderToArchive.items.forEach(item => {
                     const recipe = RECIPES[item.id];
@@ -1036,14 +1326,16 @@
                     await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', invId), { name: name, stock: newStock }, { merge: true });
                 }
 
+                // 2. Archivar con info de pago
                 orderToArchive.status = 'paid'; 
+                orderToArchive.payment = paymentData;
                 orderToArchive.actionAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', id.toString()), orderToArchive);
                 await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', id.toString()));
                 
-                window.showToast(`Pago e Inventario registrado (Orden #${id})`);
+                window.showToast(`Pago registrado con éxito.`);
             } catch (error) { console.error("Error pagando:", error); }
-        };
+        }
 
         window.cancelOrder = async function(id) {
             if (!window.state.currentUser) return;
@@ -1066,6 +1358,67 @@
                 window.showToast(`Orden #${id} anulada.`, 'error');
             } catch (error) { console.error("Error anulando:", error); }
         };
+
+        // --- BASE Y GASTOS (FINANZAS) ---
+        window.openFinanceModal = function(type) {
+            window.state.financeType = type;
+            const title = type === 'base' ? 'Ajustar Base de Caja' : 'Registrar Gasto Extra';
+            const subtitle = type === 'base' ? 'Monto con el que inicia la caja hoy' : 'Ej: Proveedores, insumos, etc.';
+            
+            document.getElementById('finance-modal-title').innerText = title;
+            document.getElementById('finance-modal-subtitle').innerText = subtitle;
+            document.getElementById('finance-amount').value = type === 'base' ? (window.state.finances?.base || '') : '';
+            
+            const descContainer = document.getElementById('finance-desc-container');
+            if(type === 'gasto') {
+                descContainer.classList.remove('hidden');
+                document.getElementById('finance-desc').value = '';
+            } else {
+                descContainer.classList.add('hidden');
+                document.getElementById('finance-desc').value = 'Base inicial';
+            }
+            
+            document.getElementById('finance-modal').classList.remove('hidden');
+        };
+
+        window.closeFinanceModal = function() { document.getElementById('finance-modal').classList.add('hidden'); };
+
+        window.saveFinance = async function() {
+            const amt = parseInt(document.getElementById('finance-amount').value) || 0;
+            const desc = document.getElementById('finance-desc').value || 'Sin descripción';
+            const type = window.state.financeType;
+
+            const newFinances = { ...window.state.finances };
+            if(!newFinances.expenses) newFinances.expenses = [];
+
+            if (type === 'base') {
+                newFinances.base = amt;
+            } else {
+                if(amt <= 0) { window.showToast("Monto inválido", "error"); return; }
+                newFinances.expenses.push({ amount: amt, desc: desc, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+            }
+
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'finances'), newFinances);
+                window.closeFinanceModal();
+                window.showToast(type === 'base' ? "Base actualizada" : "Gasto guardado");
+            } catch (e) {
+                console.error(e);
+                window.showToast("Error guardando finanzas", "error");
+            }
+        };
+
+        function renderFinances() {
+            const base = window.state.finances?.base || 0;
+            const expenses = window.state.finances?.expenses || [];
+            const totalExp = expenses.reduce((a,b) => a+b.amount, 0);
+
+            const elBase = document.getElementById('finance-base-display');
+            const elExp = document.getElementById('finance-expenses-display');
+            
+            if(elBase) elBase.innerText = formatCurrency(base);
+            if(elExp) elExp.innerText = formatCurrency(totalExp);
+        }
 
         // --- MANEJO DE MODALES PERSONALIZADOS DE SEGURIDAD ---
         window.openSecurityModal = function() {
@@ -1092,6 +1445,15 @@
                 histKitchenQuery.forEach((d) => { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets', d.id)); });
 
                 await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), { value: 0 });
+                // Reset Finanzas al cierre
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'finances'), { base: 0, expenses: [] });
+                
+                // Bloquear sesión de nuevo al cerrar caja
+                window.state.isAdminUnlocked = false;
+                document.getElementById('admin-unlocked-badge').classList.add('hidden');
+                document.getElementById('admin-unlocked-badge').classList.remove('flex');
+                switchView('mesero');
+
                 window.showToast("Cierre exitoso. Inventario intacto.", "success");
             } catch (error) { console.error("Error:", error); window.showToast("Error al limpiar.", "error"); }
         };
@@ -1189,7 +1551,7 @@
             if (window.state.cashierOrders.length === 0) {
                 container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center text-gray-400 mt-20"><i data-lucide="check-circle" class="w-16 h-16 mb-4 text-green-200"></i><p class="text-xl">No hay cuentas pendientes por cobrar.</p></div>`;
             } else {
-                container.innerHTML = window.state.cashierOrders.map(order => `<div class="bg-white border rounded-xl shadow-md overflow-hidden flex flex-col"><div class="bg-gray-800 p-3 flex justify-between items-center text-white"><span class="font-bold">Mesa ${order.table}</span><span class="text-sm">Orden #${order.orderId}</span></div><div class="p-4 flex-1"><p class="text-sm text-gray-500 mb-3">Mesero: <span class="font-semibold text-gray-800">${order.waiter}</span></p><div class="space-y-2 mb-4">${order.items.map(item => `<div class="flex justify-between text-sm"><span class="text-gray-700">${item.quantity}x ${item.name}</span><span class="font-medium">${formatCurrency(item.price * item.quantity)}</span></div>`).join('')}</div><div class="border-t pt-3 mt-auto flex justify-between items-center"><span class="text-gray-600 font-bold">Total a pagar:</span><span class="text-xl font-extrabold text-green-600">${formatCurrency(order.total)}</span></div></div><div class="p-4 pt-0 grid grid-cols-4 gap-2"><!-- Botón Editar --><button onclick="editOrder(${order.orderId})" class="col-span-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Editar orden"><i data-lucide="edit" class="w-5 h-5"></i></button><button onclick="printTicket('caja', '${order.orderId}')" class="col-span-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Imprimir Cuenta"><i data-lucide="printer" class="w-5 h-5"></i></button><button onclick="cancelOrder(${order.orderId})" class="col-span-1 bg-red-100 hover:bg-red-200 text-red-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Anular orden"><i data-lucide="x" class="w-5 h-5"></i></button><button onclick="payCashierOrder(${order.orderId})" class="col-span-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow transition-colors flex items-center justify-center" title="Pagar"><i data-lucide="dollar-sign" class="w-5 h-5"></i></button></div></div>`).join('');
+                container.innerHTML = window.state.cashierOrders.map(order => `<div class="bg-white border rounded-xl shadow-md overflow-hidden flex flex-col"><div class="bg-gray-800 p-3 flex justify-between items-center text-white"><span class="font-bold">Mesa ${order.table}</span><span class="text-sm">Orden #${order.orderId}</span></div><div class="p-4 flex-1"><p class="text-sm text-gray-500 mb-3">Mesero: <span class="font-semibold text-gray-800">${order.waiter}</span></p><div class="space-y-2 mb-4">${order.items.map(item => `<div class="flex justify-between text-sm"><span class="text-gray-700">${item.quantity}x ${item.name}</span><span class="font-medium">${formatCurrency(item.price * item.quantity)}</span></div>`).join('')}</div><div class="border-t pt-3 mt-auto flex justify-between items-center"><span class="text-gray-600 font-bold">Total a pagar:</span><span class="text-xl font-extrabold text-green-600">${formatCurrency(order.total)}</span></div></div><div class="p-4 pt-0 grid grid-cols-4 gap-2"><!-- Botón Editar --><button onclick="editOrder(${order.orderId})" class="col-span-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Editar orden"><i data-lucide="edit" class="w-5 h-5"></i></button><button onclick="printTicket('caja', '${order.orderId}')" class="col-span-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Imprimir Cuenta"><i data-lucide="printer" class="w-5 h-5"></i></button><button onclick="cancelOrder(${order.orderId})" class="col-span-1 bg-red-100 hover:bg-red-200 text-red-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Anular orden"><i data-lucide="x" class="w-5 h-5"></i></button><button onclick="openPayModal(${order.orderId})" class="col-span-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow transition-colors flex items-center justify-center" title="Pagar"><i data-lucide="dollar-sign" class="w-5 h-5"></i></button></div></div>`).join('');
             }
             lucide.createIcons();
         }
@@ -1205,6 +1567,13 @@
                     const statusColor = isPaid ? 'green' : 'red';
                     const statusText = isPaid ? 'PAGADO' : 'ANULADO';
                     const iconType = isPaid ? 'check-circle' : 'x-circle';
+                    
+                    let paymentMethodBadge = '';
+                    if (isPaid && order.payment) {
+                        const m = order.payment.method;
+                        const mText = m === 'efectivo' ? '💵 Efectivo' : (m === 'transferencia' ? '📱 Transf.' : '⚖️ Mixto');
+                        paymentMethodBadge = `<span class="bg-gray-200 text-gray-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase">${mText}</span>`;
+                    }
 
                     return `
                     <div class="bg-white border rounded-xl shadow-sm overflow-hidden flex flex-col opacity-90 hover:opacity-100 transition-opacity min-h-[200px]">
@@ -1220,19 +1589,22 @@
                             </div>
                         </div>
                         <div class="p-4 flex-1 flex flex-col">
-                            <div class="flex justify-between text-sm text-gray-500 mb-2">
+                            <div class="flex justify-between items-center text-sm text-gray-500 mb-2">
                                 <span>Mesa: <b class="text-gray-700">${order.table}</b></span>
                                 <span>Hora: <b class="text-gray-700">${order.actionAt || order.timestamp}</b></span>
                             </div>
-                            <div class="space-y-1 mb-4 mt-2 max-h-32 overflow-y-auto pr-2 flex-1">
+                            <div class="space-y-1 mb-4 mt-2 max-h-32 overflow-y-auto pr-2 flex-1 border-b border-gray-100 pb-2">
                                 ${order.items.map(item => `
                                     <div class="flex justify-between text-xs text-gray-500">
                                         <span>${item.quantity}x ${item.name}</span>
                                     </div>
                                 `).join('')}
                             </div>
-                            <div class="border-t border-gray-200 pt-3 mt-auto flex justify-between items-center">
-                                <span class="text-gray-600 font-semibold">Total Cobrado:</span>
+                            <div class="flex justify-between items-end mt-auto">
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-gray-500 font-semibold text-[10px] uppercase">Cobrado</span>
+                                    ${paymentMethodBadge}
+                                </div>
                                 <span class="text-xl font-extrabold text-${statusColor}-600">${formatCurrency(order.total)}</span>
                             </div>
                         </div>
