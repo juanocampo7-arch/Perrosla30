@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perros La 30 - Sistema de Órdenes (Cloud)</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -15,7 +13,6 @@
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         .fade-in { animation: fadeIn 0.2s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        /* Indicador de conexión */
         #connection-status { transition: all 0.3s; }
         .ticket-container { page-break-after: always; padding-bottom: 20px; }
     </style>
@@ -27,19 +24,15 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center gap-2">
-                    <!-- BOTÓN MENÚ HAMBURGUESA -->
                     <button onclick="toggleSidebar()" class="p-1 mr-1 text-white hover:bg-red-700 rounded transition-colors">
                         <i data-lucide="menu" class="w-7 h-7"></i>
                     </button>
-                    
                     <span class="font-black text-2xl tracking-tighter">PERROS LA 30</span>
                     <span class="text-xs font-medium uppercase tracking-widest bg-red-800 px-2 py-0.5 rounded-full hidden sm:block">Los Originales</span>
-                    <!-- Indicador de Nube -->
                     <div id="connection-status" class="ml-2 bg-yellow-500 text-yellow-900 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 animate-pulse">
                         Conectando...
                     </div>
                 </div>
-                
                 <div class="flex items-center gap-4">
                     <span id="admin-unlocked-badge" class="hidden items-center gap-1 bg-green-500 text-white px-2 py-1 rounded text-xs font-bold shadow-inner">
                         <i data-lucide="unlock" class="w-3 h-3"></i> <span class="hidden sm:inline">Admin Desbloqueado</span>
@@ -58,7 +51,7 @@
         </div>
         <div class="flex flex-col p-4 space-y-2 overflow-y-auto flex-1">
             <button onclick="switchView('mesero')" id="menu-mesero" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-colors bg-red-50 text-red-600">
-                <i data-lucide="utensils" class="w-5 h-5"></i> Tomar Orden
+                <i data-lucide="utensils" class="w-5 h-5"></i> Mesas / Barra
             </button>
             <button onclick="switchView('domicilios')" id="menu-domicilios" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100">
                 <i data-lucide="bike" class="w-5 h-5"></i> Domicilios
@@ -85,21 +78,15 @@
     <!-- CONTENEDOR PRINCIPAL -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6">
         
-        <!-- VISTA MESERO -->
+        <!-- VISTA MESERO (MESAS) -->
         <div id="view-mesero" class="flex flex-col lg:flex-row gap-4 fade-in lg:h-[calc(100vh-7rem)]">
-            <!-- Menú y Categorías -->
             <div class="flex-1 flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden h-[60vh] lg:h-full">
-                <div id="categories-container" class="flex overflow-x-auto bg-gray-50 p-2 gap-2 border-b shrink-0">
-                    <!-- Categorías se renderizan aquí -->
-                </div>
+                <div id="categories-container" class="flex overflow-x-auto bg-gray-50 p-2 gap-2 border-b shrink-0"></div>
                 <div class="p-4 overflow-y-auto flex-1 bg-gray-50">
-                    <div id="products-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                        <!-- Productos se renderizan aquí -->
-                    </div>
+                    <div id="products-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
                 </div>
             </div>
 
-            <!-- Ticket / Resumen de Orden -->
             <div class="w-full lg:w-[400px] shrink-0 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col h-[70vh] lg:h-full overflow-hidden">
                 <div class="p-4 bg-gray-900 text-white rounded-t-xl flex justify-between items-center shrink-0">
                     <div class="flex items-center gap-2">
@@ -107,10 +94,8 @@
                         <span id="badge-editing" class="hidden bg-yellow-500 text-yellow-900 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider animate-pulse">Editando</span>
                     </div>
                     <div class="flex items-center gap-3">
-                        <button onclick="cancelEditMode()" id="btn-cancel-edit" class="hidden text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-white font-bold transition-colors" title="Cancelar Edición">
-                            Cancelar
-                        </button>
-                        <button onclick="clearCurrentOrder()" id="btn-clear-order" class="hidden text-gray-400 hover:text-red-400 p-1.5 bg-gray-800 rounded-full transition-colors flex items-center justify-center" title="Vaciar Orden">
+                        <button onclick="cancelEditMode()" id="btn-cancel-edit" class="hidden text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-white font-bold transition-colors">Cancelar</button>
+                        <button onclick="clearCurrentOrder()" id="btn-clear-order" class="hidden text-gray-400 hover:text-red-400 p-1.5 bg-gray-800 rounded-full transition-colors flex items-center justify-center">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                         <span id="header-table-badge" class="hidden bg-red-600 px-3 py-1 rounded-full text-sm font-bold"></span>
@@ -119,7 +104,6 @@
 
                 <div class="p-4 border-b space-y-3 shrink-0">
                     <div>
-                        <!-- MEJORA: Lista de Meseros -->
                         <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Mesero</label>
                         <select id="waiter-name" onchange="window.state.waiterName = this.value" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-red-500 outline-none bg-white cursor-pointer">
                             <option value="" disabled selected>Selecciona un mesero...</option>
@@ -134,23 +118,16 @@
                         <label class="block text-sm font-medium text-gray-700 mb-0">Mesa / Cliente</label>
                         <button onclick="openMapModal()" id="table-selector-btn" class="w-full border rounded-lg p-2 flex items-center justify-between focus:ring-2 focus:ring-red-500 outline-none transition-colors bg-gray-50 hover:bg-red-50">
                             <span id="table-selector-text" class="font-bold text-gray-500">Seleccionar Mesa...</span>
-                            <span id="table-selector-icon-container">
-                                <i data-lucide="map" class="text-gray-400 w-5 h-5"></i>
-                            </span>
+                            <span id="table-selector-icon-container"><i data-lucide="map" class="text-gray-400 w-5 h-5"></i></span>
                         </button>
-                        <!-- NUEVO BOTÓN: Meseros editando órdenes -->
                         <button onclick="openActiveOrdersModal()" id="btn-waiter-edit" class="w-full bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-bold py-2 rounded-lg border border-yellow-300 transition-colors flex items-center justify-center gap-2 text-sm mt-1">
                             <i data-lucide="list-checks" class="w-4 h-4"></i> Editar Orden Activa
                         </button>
                     </div>
                 </div>
 
-                <!-- Lista de Items -->
-                <div id="cart-items" class="flex-1 overflow-y-auto p-2 space-y-2 bg-gray-50">
-                    <!-- Items del carrito -->
-                </div>
+                <div id="cart-items" class="flex-1 overflow-y-auto p-2 space-y-2 bg-gray-50"></div>
 
-                <!-- Totales y Botón Enviar -->
                 <div class="p-4 border-t bg-white rounded-b-xl shrink-0">
                     <input type="text" id="general-note" oninput="window.state.generalNote = this.value" placeholder="Observaciones generales..." class="w-full border rounded-lg p-2 mb-4 text-sm focus:ring-2 focus:ring-red-500 outline-none">
                     <div class="flex justify-between items-center mb-4 text-lg">
@@ -158,18 +135,65 @@
                         <span id="cart-total" class="font-extrabold text-2xl text-red-600">$0</span>
                     </div>
                     <button id="btn-submit-order" onclick="submitOrder()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 text-lg">
-                        <i data-lucide="cloud-upload" class="w-6 h-6"></i>
-                        Enviar Orden a la Nube
+                        <i data-lucide="cloud-upload" class="w-6 h-6"></i> Enviar Orden a la Nube
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- VISTA DOMICILIOS -->
-        <div id="view-domicilios" class="hidden flex flex-col items-center justify-center fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
-            <i data-lucide="bike" class="w-20 h-20 text-orange-500 mb-4"></i>
-            <h2 class="text-3xl font-black text-gray-800 mb-2 text-center">🚧 Módulo en Proceso 🚧</h2>
-            <p class="text-gray-500 text-lg text-center max-w-md">Próximamente la recepcionista podrá tomar pedidos de domicilios desde aquí. ¡Estamos trabajando en ello!</p>
+        <div id="view-domicilios" class="hidden flex flex-col lg:flex-row gap-4 fade-in lg:h-[calc(100vh-7rem)]">
+            <div class="flex-1 flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden h-[60vh] lg:h-full">
+                <div id="domi-categories-container" class="flex overflow-x-auto bg-gray-50 p-2 gap-2 border-b shrink-0"></div>
+                <div class="p-4 overflow-y-auto flex-1 bg-gray-50">
+                    <div id="domi-products-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+                </div>
+            </div>
+
+            <div class="w-full lg:w-[400px] shrink-0 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col h-[70vh] lg:h-full overflow-hidden">
+                <div class="p-4 bg-orange-600 text-white rounded-t-xl flex justify-between items-center shrink-0">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="bike" class="w-6 h-6"></i>
+                        <h2 class="text-xl font-bold">Domi #<span id="domi-order-counter-display">...</span></h2>
+                        <span id="domi-badge-editing" class="hidden bg-yellow-400 text-yellow-900 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider animate-pulse">Editando</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="cancelDomiEditMode()" id="domi-btn-cancel-edit" class="hidden text-xs bg-orange-800 hover:bg-orange-900 px-2 py-1 rounded text-white font-bold transition-colors">Cancelar</button>
+                        <button onclick="clearDomiOrder()" id="domi-btn-clear-order" class="hidden text-white hover:text-orange-200 p-1.5 rounded-full transition-colors flex items-center justify-center">
+                            <i data-lucide="trash-2" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-4 border-b space-y-3 shrink-0 bg-orange-50/50">
+                    <input type="text" id="domi-address" oninput="window.state.domiAddress = this.value" placeholder="Dirección Completa..." class="w-full border-2 border-orange-300 rounded-lg p-3 text-lg font-bold focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-gray-800">
+                    <div class="flex gap-2">
+                        <input type="text" id="domi-phone" oninput="window.state.domiPhone = this.value" placeholder="Teléfono" class="w-1/2 border border-gray-300 rounded-lg p-2 focus:border-orange-500 outline-none font-semibold text-gray-700">
+                        <input type="text" id="domi-name" oninput="window.state.domiName = this.value" placeholder="Nombre (Opcional)" class="w-1/2 border border-gray-300 rounded-lg p-2 focus:border-orange-500 outline-none font-semibold text-gray-700">
+                    </div>
+                    <div class="flex items-center justify-between bg-orange-100 p-3 rounded-lg border border-orange-200 mt-2">
+                        <label class="font-bold text-orange-900 text-sm">Precio Domicilio $</label>
+                        <input type="number" id="domi-fee" value="0" oninput="window.state.domiFee = parseInt(this.value) || 0; renderDomiCart();" class="w-24 border border-orange-300 rounded-md p-1.5 text-right font-black text-orange-700 outline-none bg-white">
+                    </div>
+                </div>
+
+                <div id="domi-cart-items" class="flex-1 overflow-y-auto p-2 space-y-2 bg-gray-50"></div>
+
+                <div class="p-4 border-t bg-white rounded-b-xl shrink-0">
+                    <input type="text" id="domi-general-note" oninput="window.state.domiNote = this.value" placeholder="Notas adicionales para el envío..." class="w-full border rounded-lg p-2 mb-3 text-sm focus:border-orange-500 outline-none">
+                    <div class="flex justify-between items-center mb-1 text-sm text-gray-500 font-semibold">
+                        <span>Subtotal (Productos):</span>
+                        <span id="domi-subtotal">$0</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-4 text-lg">
+                        <span class="font-black text-gray-700">Total a Cobrar:</span>
+                        <span id="domi-total" class="font-extrabold text-2xl text-orange-600">$0</span>
+                    </div>
+                    <button id="btn-submit-domi" onclick="submitDomiOrder()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 text-lg">
+                        <i data-lucide="bike" class="w-6 h-6"></i> Confirmar Domicilio
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- VISTA COCINA -->
@@ -179,25 +203,15 @@
                     <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
                         <i data-lucide="chef-hat" class="text-orange-500 w-8 h-8"></i> Monitor de Cocina
                     </h2>
-                    <p class="text-gray-500">Órdenes separadas por estación</p>
+                    <p class="text-gray-500">Órdenes y domicilios pendientes</p>
                 </div>
-                
                 <div class="flex space-x-1 sm:space-x-2 bg-gray-200 p-1.5 rounded-xl overflow-x-auto">
-                    <button onclick="setKitchenStation('perrero')" id="tab-station-perrero" class="px-4 py-2 bg-white font-bold text-red-600 rounded-lg shadow transition-all whitespace-nowrap">
-                        Perrero
-                    </button>
-                    <button onclick="setKitchenStation('hamburguesero')" id="tab-station-hamburguesero" class="px-4 py-2 font-bold text-gray-600 hover:text-gray-800 rounded-lg transition-all whitespace-nowrap">
-                        Hamburguesero
-                    </button>
-                    <button onclick="setKitchenStation('general')" id="tab-station-general" class="px-4 py-2 font-bold text-gray-600 hover:text-gray-800 rounded-lg transition-all whitespace-nowrap">
-                        Otras Prep.
-                    </button>
+                    <button onclick="setKitchenStation('perrero')" id="tab-station-perrero" class="px-4 py-2 bg-white font-bold text-red-600 rounded-lg shadow transition-all whitespace-nowrap">Perrero</button>
+                    <button onclick="setKitchenStation('hamburguesero')" id="tab-station-hamburguesero" class="px-4 py-2 font-bold text-gray-600 hover:text-gray-800 rounded-lg transition-all whitespace-nowrap">Hamburguesero</button>
+                    <button onclick="setKitchenStation('general')" id="tab-station-general" class="px-4 py-2 font-bold text-gray-600 hover:text-gray-800 rounded-lg transition-all whitespace-nowrap">Otras Prep.</button>
                 </div>
             </div>
-            
-            <div id="kitchen-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start pb-6 content-start">
-                <!-- Tarjetas de cocina -->
-            </div>
+            <div id="kitchen-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start pb-6 content-start"></div>
         </div>
 
         <!-- VISTA CAJA -->
@@ -210,16 +224,14 @@
                     <p class="text-gray-500">Órdenes pendientes de pago y finanzas</p>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="generateReporteZ()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 sm:px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-blue-200 text-sm shadow-sm whitespace-nowrap" title="Ver totales del día">
+                    <button onclick="generateReporteZ()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 sm:px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-blue-200 text-sm shadow-sm whitespace-nowrap">
                         <i data-lucide="calculator" class="w-4 h-4"></i> <span class="hidden sm:inline">Reporte Z</span>
                     </button>
-                    <button onclick="openSecurityModal()" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 sm:px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-red-200 text-sm shadow-sm whitespace-nowrap" title="Cierre de caja y limpieza">
+                    <button onclick="openSecurityModal()" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 sm:px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-red-200 text-sm shadow-sm whitespace-nowrap">
                         <i data-lucide="lock" class="w-4 h-4"></i> <span class="hidden sm:inline">Limpiar Sistema</span>
                     </button>
                 </div>
             </div>
-
-            <!-- Panel de Finanzas (Base y Gastos) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 shrink-0">
                 <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex justify-between items-center">
                     <div>
@@ -240,10 +252,7 @@
                     </button>
                 </div>
             </div>
-
-            <div id="cashier-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start pb-6 content-start">
-                <!-- Tarjetas de caja -->
-            </div>
+            <div id="cashier-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start pb-6 content-start"></div>
         </div>
 
         <!-- VISTA HISTORIAL -->
@@ -254,9 +263,7 @@
                 </h2>
                 <p class="text-gray-500">Registro de todas las ventas y órdenes anuladas del día</p>
             </div>
-            <div id="history-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start pb-6 content-start">
-                <!-- Tarjetas de historial -->
-            </div>
+            <div id="history-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start pb-6 content-start"></div>
         </div>
 
         <!-- VISTA INVENTARIO -->
@@ -265,7 +272,7 @@
                 <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
                     <i data-lucide="boxes" class="text-purple-600 w-8 h-8"></i> Control de Inventario
                 </h2>
-                <p class="text-gray-500">Stock de ingredientes y productos terminados. Se descuentan automáticamente al Pagar.</p>
+                <p class="text-gray-500">Stock de ingredientes y productos terminados.</p>
             </div>
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex-1 overflow-hidden flex flex-col">
                 <div class="p-4 bg-gray-50 border-b flex justify-between items-center shrink-0">
@@ -273,76 +280,49 @@
                     <span class="text-xs text-gray-500 italic">*Cantidades se actualizan en vivo</span>
                 </div>
                 <div class="flex-1 overflow-y-auto p-4">
-                    <div id="inventory-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                        <!-- Items de inventario -->
-                    </div>
+                    <div id="inventory-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
                 </div>
             </div>
         </div>
-
     </main>
 
-    <!-- MODALES Y NOTIFICACIONES -->
+    <!-- TODOS LOS MODALES DEL SISTEMA -->
     <div id="toast" class="fixed bottom-4 right-4 text-white px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-20 opacity-0 z-[100]">
-        <div id="toast-icon-container">
-            <i data-lucide="check-circle" class="w-6 h-6"></i>
-        </div>
+        <div id="toast-icon-container"><i data-lucide="check-circle" class="w-6 h-6"></i></div>
         <span id="toast-message" class="font-medium">Mensaje</span>
     </div>
 
-    <!-- MAPA MODAL -->
+    <!-- 1. MAPA Y MESAS -->
     <div id="map-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col h-[80vh] sm:h-auto">
             <div class="bg-gray-900 text-white p-4 flex justify-between items-center shrink-0">
-                <h3 class="text-xl font-bold flex items-center gap-2">
-                    <i data-lucide="map" class="text-red-500"></i> Selecciona Mesa
-                </h3>
+                <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="map" class="text-red-500"></i> Selecciona Mesa</h3>
                 <div class="flex items-center gap-2 sm:gap-4">
-                    <button onclick="toggleMultipleTables()" id="btn-multiple-tables" class="text-xs sm:text-sm px-2 sm:px-3 py-1 rounded border border-gray-500 text-gray-200 hover:bg-gray-800 transition-colors">
-                        Juntar Mesas
-                    </button>
-                    <!-- BOTÓN Para llevar / Sin Mesa -->
-                    <button onclick="selectNoTable()" class="text-xs sm:text-sm px-2 sm:px-3 py-1 rounded border border-orange-500 text-orange-400 hover:bg-orange-500 hover:text-white font-bold transition-colors">
-                        Para Llevar
-                    </button>
-                    
-                    <button onclick="confirmTableSelection()" id="btn-confirm-tables" class="hidden text-xs sm:text-sm px-2 sm:px-3 py-1 rounded bg-red-600 hover:bg-red-700 font-bold transition-colors">
-                        Confirmar
-                    </button>
-                    <button onclick="closeMapModal()" class="text-gray-400 hover:text-white transition-colors ml-2">
-                        <i data-lucide="x" class="w-6 h-6"></i>
-                    </button>
+                    <button onclick="toggleMultipleTables()" id="btn-multiple-tables" class="text-xs sm:text-sm px-2 sm:px-3 py-1 rounded border border-gray-500 text-gray-200 hover:bg-gray-800 transition-colors">Juntar Mesas</button>
+                    <button onclick="selectNoTable()" class="text-xs sm:text-sm px-2 sm:px-3 py-1 rounded border border-orange-500 text-orange-400 hover:bg-orange-500 hover:text-white font-bold transition-colors">Para Llevar</button>
+                    <button onclick="confirmTableSelection()" id="btn-confirm-tables" class="hidden text-xs sm:text-sm px-2 sm:px-3 py-1 rounded bg-red-600 hover:bg-red-700 font-bold transition-colors">Confirmar</button>
+                    <button onclick="closeMapModal()" class="text-gray-400 hover:text-white transition-colors ml-2"><i data-lucide="x" class="w-6 h-6"></i></button>
                 </div>
             </div>
             <div class="p-6 bg-gray-100 overflow-auto flex-1 relative">
                 <div class="min-w-[700px] h-[450px] bg-white border-4 border-gray-300 rounded-xl relative mx-auto shadow-inner overflow-hidden" id="map-tables-container">
-                    <div class="absolute top-0 left-0 w-1/4 h-[35%] border-b-4 border-r-4 border-gray-300 bg-gray-50 flex items-center justify-center">
-                        <span class="font-black text-2xl text-gray-400 tracking-widest">CAJA</span>
-                    </div>
-                    <div class="absolute top-0 left-1/4 w-[45%] h-[35%] border-b-4 border-r-4 border-gray-300 bg-gray-50 flex items-center justify-center">
-                        <span class="font-black text-3xl text-gray-400 tracking-widest">COCINA</span>
-                    </div>
+                    <div class="absolute top-0 left-0 w-1/4 h-[35%] border-b-4 border-r-4 border-gray-300 bg-gray-50 flex items-center justify-center"><span class="font-black text-2xl text-gray-400 tracking-widest">CAJA</span></div>
+                    <div class="absolute top-0 left-1/4 w-[45%] h-[35%] border-b-4 border-r-4 border-gray-300 bg-gray-50 flex items-center justify-center"><span class="font-black text-3xl text-gray-400 tracking-widest">COCINA</span></div>
                     <div class="absolute top-[35%] left-[70%] w-1 h-[65%] bg-gray-300"></div>
                     <div class="absolute top-[35%] left-[25%] w-1 h-[65%] bg-gray-300"></div>
-                    <div class="absolute bottom-0 left-[25%] w-32 h-10 border-t-4 border-l-4 border-r-4 border-gray-300 bg-white flex items-center justify-center z-10 translate-x-[-50%] rounded-t-lg">
-                        <span class="font-bold text-gray-500">ENTRADA</span>
-                    </div>
+                    <div class="absolute bottom-0 left-[25%] w-32 h-10 border-t-4 border-l-4 border-r-4 border-gray-300 bg-white flex items-center justify-center z-10 translate-x-[-50%] rounded-t-lg"><span class="font-bold text-gray-500">ENTRADA</span></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- NUEVO: MODAL PARA LLEVAR / NOMBRE CLIENTE -->
+    <!-- 2. NOMBRE PARA LLEVAR -->
     <div id="no-table-modal" class="fixed inset-0 bg-black/60 z-[110] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center">
-            <div class="mx-auto w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-4">
-                <i data-lucide="user" class="w-6 h-6"></i>
-            </div>
+            <div class="mx-auto w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-4"><i data-lucide="user" class="w-6 h-6"></i></div>
             <h3 class="text-xl font-bold text-gray-800 mb-1">Pedido Para Llevar</h3>
             <p class="text-sm text-gray-500 mb-4">Ingresa el nombre del cliente para identificar la orden.</p>
-            
             <input type="text" id="no-table-name" placeholder="Ej. Carlos G..." class="w-full border-2 border-gray-300 rounded-xl p-3 text-lg focus:border-orange-500 outline-none mb-6 text-center font-bold">
-            
             <div class="flex gap-2">
                 <button onclick="closeNoTableModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
                 <button onclick="confirmNoTable()" class="flex-1 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl shadow-md transition-colors">Confirmar</button>
@@ -350,77 +330,49 @@
         </div>
     </div>
 
-    <!-- MODAL ÓRDENES ACTIVAS (MESEROS) -->
+    <!-- 3. ÓRDENES ACTIVAS (MESEROS) -->
     <div id="active-orders-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-[80vh]">
             <div class="bg-yellow-500 text-yellow-900 p-4 flex justify-between items-center shrink-0">
-                <h3 class="text-xl font-bold flex items-center gap-2">
-                    <i data-lucide="list-checks" class="w-6 h-6"></i> Órdenes Activas
-                </h3>
-                <button onclick="closeActiveOrdersModal()" class="text-yellow-800 hover:text-yellow-900 transition-colors">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
+                <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="list-checks" class="w-6 h-6"></i> Órdenes Activas</h3>
+                <button onclick="closeActiveOrdersModal()" class="text-yellow-800 hover:text-yellow-900 transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
-            <div class="p-4 overflow-y-auto flex-1 bg-gray-50" id="active-orders-list">
-                <!-- Lista de órdenes inyectada por JS -->
-            </div>
+            <div class="p-4 overflow-y-auto flex-1 bg-gray-50" id="active-orders-list"></div>
         </div>
     </div>
 
-    <!-- MODAL DE ÉXITO -->
+    <!-- 4. ORDEN ENVIADA (ÉXITO) -->
     <div id="success-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
         <div class="bg-white rounded-2xl p-6 md:p-8 max-w-sm w-full text-center shadow-2xl">
             <i data-lucide="check-circle" class="text-green-500 w-20 h-20 mx-auto mb-4"></i>
             <h3 id="success-title" class="text-2xl font-bold text-gray-800 mb-2">¡Orden Enviada!</h3>
             <p id="success-subtitle" class="text-gray-600 mb-6">¿Qué deseas hacer ahora?</p>
-
             <div class="space-y-3">
                 <div class="flex gap-2">
-                    <button onclick="printTicket('last-cocina')" class="flex-1 bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-2 rounded-xl transition-colors border border-orange-200 flex flex-col items-center justify-center gap-1 text-xs shadow-sm">
-                        <i data-lucide="chef-hat" class="w-5 h-5"></i>
-                        Imprimir Cocina
-                    </button>
-                    <button onclick="printTicket('last-caja')" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 rounded-xl transition-colors border border-gray-200 flex flex-col items-center justify-center gap-1 text-xs shadow-sm">
-                        <i data-lucide="receipt" class="w-5 h-5"></i>
-                        Imprimir Caja
-                    </button>
+                    <button onclick="printTicket('last-cocina')" class="flex-1 bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-2 rounded-xl transition-colors border border-orange-200 flex flex-col items-center justify-center gap-1 text-xs shadow-sm"><i data-lucide="chef-hat" class="w-5 h-5"></i>Imprimir Cocina</button>
+                    <button onclick="printTicket('last-caja')" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 rounded-xl transition-colors border border-gray-200 flex flex-col items-center justify-center gap-1 text-xs shadow-sm"><i data-lucide="receipt" class="w-5 h-5"></i>Imprimir Caja</button>
                 </div>
                 <div class="w-full h-px bg-gray-200 my-3"></div>
-                
-                <button onclick="actionNewOrderSameTable()" id="btn-same-table" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors shadow-md">
-                    Nueva Orden
-                </button>
-                <button onclick="actionNewOrderOtherTable()" class="w-full bg-white border-2 border-gray-200 hover:border-red-500 text-gray-800 hover:text-red-600 font-bold py-3 rounded-xl transition-colors">
-                    Atender Otra Mesa
-                </button>
+                <button onclick="actionNewOrderSameTable()" id="btn-same-table" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors shadow-md">Nueva Orden</button>
+                <button onclick="actionNewOrderOtherTable()" class="w-full bg-white border-2 border-gray-200 hover:border-red-500 text-gray-800 hover:text-red-600 font-bold py-3 rounded-xl transition-colors">Atender Otra Mesa</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL MÉTODO DE PAGO -->
+    <!-- 5. REGISTRAR PAGO -->
     <div id="pay-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center">
             <h3 class="text-xl font-bold text-gray-800 mb-1">Registrar Pago</h3>
             <p class="text-sm text-gray-500 mb-4">Selecciona el método de pago para la orden</p>
-            
             <div class="bg-gray-100 p-4 rounded-xl mb-6">
                 <p class="text-xs font-bold text-gray-500 uppercase">Total a Cobrar</p>
                 <h2 id="pay-modal-total" class="text-3xl font-black text-green-600">$0</h2>
             </div>
-            
             <div class="grid grid-cols-2 gap-2 mb-4">
-                <button onclick="setPaymentMethod('efectivo')" id="btn-pay-efectivo" class="border-2 border-green-500 bg-green-50 text-green-700 font-bold py-2 rounded-xl transition-colors">
-                    💵 Efectivo
-                </button>
-                <button onclick="setPaymentMethod('transferencia')" id="btn-pay-transferencia" class="border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-gray-600 font-bold py-2 rounded-xl transition-colors">
-                    📱 Nequi / Transf.
-                </button>
+                <button onclick="setPaymentMethod('efectivo')" id="btn-pay-efectivo" class="border-2 border-green-500 bg-green-50 text-green-700 font-bold py-2 rounded-xl transition-colors">💵 Efectivo</button>
+                <button onclick="setPaymentMethod('transferencia')" id="btn-pay-transferencia" class="border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-gray-600 font-bold py-2 rounded-xl transition-colors">📱 Nequi / Transf.</button>
             </div>
-            <button onclick="setPaymentMethod('dividido')" id="btn-pay-dividido" class="w-full border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 text-gray-600 font-bold py-2 rounded-xl transition-colors mb-4">
-                ⚖️ Pago Mixto / Dividido
-            </button>
-
-            <!-- Sección pago dividido oculta por defecto -->
+            <button onclick="setPaymentMethod('dividido')" id="btn-pay-dividido" class="w-full border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 text-gray-600 font-bold py-2 rounded-xl transition-colors mb-4">⚖️ Pago Mixto / Dividido</button>
             <div id="pay-mixed-section" class="hidden bg-blue-50 p-4 rounded-xl mb-6 border border-blue-200">
                 <div class="flex items-center justify-between mb-3">
                     <label class="text-sm font-bold text-blue-900">Efectivo recibido:</label>
@@ -431,33 +383,24 @@
                     <span id="mixed-transfer-display" class="font-black text-lg text-purple-700">$0</span>
                 </div>
             </div>
-            
             <div class="flex gap-2">
                 <button onclick="closePayModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
-                <button onclick="confirmPayment()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-colors flex justify-center items-center gap-2">
-                    <i data-lucide="check" class="w-5 h-5"></i> Confirmar
-                </button>
+                <button onclick="confirmPayment()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-colors flex justify-center items-center gap-2"><i data-lucide="check" class="w-5 h-5"></i> Confirmar</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DIVIDIR CUENTA -->
+    <!-- 6. DIVIDIR CUENTA -->
     <div id="split-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-[85vh]">
             <div class="bg-orange-500 text-white p-4 flex justify-between items-center shrink-0">
-                <h3 class="text-xl font-bold flex items-center gap-2">
-                    <i data-lucide="scissors" class="w-6 h-6"></i> Dividir Cuenta
-                </h3>
-                <button onclick="closeSplitModal()" class="text-orange-100 hover:text-white transition-colors">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
+                <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="scissors" class="w-6 h-6"></i> Dividir Cuenta</h3>
+                <button onclick="closeSplitModal()" class="text-orange-100 hover:text-white transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
             <div class="p-4 bg-orange-50 shrink-0 border-b border-orange-100">
-                <p class="text-sm text-orange-800 font-medium leading-tight">Selecciona la cantidad de cada producto que la persona va a pagar ahora. El resto quedará en la cuenta.</p>
+                <p class="text-sm text-orange-800 font-medium leading-tight">Selecciona la cantidad de cada producto que la persona va a pagar ahora.</p>
             </div>
-            <div class="p-4 overflow-y-auto flex-1 bg-white space-y-3" id="split-items-list">
-                <!-- Items inyectados por JS -->
-            </div>
+            <div class="p-4 overflow-y-auto flex-1 bg-white space-y-3" id="split-items-list"></div>
             <div class="p-4 bg-gray-50 border-t shrink-0">
                 <div class="flex justify-between items-center mb-4 text-lg">
                     <span class="font-bold text-gray-600">Subtotal a Pagar:</span>
@@ -465,30 +408,25 @@
                 </div>
                 <div class="flex gap-2">
                     <button onclick="closeSplitModal()" class="flex-1 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
-                    <button onclick="proceedSplitPayment()" class="flex-[2] py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl shadow-md transition-colors flex justify-center items-center gap-2">
-                        Continuar Pago <i data-lucide="arrow-right" class="w-5 h-5"></i>
-                    </button>
+                    <button onclick="proceedSplitPayment()" class="flex-[2] py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl shadow-md transition-colors flex justify-center items-center gap-2">Continuar Pago <i data-lucide="arrow-right" class="w-5 h-5"></i></button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL FINANZAS (Base / Gastos) -->
+    <!-- 7. FINANZAS Y GASTOS -->
     <div id="finance-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center">
-            <h3 id="finance-modal-title" class="text-xl font-bold text-gray-800 mb-1">Registrar Gasto</h3>
+            <h3 id="finance-modal-title" class="text-xl font-bold text-gray-800 mb-1">Registrar</h3>
             <p id="finance-modal-subtitle" class="text-sm text-gray-500 mb-4">Detalles del movimiento de caja</p>
-            
             <div class="mb-4">
                 <label class="block text-left text-sm font-bold text-gray-700 mb-1">Monto ($)</label>
                 <input type="number" id="finance-amount" placeholder="Ej: 15000" class="w-full border-2 border-gray-300 rounded-xl p-3 text-lg font-bold focus:border-blue-500 outline-none">
             </div>
-            
             <div id="finance-desc-container" class="mb-6">
                 <label class="block text-left text-sm font-bold text-gray-700 mb-1">Motivo / Descripción</label>
                 <input type="text" id="finance-desc" placeholder="Ej: Compra de hielo..." class="w-full border-2 border-gray-300 rounded-xl p-3 text-sm focus:border-blue-500 outline-none">
             </div>
-            
             <div class="flex gap-2">
                 <button onclick="closeFinanceModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
                 <button onclick="saveFinance()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-colors">Guardar</button>
@@ -496,76 +434,56 @@
         </div>
     </div>
 
-    <!-- MODAL REPORTE Z -->
+    <!-- 8. REPORTE Z -->
     <div id="reportez-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
             <div class="bg-blue-600 text-white p-4 flex justify-between items-center shrink-0">
-                <h3 class="text-xl font-bold flex items-center gap-2">
-                    <i data-lucide="calculator" class="w-6 h-6"></i> Reporte Z (Cierre del Día)
-                </h3>
-                <button onclick="closeReporteZ()" class="text-blue-200 hover:text-white transition-colors">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
+                <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="calculator" class="w-6 h-6"></i> Reporte Z (Cierre)</h3>
+                <button onclick="closeReporteZ()" class="text-blue-200 hover:text-white transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
-            
             <div class="p-5 overflow-y-auto bg-gray-50 flex-1">
-                <!-- Resumen Financiero -->
                 <div class="bg-white border border-gray-200 rounded-xl p-4 mb-5 shadow-sm">
                     <h4 class="font-bold text-gray-500 text-xs uppercase tracking-wider mb-3 border-b pb-2">Cuadre de Caja</h4>
                     <div class="space-y-2 text-sm">
-                        <div class="flex justify-between text-gray-600"><span>Ventas Efectivo:</span> <span id="z-ventas-efectivo" class="font-semibold">$0</span></div>
-                        <div class="flex justify-between text-gray-600"><span>Ventas Nequi/Transf:</span> <span id="z-ventas-transf" class="font-semibold">$0</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Ventas Productos (Efectivo):</span> <span id="z-ventas-efectivo" class="font-semibold text-gray-900">$0</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Ventas Productos (Nequi/Trans):</span> <span id="z-ventas-transf" class="font-semibold text-gray-900">$0</span></div>
+                        <div class="flex justify-between text-orange-600 bg-orange-50 p-1.5 rounded font-semibold border border-orange-100">
+                            <span>Fletes Domicilios (Recaudo):</span> <span id="z-fletes">$0</span>
+                        </div>
                         <div class="flex justify-between text-gray-600 pt-1 border-t border-gray-100"><span>Base Inicial:</span> <span id="z-base" class="font-semibold text-green-600">+$0</span></div>
                         <div class="flex justify-between text-gray-600"><span>Salidas/Gastos:</span> <span id="z-gastos" class="font-semibold text-red-600">-$0</span></div>
                     </div>
                 </div>
-
                 <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex justify-between items-center mb-5">
                     <div>
-                        <span class="block font-bold text-blue-900 leading-tight">Efectivo en Cajón:</span>
-                        <span class="text-[10px] text-blue-600 uppercase font-bold">(Ventas Efec. + Base - Gastos)</span>
+                        <span class="block font-bold text-blue-900 leading-tight">Efectivo Físico Esperado:</span>
+                        <span class="text-[10px] text-blue-600 uppercase font-bold">(Efec. Productos + Base - Gastos)</span>
                     </div>
                     <span id="z-efectivo-neto" class="font-extrabold text-2xl text-blue-700">$0</span>
                 </div>
-
-                <!-- NUEVO: Rendimiento de Meseros -->
                 <div class="mb-5 pb-4 border-b border-gray-300">
                     <h4 class="font-bold text-gray-500 text-xs uppercase tracking-wider mb-2">Rendimiento por Mesero</h4>
-                    <div id="reportez-waiters" class="space-y-2">
-                        <!-- Llenado por JS -->
-                    </div>
+                    <div id="reportez-waiters" class="space-y-2"></div>
                 </div>
-
                 <div class="mb-4 pb-4">
-                    <h4 class="font-bold text-gray-500 text-xs uppercase tracking-wider mb-2">Resumen de Productos Vendidos</h4>
-                    <div id="reportez-items" class="space-y-2">
-                        <!-- Las cantidades se llenan por JS -->
-                    </div>
+                    <h4 class="font-bold text-gray-500 text-xs uppercase tracking-wider mb-2">Productos Vendidos</h4>
+                    <div id="reportez-items" class="space-y-2"></div>
                 </div>
             </div>
-
             <div class="p-4 bg-white border-t flex gap-2 shrink-0">
-                <button onclick="closeReporteZ()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-lg transition-colors">
-                    Cerrar
-                </button>
-                <button onclick="printReporteZ()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md flex items-center justify-center gap-2 transition-colors">
-                    <i data-lucide="printer" class="w-5 h-5"></i> Imprimir Z
-                </button>
+                <button onclick="closeReporteZ()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-lg transition-colors">Cerrar</button>
+                <button onclick="printReporteZ()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md flex items-center justify-center gap-2 transition-colors"><i data-lucide="printer" class="w-5 h-5"></i> Imprimir Z</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL SEGURIDAD TABS / PIN ADMIN -->
+    <!-- 9. SEGURIDAD ADMIN TABS -->
     <div id="tab-security-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center">
-            <div class="mx-auto w-16 h-16 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center mb-4">
-                <i data-lucide="lock" class="w-8 h-8"></i>
-            </div>
+            <div class="mx-auto w-16 h-16 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center mb-4"><i data-lucide="lock" class="w-8 h-8"></i></div>
             <h3 class="text-xl font-bold text-gray-800 mb-2">Acceso Administrativo</h3>
-            <p class="text-sm text-gray-500 mb-6">Ingresa el PIN para desbloquear Caja, Historial e Inventario para esta sesión.</p>
-            
+            <p class="text-sm text-gray-500 mb-6">Ingresa el PIN para desbloquear Caja, Historial e Inventario.</p>
             <input type="password" id="tab-security-pin" placeholder="PIN..." class="w-full border-2 border-gray-300 rounded-xl p-3 text-center text-xl tracking-widest focus:border-red-500 focus:outline-none mb-6">
-            
             <div class="flex gap-2">
                 <button onclick="closeTabSecurityModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
                 <button onclick="confirmTabSecurity()" class="flex-1 py-3 bg-gray-800 hover:bg-gray-900 text-white font-bold rounded-xl shadow-md transition-colors">Desbloquear</button>
@@ -573,17 +491,13 @@
         </div>
     </div>
 
-    <!-- MODAL SEGURIDAD PIN CIERRE -->
+    <!-- 10. SEGURIDAD LIMPIAR TODO -->
     <div id="security-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center">
-            <div class="mx-auto w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4">
-                <i data-lucide="alert-triangle" class="w-8 h-8"></i>
-            </div>
+            <div class="mx-auto w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4"><i data-lucide="alert-triangle" class="w-8 h-8"></i></div>
             <h3 class="text-xl font-bold text-gray-800 mb-2">Cierre de Caja</h3>
-            <p class="text-sm text-gray-500 mb-6">Por favor ingresa la clave para limpiar el sistema. (El inventario NO se borrará).</p>
-            
-            <input type="password" id="security-pin" placeholder="Clave secreta..." class="w-full border-2 border-gray-300 rounded-xl p-3 text-center text-xl tracking-widest focus:border-red-500 focus:outline-none mb-6">
-            
+            <p class="text-sm text-gray-500 mb-6">Ingresa la clave para limpiar el sistema (El inventario NO se borrará).</p>
+            <input type="password" id="security-pin" placeholder="Clave..." class="w-full border-2 border-gray-300 rounded-xl p-3 text-center text-xl tracking-widest focus:border-red-500 focus:outline-none mb-6">
             <div class="flex gap-2">
                 <button onclick="closeSecurityModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
                 <button onclick="confirmSecurityAndReset()" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-md transition-colors">Limpiar Todo</button>
@@ -591,21 +505,17 @@
         </div>
     </div>
 
-    <!-- MODAL EDITAR INVENTARIO -->
+    <!-- 11. INVENTARIO EDITAR -->
     <div id="inventory-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center">
-            <div class="mx-auto w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mb-4">
-                <i data-lucide="package-plus" class="w-6 h-6"></i>
-            </div>
+            <div class="mx-auto w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mb-4"><i data-lucide="package-plus" class="w-6 h-6"></i></div>
             <h3 class="text-xl font-bold text-gray-800 mb-1">Ajustar Stock</h3>
             <p id="inv-modal-item-name" class="text-sm text-gray-500 mb-6 font-semibold">Cargando...</p>
-            
             <div class="flex items-center justify-center gap-4 mb-6">
                 <button onclick="adjInvInput(-1)" class="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xl flex items-center justify-center transition-colors"><i data-lucide="minus" class="w-5 h-5"></i></button>
                 <input type="number" id="inv-modal-input" class="w-24 border-2 border-gray-300 rounded-xl p-2 text-center text-xl font-bold focus:border-purple-500 focus:outline-none appearance-none">
                 <button onclick="adjInvInput(1)" class="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xl flex items-center justify-center transition-colors"><i data-lucide="plus" class="w-5 h-5"></i></button>
             </div>
-            
             <div class="flex gap-2">
                 <button onclick="closeInventoryModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
                 <button onclick="saveInventoryStock()" class="flex-1 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow-md transition-colors">Guardar</button>
@@ -620,7 +530,7 @@
         import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // ==========================================
-        // CONFIGURACIÓN DE BASE DE DATOS (FIREBASE)
+        // CONFIGURACIÓN DE FIREBASE
         // ==========================================
         let firebaseConfig;
         if (typeof __firebase_config !== 'undefined') {
@@ -651,8 +561,7 @@
                 { id: 'p5', name: 'Perra', price: 21000 }, { id: 'p6', name: 'Chow Chow Instagram', price: 25000 },
                 { id: 'p7', name: 'San Bernardo', price: 36000 }, { id: 'p8', name: 'Perro con Salchicha Ranchera', price: 21000 },
                 { id: 'p9', name: 'Perro Super Ranchero', price: 33000 }, { id: 'p10', name: 'Perro con Salchicha Americana', price: 21000 },
-                { id: 'p11', name: 'Perro Vegano', price: 19000 },
-                { id: 'p12', name: 'COMBO PS', price: 20000 }, { id: 'p13', name: 'COMBO PT', price: 25000 },
+                { id: 'p11', name: 'Perro Vegano', price: 19000 }, { id: 'p12', name: 'COMBO PS', price: 20000 }, { id: 'p13', name: 'COMBO PT', price: 25000 },
             ],
             'Hamburguesas': [
                 { id: 'h1', name: 'Hamburguesa Sencilla', price: 19000 }, { id: 'h2', name: 'Hamburguesa Doble', price: 23000 },
@@ -704,16 +613,11 @@
         }
 
         const TABLE_POSITIONS = [
-            { id: 1, left: '8%', top: '55%' }, { id: 2, left: '18%', top: '55%' },
-            { id: 3, left: '6%', top: '85%' }, { id: 4, left: '13%', top: '85%' },
-            { id: 5, left: '20%', top: '85%' }, { id: 6, left: '32%', top: '55%' },
-            { id: 7, left: '32%', top: '85%' }, { id: 8, left: '40%', top: '85%' },
-            { id: 9, left: '48%', top: '85%' }, { id: 10, left: '56%', top: '85%' },
-            { id: 11, left: '64%', top: '85%' }, { id: 12, left: '52%', top: '58%' },
-            { id: 13, left: '60%', top: '58%' }, { id: 14, left: '68%', top: '58%' },
-            { id: 15, left: '76%', top: '85%' }, { id: 16, left: '83%', top: '85%' },
-            { id: 17, left: '90%', top: '85%' }, { id: 18, left: '96%', top: '85%' },
-            { id: 19, left: '82%', top: '58%' }, { id: 20, left: '92%', top: '58%' }
+            { id: 1, left: '8%', top: '55%' }, { id: 2, left: '18%', top: '55%' }, { id: 3, left: '6%', top: '85%' }, { id: 4, left: '13%', top: '85%' },
+            { id: 5, left: '20%', top: '85%' }, { id: 6, left: '32%', top: '55%' }, { id: 7, left: '32%', top: '85%' }, { id: 8, left: '40%', top: '85%' },
+            { id: 9, left: '48%', top: '85%' }, { id: 10, left: '56%', top: '85%' }, { id: 11, left: '64%', top: '85%' }, { id: 12, left: '52%', top: '58%' },
+            { id: 13, left: '60%', top: '58%' }, { id: 14, left: '68%', top: '58%' }, { id: 15, left: '76%', top: '85%' }, { id: 16, left: '83%', top: '85%' },
+            { id: 17, left: '90%', top: '85%' }, { id: 18, left: '96%', top: '85%' }, { id: 19, left: '82%', top: '58%' }, { id: 20, left: '92%', top: '58%' }
         ];
 
         const INVENTORY_DICT = {
@@ -754,12 +658,15 @@
             currentUser: null, currentView: 'mesero', kitchenStation: 'perrero',
             waiterName: '', selectedTables: [], isMultipleTableMode: false,
             activeCategory: MENU_CATEGORIES[0], currentOrderItems: [], generalNote: '',
+            
+            domiOrderItems: [], domiCategory: MENU_CATEGORIES[0],
+            domiAddress: '', domiPhone: '', domiName: '', domiFee: 0, domiNote: '',
+            
             orderCounter: 1, kitchenTickets: [], cashierOrders: [], historyOrders: [], 
             inventory: {}, finances: { base: 0, expenses: [] },
             lastSubmittedOrder: null, zReportData: null, editingInvId: null, editingOrderId: null,
             isAdminUnlocked: false, pendingView: null, pendingPayOrder: null, 
             financeType: 'gasto', paymentMethod: 'efectivo',
-            // NUEVO: Para dividir cuentas
             splitSelection: [], pendingSplitOrder: null 
         };
 
@@ -806,935 +713,45 @@
             dataList.forEach(({format, data}) => {
                 html += `<div class="ticket-container">`;
                 if (format === 'caja') {
-                    html += `<div class="header-title">PERROS LA 30</div><p>Los Originales</p><p style="font-size:12px;margin-bottom:10px;">Ticket de Venta</p><div class="info-text"><b>Orden #:</b> ${data.orderId}</div><div class="info-text"><b>Mesa:</b> ${data.table}</div><div class="info-text"><b>Mesero:</b> ${data.waiter}</div><div class="info-text"><b>Fecha:</b> ${data.timestamp}</div><div class="divider"></div>`;
-                    data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.quantity}</span><span class="item-name">${item.name}</span><span class="item-price">${formatCurrency(item.price * item.quantity)}</span></div>`; });
-                    html += `<div class="divider"></div><div class="totals">TOTAL: ${formatCurrency(data.total)}</div><div class="divider"></div>`;
-                    if(data.payment) {
-                        html += `<p style="text-align:right;font-size:12px;">Efectivo: ${formatCurrency(data.payment.cashAmount)}<br>Nequi/Transf: ${formatCurrency(data.payment.transferAmount)}</p>`;
+                    html += `<div class="header-title">PERROS LA 30</div><p>Los Originales</p><p style="font-size:12px;margin-bottom:10px;">Ticket de Venta</p><div class="info-text"><b>Orden #:</b> ${data.orderId}</div>`;
+                    if(data.type === 'domicilio') {
+                        html += `<div class="info-text" style="font-size:16px; font-weight:bold; border: 1px solid #000; padding: 4px; margin-bottom: 5px; text-align:center;">DOMICILIO</div>`;
+                        if(data.name) html += `<div class="info-text"><b>Cliente:</b> ${data.name}</div>`;
+                        html += `<div class="info-text"><b>Dir:</b> ${data.address}</div>`;
+                        if(data.phone) html += `<div class="info-text"><b>Tel:</b> ${data.phone}</div>`;
+                    } else {
+                        html += `<div class="info-text"><b>Mesa:</b> ${data.table}</div><div class="info-text"><b>Mesero:</b> ${data.waiter}</div>`;
                     }
+                    html += `<div class="info-text"><b>Fecha:</b> ${data.timestamp}</div><div class="divider"></div>`;
+                    data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.quantity}</span><span class="item-name">${item.name}</span><span class="item-price">${formatCurrency(item.price * item.quantity)}</span></div>`; });
+                    if(data.type === 'domicilio' && data.domiFee > 0) {
+                        html += `<div class="divider"></div><div class="item-row"><span class="item-qty"></span><span class="item-name" style="font-weight:bold;">Costo de Envío</span><span class="item-price">${formatCurrency(data.domiFee)}</span></div>`;
+                    }
+                    html += `<div class="divider"></div><div class="totals">TOTAL: ${formatCurrency(data.total)}</div><div class="divider"></div>`;
+                    if(data.payment) { html += `<p style="text-align:right;font-size:12px;">Efectivo: ${formatCurrency(data.payment.cashAmount)}<br>Nequi/Transf: ${formatCurrency(data.payment.transferAmount)}</p>`; }
                     html += `<p style="margin-top:15px;font-size:12px;">¡Gracias por su compra!</p>`;
                 } else if (format === 'cocina') {
-                    html += `<div class="station-title">${data.station}</div><div class="info-text" style="font-size:18px;"><b>Mesa:</b> ${data.table}</div><div class="info-text" style="font-size:16px;"><b>Orden #:</b> ${data.orderId}</div><div class="info-text"><b>Mesero:</b> ${data.waiter}</div><div class="info-text"><b>Hora:</b> ${data.timestamp}</div><div class="divider" style="border-top:2px solid #000;"></div>`;
-                    data.items.forEach(item => {
-                        html += `<div style="font-weight:bold;font-size:18px;margin-top:5px;display:flex;"><span style="margin-right:10px;">${item.quantity}</span><span>${item.name}</span></div>${item.note ? `<div class="note">>> ${item.note}</div>` : ''}<div class="divider"></div>`;
-                    });
+                    html += `<div class="station-title">${data.station}</div>`;
+                    if(data.type === 'domicilio') {
+                        html += `<div class="info-text" style="font-size:22px; font-weight:bold; border: 2px solid #000; padding: 4px; margin-bottom: 5px; text-align:center;">DOMICILIO</div><div class="info-text" style="font-size:16px;"><b>Dir:</b> ${data.address}</div>`;
+                    } else {
+                        html += `<div class="info-text" style="font-size:18px;"><b>Mesa:</b> ${data.table}</div>`;
+                    }
+                    html += `<div class="info-text" style="font-size:16px;"><b>Orden #:</b> ${data.orderId}</div><div class="info-text"><b>Hora:</b> ${data.timestamp}</div><div class="divider" style="border-top:2px solid #000;"></div>`;
+                    data.items.forEach(item => { html += `<div style="font-weight:bold;font-size:18px;margin-top:5px;display:flex;"><span style="margin-right:10px;">${item.quantity}</span><span>${item.name}</span></div>${item.note ? `<div class="note">>> ${item.note}</div>` : ''}<div class="divider"></div>`; });
                     if (data.generalNote) html += `<div style="margin-top:10px;border:1px solid #000;padding:5px;"><b>NOTA GENERAL:</b><br>${data.generalNote}</div>`;
                     html += `<p style="margin-top:20px;">--- Fin Comanda ---</p>`;
                 }
                 html += `</div>`;
             });
             html += `<script>window.onload = function() { window.print(); setTimeout(function(){ window.close(); }, 500); }<\/script></body></html>`;
-            printWindow.document.write(html);
-            printWindow.document.close();
-        };
-
-        // --- LÓGICA DE REPORTE Z CON MESEROS ---
-        window.generateReporteZ = function() {
-            if (window.state.historyOrders.length === 0 && window.state.finances.expenses.length === 0) { 
-                window.showToast("No hay movimientos para generar Reporte Z.", "error"); return; 
-            }
-            
-            let totalRecaudado = 0, totalEfectivo = 0, totalTransf = 0;
-            const itemsVendidos = {};
-            const waiterStats = {}; // NUEVO: Rendimiento de Meseros
-
-            window.state.historyOrders.forEach(order => {
-                if (order.status === 'paid') {
-                    totalRecaudado += order.total;
-                    totalEfectivo += order.payment?.cashAmount || 0;
-                    totalTransf += order.payment?.transferAmount || 0;
-                    if(!order.payment) totalEfectivo += order.total; 
-
-                    // Stats de Meseros
-                    const wName = order.waiter || 'Desconocido';
-                    if(!waiterStats[wName]) waiterStats[wName] = { tables: 0, items: 0, total: 0 };
-                    waiterStats[wName].tables += 1;
-                    waiterStats[wName].total += order.total;
-
-                    order.items.forEach(item => {
-                        if (!itemsVendidos[item.name]) itemsVendidos[item.name] = { qty: 0, revenue: 0 };
-                        itemsVendidos[item.name].qty += item.quantity;
-                        itemsVendidos[item.name].revenue += (item.price * item.quantity);
-                        waiterStats[wName].items += item.quantity;
-                    });
-                }
-            });
-
-            const base = window.state.finances.base || 0;
-            const totalGastos = window.state.finances.expenses.reduce((sum, e) => sum + e.amount, 0);
-            const efectivoNeto = base + totalEfectivo - totalGastos;
-
-            const sortedItems = Object.keys(itemsVendidos).map(name => ({ name, qty: itemsVendidos[name].qty, revenue: itemsVendidos[name].revenue })).sort((a, b) => b.qty - a.qty);
-            const sortedWaiters = Object.keys(waiterStats).map(name => ({name, ...waiterStats[name]})).sort((a,b) => b.total - a.total);
-            
-            window.state.zReportData = { 
-                date: new Date().toLocaleDateString('es-CO'), time: new Date().toLocaleTimeString('es-CO'), 
-                total: totalRecaudado, efectivo: totalEfectivo, transferencia: totalTransf,
-                base: base, gastos: totalGastos, efectivoNeto: efectivoNeto,
-                items: sortedItems, waiters: sortedWaiters 
-            };
-            
-            document.getElementById('z-ventas-efectivo').innerText = formatCurrency(totalEfectivo);
-            document.getElementById('z-ventas-transf').innerText = formatCurrency(totalTransf);
-            document.getElementById('z-base').innerText = "+" + formatCurrency(base);
-            document.getElementById('z-gastos').innerText = "-" + formatCurrency(totalGastos);
-            document.getElementById('z-efectivo-neto').innerText = formatCurrency(efectivoNeto);
-            
-            document.getElementById('reportez-waiters').innerHTML = sortedWaiters.map(w => `<div class="flex justify-between items-center bg-gray-100 p-2 rounded border border-gray-200 text-sm"><span class="font-bold text-gray-800">${w.name}</span><div class="text-right"><span class="block font-black text-green-700">${formatCurrency(w.total)}</span><span class="text-xs text-gray-500 font-semibold">${w.tables} mesas | ${w.items} items</span></div></div>`).join('');
-            document.getElementById('reportez-items').innerHTML = sortedItems.map(i => `<div class="flex justify-between items-center bg-white p-2 rounded border text-sm"><span class="font-semibold flex-1 text-gray-700">${i.name}</span><div class="flex gap-4 items-center"><span class="text-gray-500 font-medium">${formatCurrency(i.revenue)}</span><span class="bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-md min-w-[2rem] text-center">${i.qty}</span></div></div>`).join('');
-            
-            document.getElementById('reportez-modal').classList.remove('hidden');
-        };
-
-        window.closeReporteZ = function() { document.getElementById('reportez-modal').classList.add('hidden'); };
-
-        window.printReporteZ = function() {
-            const data = window.state.zReportData; if (!data) return;
-            const printWindow = window.open('', '_blank', 'width=400,height=600');
-            let html = `<html><head><style>@page{margin:0;size:auto;} body{font-family:'Courier New',Courier,monospace;width:280px;margin:0;padding:10px;font-size:14px;} h1,p{margin:0;padding:2px 0;text-align:center;} .divider{border-top:1px dashed #000;margin:8px 0;} .item-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;} .item-qty{font-weight:bold;width:30px;} .item-name{flex:1;} .item-price{font-weight:bold;text-align:right;} .totals{margin-top:10px;font-weight:bold;font-size:16px;text-align:right;} .header-title{font-size:20px;font-weight:bold;text-align:center;} .summary-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;}</style></head><body><div class="header-title">PERROS LA 30</div><p>REPORTE Z (CIERRE DIARIO)</p><div class="divider"></div><p style="text-align:left;font-size:12px;"><b>Fecha:</b> ${data.date}</p><p style="text-align:left;font-size:12px;"><b>Hora:</b> ${data.time}</p><div class="divider"></div>`;
-            
-            html += `<div class="summary-row"><span>Total Ventas:</span><b>${formatCurrency(data.total)}</b></div>`;
-            html += `<div class="summary-row"><span>Ventas Efectivo:</span><span>${formatCurrency(data.efectivo)}</span></div>`;
-            html += `<div class="summary-row"><span>Ventas Transf:</span><span>${formatCurrency(data.transferencia)}</span></div>`;
-            html += `<div class="summary-row"><span>Base Inicial:</span><span>+${formatCurrency(data.base)}</span></div>`;
-            html += `<div class="summary-row"><span>Gastos/Salidas:</span><span>-${formatCurrency(data.gastos)}</span></div>`;
-            html += `<div class="divider"></div>`;
-            html += `<div class="totals">EFECTIVO EN CAJA:<br>${formatCurrency(data.efectivoNeto)}</div>`;
-            html += `<div class="divider"></div>`;
-            
-            html += `<div style="text-align:center; font-weight:bold; margin-bottom:5px;">RENDIMIENTO MESEROS</div>`;
-            data.waiters.forEach(w => { html += `<div class="summary-row"><span>${w.name} (${w.tables}m):</span><span>${formatCurrency(w.total)}</span></div>`; });
-            html += `<div class="divider"></div>`;
-
-            html += `<div style="margin-bottom:5px;font-weight:bold;display:flex;font-size:12px;"><span style="width:30px;">CANT</span><span style="flex:1;">PRODUCTO</span><span>TOTAL</span></div><div class="divider"></div>`;
-            data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.qty}x</span><span class="item-name">${item.name}</span><span class="item-price">${formatCurrency(item.revenue)}</span></div>`; });
-            
-            html += `<div class="divider"></div><p style="font-size:12px;margin-top:20px;">Fin del Reporte</p><script>window.onload=function(){window.print();setTimeout(function(){window.close();},500);}<\/script></body></html>`;
             printWindow.document.write(html); printWindow.document.close();
         };
 
-        const initAuth = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
-                else await signInAnonymously(auth);
-            } catch (error) {
-                document.getElementById('connection-status').innerText = "Modo Local";
-                document.getElementById('connection-status').className = "ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1";
-            }
-        };
-
-        onAuthStateChanged(auth, (user) => {
-            window.state.currentUser = user;
-            const statusEl = document.getElementById('connection-status');
-            if (user) {
-                statusEl.innerText = "Nube Conectada";
-                statusEl.className = "ml-2 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1";
-                setupFirebaseListeners();
-            } else {
-                statusEl.innerText = "Desconectado";
-                statusEl.className = "ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1";
-            }
-        });
-
-        function setupFirebaseListeners() {
-            if (!window.state.currentUser) return;
-
-            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), (snapshot) => {
-                if (snapshot.exists() && !window.state.editingOrderId) {
-                    window.state.orderCounter = snapshot.data().value + 1;
-                    document.getElementById('order-counter-display').innerText = window.state.orderCounter;
-                } else if(!window.state.editingOrderId) {
-                    window.state.orderCounter = 1;
-                    document.getElementById('order-counter-display').innerText = window.state.orderCounter;
-                }
-            }, (e) => console.error(e));
-
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets'), (snapshot) => {
-                window.state.kitchenTickets = [];
-                snapshot.forEach(doc => window.state.kitchenTickets.push(doc.data()));
-                window.state.kitchenTickets.sort((a,b) => a.orderId - b.orderId);
-                updateBadges(); if (window.state.currentView === 'cocina') renderKitchen();
-            }, (e) => console.error(e));
-
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'cashierOrders'), (snapshot) => {
-                window.state.cashierOrders = [];
-                snapshot.forEach(doc => window.state.cashierOrders.push(doc.data()));
-                window.state.cashierOrders.sort((a,b) => a.orderId - b.orderId);
-                updateBadges(); if (window.state.currentView === 'caja') renderCashier();
-                
-                // Actualizar lista de órdenes si modal activo está abierto
-                if(!document.getElementById('active-orders-modal').classList.contains('hidden')) renderActiveOrdersModal();
-            }, (e) => console.error(e));
-
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders'), (snapshot) => {
-                window.state.historyOrders = [];
-                snapshot.forEach(doc => window.state.historyOrders.push(doc.data()));
-                window.state.historyOrders.sort((a,b) => b.orderId - a.orderId);
-                if (window.state.currentView === 'historial') renderHistory();
-            }, (e) => console.error(e));
-
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'inventory'), (snapshot) => {
-                window.state.inventory = {};
-                snapshot.forEach(doc => { window.state.inventory[doc.id] = doc.data(); });
-                if (window.state.currentView === 'inventario') renderInventory();
-            }, (e) => console.error(e));
-
-            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'finances'), (snapshot) => {
-                if(snapshot.exists()) { window.state.finances = snapshot.data(); } 
-                else { window.state.finances = { base: 0, expenses: [] }; }
-                renderFinances();
-            }, (e) => console.error(e));
-        }
-
-        // --- SISTEMA DE SEGURIDAD (TABS) ---
-        window.attemptSwitchView = function(view) {
-            if (window.state.isAdminUnlocked) {
-                switchView(view);
-            } else {
-                window.state.pendingView = view;
-                document.getElementById('tab-security-pin').value = '';
-                document.getElementById('tab-security-modal').classList.remove('hidden');
-            }
-        };
-
-        window.closeTabSecurityModal = function() {
-            document.getElementById('tab-security-modal').classList.add('hidden');
-            window.state.pendingView = null;
-        };
-
-        window.confirmTabSecurity = function() {
-            const pin = document.getElementById('tab-security-pin').value;
-            if (pin === '1089607033') {
-                window.state.isAdminUnlocked = true;
-                document.getElementById('tab-security-modal').classList.add('hidden');
-                document.getElementById('admin-unlocked-badge').classList.remove('hidden');
-                document.getElementById('admin-unlocked-badge').classList.add('flex');
-                if (window.state.pendingView) switchView(window.state.pendingView);
-                window.showToast("Sesión de Administrador Desbloqueada");
-            } else {
-                window.showToast("PIN Incorrecto", "error");
-            }
-        };
-        
-        // --- MENÚ HAMBURGUESA LATERAL ---
-        window.toggleSidebar = function() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            if (sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.remove('-translate-x-full');
-                overlay.classList.remove('hidden');
-            } else {
-                sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
-            }
-        };
-
-        window.switchView = function(view) {
-            window.state.currentView = view;
-            ['mesero', 'cocina', 'caja', 'historial', 'inventario', 'domicilios'].forEach(v => {
-                const viewEl = document.getElementById(`view-${v}`);
-                if(viewEl) viewEl.classList.add('hidden');
-                
-                const menuBtn = document.getElementById(`menu-${v}`);
-                if(menuBtn) {
-                    if (v === view) {
-                        menuBtn.className = "flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-colors bg-red-50 text-red-600";
-                    } else {
-                        menuBtn.className = "flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100";
-                    }
-                }
-            });
-            
-            const activeView = document.getElementById(`view-${view}`);
-            if(activeView) activeView.classList.remove('hidden');
-            
-            if(view === 'cocina') renderKitchen();
-            if(view === 'caja') renderCashier();
-            if(view === 'historial') renderHistory(); 
-            if(view === 'inventario') renderInventory(); 
-            
-            const sidebar = document.getElementById('sidebar');
-            if (!sidebar.classList.contains('-translate-x-full')) {
-                window.toggleSidebar();
-            }
-        };
-
-        window.setKitchenStation = function(station) {
-            window.state.kitchenStation = station;
-            ['perrero', 'hamburguesero', 'general'].forEach(s => {
-                const btn = document.getElementById(`tab-station-${s}`);
-                if (s === station) btn.className = "px-4 py-2 bg-white font-bold text-red-600 rounded-lg shadow transition-all whitespace-nowrap";
-                else btn.className = "px-4 py-2 font-bold text-gray-600 hover:text-gray-800 rounded-lg transition-all whitespace-nowrap";
-            });
-            renderKitchen();
-        };
-
-        window.changeCategory = function(category) {
-            window.state.activeCategory = category;
-            renderCategories(); renderProducts();
-        };
-
-        window.addItemToOrder = function(productId) {
-            const product = FLAT_MENU.find(p => p.id === productId); if (!product) return;
-            const existingIndex = window.state.currentOrderItems.findIndex(item => item.id === productId && item.note === '');
-            if (existingIndex >= 0) window.state.currentOrderItems[existingIndex].quantity += 1;
-            else window.state.currentOrderItems.push({ ...product, quantity: 1, note: '' });
-            renderCart();
-        };
-
-        window.updateItemQuantity = function(index, delta) {
-            const newQty = window.state.currentOrderItems[index].quantity + delta;
-            if (newQty > 0) window.state.currentOrderItems[index].quantity = newQty;
-            else window.state.currentOrderItems.splice(index, 1);
-            renderCart();
-        };
-
-        window.updateItemNoteText = function(index, value, element) {
-            window.state.currentOrderItems[index].note = value;
-            element.style.height = 'auto'; element.style.height = element.scrollHeight + 'px';
-        };
-
-        window.removeItem = function(index) {
-            window.state.currentOrderItems.splice(index, 1);
-            renderCart();
-        };
-
-        window.clearCurrentOrder = function() {
-            window.state.currentOrderItems = [];
-            window.state.generalNote = '';
-            document.getElementById('general-note').value = '';
-            renderCart();
-            if(!window.state.editingOrderId) window.showToast('Orden vaciada.', 'error');
-        };
-
-        window.openMapModal = function() {
-            window.state.isMultipleTableMode = false;
-            document.getElementById('btn-multiple-tables').classList.remove('bg-gray-700', 'text-white');
-            document.getElementById('btn-multiple-tables').innerText = 'Juntar Mesas';
-            document.getElementById('btn-confirm-tables').classList.add('hidden');
-            document.getElementById('map-modal').classList.remove('hidden');
-            renderMapTables();
-        };
-
-        window.closeMapModal = function() { document.getElementById('map-modal').classList.add('hidden'); };
-
-        window.toggleMultipleTables = function() {
-            window.state.isMultipleTableMode = !window.state.isMultipleTableMode;
-            const btn = document.getElementById('btn-multiple-tables');
-            const confirmBtn = document.getElementById('btn-confirm-tables');
-            if (window.state.isMultipleTableMode) {
-                btn.classList.add('bg-gray-700', 'text-white'); btn.innerText = "Modo: Varias Mesas";
-                confirmBtn.classList.remove('hidden');
-            } else {
-                btn.classList.remove('bg-gray-700', 'text-white'); btn.innerText = "Juntar Mesas";
-                confirmBtn.classList.add('hidden');
-                if(window.state.selectedTables.length > 1) { window.state.selectedTables = [window.state.selectedTables[0]]; renderMapTables(); }
-            }
-        };
-
-        window.selectNoTable = function() {
-            document.getElementById('no-table-name').value = '';
-            document.getElementById('no-table-modal').classList.remove('hidden');
-        };
-
-        window.closeNoTableModal = function() {
-            document.getElementById('no-table-modal').classList.add('hidden');
-        };
-
-        window.confirmNoTable = function() {
-            const nombre = document.getElementById('no-table-name').value;
-            if (nombre && nombre.trim() !== "") {
-                window.state.selectedTables = ["Llevar: " + nombre.trim().toUpperCase()];
-                window.closeNoTableModal();
-                window.closeMapModal();
-                renderCart();
-            } else {
-                window.showToast("Ingresa un nombre válido", "error");
-            }
-        };
-
-        window.confirmTableSelection = function() {
-            if (window.state.selectedTables.length === 0) { window.showToast("Selecciona una mesa.", "error"); return; }
-            window.closeMapModal(); renderCart();
-        };
-
-        window.selectMapTable = function(id) {
-            const tableId = id.toString();
-            if (window.state.isMultipleTableMode) {
-                const index = window.state.selectedTables.indexOf(tableId);
-                if (index > -1) window.state.selectedTables.splice(index, 1);
-                else window.state.selectedTables.push(tableId);
-                renderMapTables();
-            } else {
-                window.state.selectedTables = [tableId];
-                window.closeMapModal(); renderCart();
-            }
-        };
-
-        // --- NUEVO: MESEROS EDITANDO ÓRDENES ACTIVAS ---
-        window.openActiveOrdersModal = function() {
-            renderActiveOrdersModal();
-            document.getElementById('active-orders-modal').classList.remove('hidden');
-        };
-
-        window.closeActiveOrdersModal = function() {
-            document.getElementById('active-orders-modal').classList.add('hidden');
-        };
-
-        window.renderActiveOrdersModal = function() {
-            const container = document.getElementById('active-orders-list');
-            if (window.state.cashierOrders.length === 0) {
-                container.innerHTML = '<p class="text-center text-gray-500 my-8 font-semibold">No hay órdenes en curso.</p>';
-                return;
-            }
-            container.innerHTML = window.state.cashierOrders.map(order => `
-                <div class="bg-white border border-gray-200 p-3 rounded-xl mb-3 flex justify-between items-center shadow-sm">
-                    <div>
-                        <span class="font-bold text-gray-800">${order.table}</span>
-                        <p class="text-xs text-gray-500 font-medium">Mesero: ${order.waiter} | Orden #${order.orderId}</p>
-                    </div>
-                    <button onclick="editOrder('${order.orderId}'); closeActiveOrdersModal();" class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-lg font-bold hover:bg-yellow-200 transition-colors text-sm flex items-center gap-1 shadow-sm">
-                        <i data-lucide="edit-2" class="w-4 h-4"></i> Abrir
-                    </button>
-                </div>
-            `).join('');
-            lucide.createIcons();
-        };
-
-        window.editOrder = function(orderId) {
-            const order = window.state.cashierOrders.find(o => o.orderId == orderId);
-            if(!order) return;
-            
-            window.state.editingOrderId = orderId;
-            window.state.currentOrderItems = JSON.parse(JSON.stringify(order.items));
-            window.state.waiterName = order.waiter;
-            
-            const mesasArr = order.table.split(' y ');
-            window.state.selectedTables = mesasArr;
-            
-            window.state.generalNote = order.generalNote || '';
-            document.getElementById('waiter-name').value = order.waiter;
-            document.getElementById('general-note').value = window.state.generalNote;
-            
-            document.getElementById('order-counter-display').innerText = orderId;
-            document.getElementById('badge-editing').classList.remove('hidden');
-            document.getElementById('btn-cancel-edit').classList.remove('hidden');
-            document.getElementById('btn-submit-order').innerHTML = `<i data-lucide="save" class="w-6 h-6"></i> Actualizar Orden`;
-            
-            window.switchView('mesero');
-            renderCart();
-            window.showToast(`Modificando Orden #${orderId}`);
-            lucide.createIcons();
-        };
-
-        window.cancelEditMode = function() {
-            window.state.editingOrderId = null;
-            document.getElementById('badge-editing').classList.add('hidden');
-            document.getElementById('btn-cancel-edit').classList.add('hidden');
-            document.getElementById('btn-submit-order').innerHTML = `<i data-lucide="cloud-upload" class="w-6 h-6"></i> Enviar Orden a la Nube`;
-            document.getElementById('order-counter-display').innerText = window.state.orderCounter;
-            
-            window.clearCurrentOrder();
-            window.switchView('mesero');
-            lucide.createIcons();
-        };
-
-        // ==========================================
-        // ESCRITURA EN LA NUBE (FIREBASE)
-        // ==========================================
-        window.submitOrder = async function() {
-            if (!window.state.currentUser) { window.showToast('Esperando conexión a la nube...', 'error'); return; }
-            if (!window.state.waiterName.trim()) { window.showToast('Debes seleccionar un mesero.', 'error'); return; }
-            if (window.state.selectedTables.length === 0) { window.showToast('Selecciona una mesa o Para Llevar.', 'error'); return; }
-            if (window.state.currentOrderItems.length === 0) { window.showToast('La orden está vacía.', 'error'); return; }
-
-            const currentOrderId = window.state.editingOrderId ? window.state.editingOrderId : window.state.orderCounter;
-            const now = new Date();
-            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const tableStr = window.state.selectedTables.join(' y ');
-            const preparedDrinksIds = ['b7', 'b8', 'b9', 'b10', 'b11', 'b12'];
-
-            const itemsPerrero = window.state.currentOrderItems.filter(i => i.category === 'Perros' || i.id === 'ad1');
-            const itemsHamburguesero = window.state.currentOrderItems.filter(i => i.category === 'Hamburguesas' || i.category === 'Arepas');
-            const itemsGeneral = window.state.currentOrderItems.filter(i => {
-                if (['Perros', 'Hamburguesas', 'Arepas'].includes(i.category)) return false;
-                if (i.id === 'ad1') return false;
-                if (i.category === 'Bebidas' && !preparedDrinksIds.includes(i.id)) return false;
-                return true; 
-            });
-
-            const baseOrderInfo = { orderId: currentOrderId, waiter: window.state.waiterName, table: tableStr, generalNote: window.state.generalNote, timestamp: timeString };
-            const ticketsToSave = [];
-            if (itemsPerrero.length > 0) ticketsToSave.push({ ...baseOrderInfo, ticketId: `${currentOrderId}-P`, station: 'perrero', items: JSON.parse(JSON.stringify(itemsPerrero)) });
-            if (itemsHamburguesero.length > 0) ticketsToSave.push({ ...baseOrderInfo, ticketId: `${currentOrderId}-H`, station: 'hamburguesero', items: JSON.parse(JSON.stringify(itemsHamburguesero)) });
-            if (itemsGeneral.length > 0) ticketsToSave.push({ ...baseOrderInfo, ticketId: `${currentOrderId}-G`, station: 'general', items: JSON.parse(JSON.stringify(itemsGeneral)) });
-
-            const total = window.state.currentOrderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-            const cashierOrderToSave = {
-                orderId: currentOrderId, waiter: window.state.waiterName, table: tableStr,
-                items: JSON.parse(JSON.stringify(window.state.currentOrderItems)), total: total, timestamp: timeString, status: 'unpaid'
-            };
-
-            try {
-                if (!window.state.editingOrderId) {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), { value: currentOrderId });
-                } else {
-                    const oldTickets = window.state.kitchenTickets.filter(t => t.orderId === currentOrderId);
-                    for (const t of oldTickets) {
-                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', t.ticketId));
-                    }
-                }
-
-                for (const t of ticketsToSave) {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', t.ticketId), t);
-                }
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', currentOrderId.toString()), cashierOrderToSave);
-
-                window.state.lastSubmittedOrder = { id: currentOrderId, table: tableStr, cashier: cashierOrderToSave, kitchen: ticketsToSave };
-                
-                window.state.currentOrderItems = [];
-                window.state.generalNote = '';
-                document.getElementById('general-note').value = '';
-                
-                const wasEditing = window.state.editingOrderId !== null;
-                if (wasEditing) {
-                    window.cancelEditMode();
-                    window.showToast("Orden actualizada con éxito", "success");
-                } else {
-                    renderCart();
-                    document.getElementById('success-title').innerText = `¡Orden #${window.state.lastSubmittedOrder.id} Enviada!`;
-                    document.getElementById('success-subtitle').innerText = `¿Qué deseas hacer ahora, ${window.state.waiterName}?`;
-                    document.getElementById('btn-same-table').innerText = `Nueva Orden (${window.state.selectedTables.length > 1 ? 'Mesas' : 'Mesa'} ${window.state.lastSubmittedOrder.table})`;
-                    document.getElementById('success-modal').classList.remove('hidden');
-                    lucide.createIcons();
-                }
-
-            } catch (error) { console.error("Error guardando orden:", error); window.showToast("Error al subir la orden.", "error"); }
-        };
-
-        window.completeKitchenTicket = async function(ticketId) {
-            if (!window.state.currentUser) return;
-            try {
-                const ticketToArchive = window.state.kitchenTickets.find(t => t.ticketId === ticketId);
-                if (ticketToArchive) {
-                    ticketToArchive.status = 'completed';
-                    ticketToArchive.completedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets', ticketId), ticketToArchive);
-                }
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', ticketId));
-            } catch (error) { console.error("Error completando ticket:", error); }
-        };
-
-        // --- SISTEMA DE PAGO Y DIVIDIR CUENTAS ---
-        window.openPayModal = function(orderId) {
-            const order = window.state.cashierOrders.find(o => o.orderId == orderId);
-            if (!order) return;
-            
-            // Usamos la orden completa para pago
-            window.state.pendingPayOrder = { ...order, isPartial: false };
-            document.getElementById('pay-modal-total').innerText = formatCurrency(order.total);
-            window.setPaymentMethod('efectivo'); 
-            document.getElementById('pay-modal').classList.remove('hidden');
-        };
-
-        window.closePayModal = function() {
-            window.state.pendingPayOrder = null;
-            document.getElementById('pay-modal').classList.add('hidden');
-        };
-
-        window.setPaymentMethod = function(method) {
-            window.state.paymentMethod = method;
-            const btnEfectivo = document.getElementById('btn-pay-efectivo');
-            const btnTransf = document.getElementById('btn-pay-transferencia');
-            const btnMixto = document.getElementById('btn-pay-dividido');
-            const mixedSection = document.getElementById('pay-mixed-section');
-
-            btnEfectivo.className = "border-2 border-gray-200 hover:border-green-500 hover:bg-green-50 text-gray-600 font-bold py-2 rounded-xl transition-colors";
-            btnTransf.className = "border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-gray-600 font-bold py-2 rounded-xl transition-colors";
-            btnMixto.className = "w-full border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 text-gray-600 font-bold py-2 rounded-xl transition-colors mb-4";
-            mixedSection.classList.add('hidden');
-
-            if (method === 'efectivo') {
-                btnEfectivo.className = "border-2 border-green-500 bg-green-50 text-green-700 font-bold py-2 rounded-xl transition-colors";
-            } else if (method === 'transferencia') {
-                btnTransf.className = "border-2 border-purple-500 bg-purple-50 text-purple-700 font-bold py-2 rounded-xl transition-colors";
-            } else if (method === 'dividido') {
-                btnMixto.className = "w-full border-2 border-blue-500 bg-blue-50 text-blue-700 font-bold py-2 rounded-xl transition-colors mb-4";
-                mixedSection.classList.remove('hidden');
-                document.getElementById('mixed-cash-input').value = '';
-                document.getElementById('mixed-transfer-display').innerText = formatCurrency(window.state.pendingPayOrder.total);
-            }
-        };
-
-        window.updateMixedTransfer = function() {
-            if (!window.state.pendingPayOrder) return;
-            const total = window.state.pendingPayOrder.total;
-            const cash = parseInt(document.getElementById('mixed-cash-input').value) || 0;
-            const transfer = total - cash;
-            document.getElementById('mixed-transfer-display').innerText = formatCurrency(transfer > 0 ? transfer : 0);
-        };
-
-        // NUEVO: FUNCIONALIDAD DIVIDIR CUENTA
-        window.openSplitModal = function(orderId) {
-            const order = window.state.cashierOrders.find(o => o.orderId == orderId);
-            if (!order) return;
-            
-            window.state.pendingSplitOrder = JSON.parse(JSON.stringify(order));
-            // Iniciar selección en 0 para cada producto
-            window.state.splitSelection = order.items.map(item => ({ ...item, selectedQty: 0 }));
-            renderSplitModal();
-            document.getElementById('split-modal').classList.remove('hidden');
-        };
-
-        window.closeSplitModal = function() {
-            window.state.pendingSplitOrder = null;
-            document.getElementById('split-modal').classList.add('hidden');
-        };
-
-        window.updateSplitQty = function(index, delta) {
-            const item = window.state.splitSelection[index];
-            let newQty = item.selectedQty + delta;
-            if(newQty >= 0 && newQty <= item.quantity) {
-                window.state.splitSelection[index].selectedQty = newQty;
-                renderSplitModal();
-            }
-        };
-
-        window.renderSplitModal = function() {
-            const container = document.getElementById('split-items-list');
-            let splitTotal = 0;
-
-            container.innerHTML = window.state.splitSelection.map((item, index) => {
-                splitTotal += (item.price * item.selectedQty);
-                return `
-                <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 flex justify-between items-center shadow-sm">
-                    <div class="flex-1 pr-2">
-                        <p class="font-bold text-gray-800 text-sm">${item.name}</p>
-                        <p class="text-xs text-gray-500 font-medium">Restan: ${item.quantity - item.selectedQty} | ${formatCurrency(item.price)} c/u</p>
-                    </div>
-                    <div class="flex items-center space-x-3 bg-white border border-gray-300 rounded-lg p-1">
-                        <button onclick="updateSplitQty(${index}, -1)" class="p-1 bg-gray-100 rounded text-orange-600 hover:bg-orange-100 transition-colors"><i data-lucide="minus" class="w-4 h-4"></i></button>
-                        <span class="font-black w-4 text-center text-lg text-gray-800">${item.selectedQty}</span>
-                        <button onclick="updateSplitQty(${index}, 1)" class="p-1 bg-gray-100 rounded text-green-600 hover:bg-green-100 transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button>
-                    </div>
-                </div>
-            `}).join('');
-
-            document.getElementById('split-total-display').innerText = formatCurrency(splitTotal);
-            lucide.createIcons();
-        };
-
-        window.proceedSplitPayment = function() {
-            const selectedItems = window.state.splitSelection.filter(i => i.selectedQty > 0).map(i => ({...i, quantity: i.selectedQty}));
-            if(selectedItems.length === 0) {
-                window.showToast("Añade al menos un producto para pagar", "error");
-                return;
-            }
-
-            const splitTotal = selectedItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-
-            // Preparamos la orden parcial para el modal de pagos
-            window.state.pendingPayOrder = {
-                ...window.state.pendingSplitOrder,
-                items: selectedItems,
-                total: splitTotal,
-                isPartial: true,
-                originalOrder: window.state.pendingSplitOrder
-            };
-
-            window.closeSplitModal();
-            document.getElementById('pay-modal-total').innerText = formatCurrency(splitTotal);
-            window.setPaymentMethod('efectivo');
-            document.getElementById('pay-modal').classList.remove('hidden');
-        };
-
-        window.confirmPayment = async function() {
-            const order = window.state.pendingPayOrder;
-            const method = window.state.paymentMethod;
-            if (!order) return;
-
-            let cashAmount = 0; let transferAmount = 0;
-
-            if (method === 'efectivo') { cashAmount = order.total; } 
-            else if (method === 'transferencia') { transferAmount = order.total; } 
-            else if (method === 'dividido') {
-                cashAmount = parseInt(document.getElementById('mixed-cash-input').value) || 0;
-                transferAmount = order.total - cashAmount;
-                if(transferAmount < 0) transferAmount = 0;
-            }
-
-            const paymentData = { method: method, cashAmount: cashAmount, transferAmount: transferAmount };
-            
-            // Aquí diferenciamos si es orden completa o pago parcial
-            await processPayOrder(order, paymentData);
-            window.closePayModal();
-        };
-
-        async function processPayOrder(payOrder, paymentData) {
-            if (!window.state.currentUser) return;
-            try {
-                // 1. Deducir Inventario SIEMPRE sobre lo que se está pagando ahora
-                const updates = {};
-                payOrder.items.forEach(item => {
-                    const recipe = RECIPES[item.id];
-                    if (recipe) {
-                        for (const [invId, qtyNeeded] of Object.entries(recipe)) {
-                            if (!updates[invId]) updates[invId] = 0;
-                            updates[invId] += (qtyNeeded * item.quantity);
-                        }
-                    }
-                });
-
-                for (const [invId, deductedQty] of Object.entries(updates)) {
-                    let currentStock = window.state.inventory[invId]?.stock || 0;
-                    let newStock = currentStock - deductedQty;
-                    const name = INVENTORY_DICT[invId] || invId;
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', invId), { name: name, stock: newStock }, { merge: true });
-                }
-
-                // 2. Procesamiento de DB (Parcial o Completo)
-                if (payOrder.isPartial) {
-                    const originalOrder = payOrder.originalOrder;
-                    const paidItems = payOrder.items;
-
-                    // Restamos los items pagados de la orden original
-                    let remainingItems = [];
-                    originalOrder.items.forEach(origItem => {
-                        const paidItem = paidItems.find(pi => pi.id === origItem.id && pi.note === origItem.note);
-                        const paidQty = paidItem ? paidItem.quantity : 0;
-                        const remainingQty = origItem.quantity - paidQty;
-                        if (remainingQty > 0) {
-                            remainingItems.push({...origItem, quantity: remainingQty});
-                        }
-                    });
-
-                    // Actualizamos DB Original
-                    if (remainingItems.length > 0) {
-                        const remainingTotal = remainingItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-                        originalOrder.items = remainingItems;
-                        originalOrder.total = remainingTotal;
-                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', originalOrder.orderId.toString()), originalOrder);
-                    } else {
-                        // Se terminó de pagar todo mediante división
-                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', originalOrder.orderId.toString()));
-                    }
-
-                    // Guardamos la parte pagada en el historial
-                    const historyRecord = {
-                        ...originalOrder,
-                        orderId: originalOrder.orderId + '-P' + Math.floor(Math.random()*1000), // Sufijo para evitar sobreescribir si dividen en 3
-                        items: paidItems,
-                        total: payOrder.total,
-                        status: 'paid',
-                        payment: paymentData,
-                        actionAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                    };
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', historyRecord.orderId.toString()), historyRecord);
-                    window.showToast("Pago Parcial registrado.");
-
-                } else {
-                    // Pago Completo normal
-                    payOrder.status = 'paid'; 
-                    payOrder.payment = paymentData;
-                    payOrder.actionAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', payOrder.orderId.toString()), payOrder);
-                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', payOrder.orderId.toString()));
-                    window.showToast("Pago registrado con éxito.");
-                }
-
-            } catch (error) { console.error("Error pagando:", error); window.showToast("Error en el pago.", "error"); }
-        }
-
-        window.cancelOrder = async function(id) {
-            if (!window.state.currentUser) return;
-            try {
-                const orderToArchive = window.state.cashierOrders.find(o => o.orderId == id);
-                if (orderToArchive) {
-                    orderToArchive.status = 'cancelled';
-                    orderToArchive.actionAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', id.toString()), orderToArchive);
-                }
-
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', id.toString()));
-                
-                const ticketsToDelete = window.state.kitchenTickets.filter(t => t.orderId == id);
-                for (const t of ticketsToDelete) {
-                    t.status = 'cancelled'; t.actionAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets', t.ticketId), t);
-                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', t.ticketId));
-                }
-                window.showToast(`Orden #${id} anulada.`, 'error');
-            } catch (error) { console.error("Error anulando:", error); }
-        };
-
-        // --- BASE Y GASTOS (FINANZAS) ---
-        window.openFinanceModal = function(type) {
-            window.state.financeType = type;
-            const title = type === 'base' ? 'Ajustar Base de Caja' : 'Registrar Gasto Extra';
-            const subtitle = type === 'base' ? 'Monto con el que inicia la caja hoy' : 'Ej: Proveedores, insumos, etc.';
-            
-            document.getElementById('finance-modal-title').innerText = title;
-            document.getElementById('finance-modal-subtitle').innerText = subtitle;
-            document.getElementById('finance-amount').value = type === 'base' ? (window.state.finances?.base || '') : '';
-            
-            const descContainer = document.getElementById('finance-desc-container');
-            if(type === 'gasto') {
-                descContainer.classList.remove('hidden');
-                document.getElementById('finance-desc').value = '';
-            } else {
-                descContainer.classList.add('hidden');
-                document.getElementById('finance-desc').value = 'Base inicial';
-            }
-            
-            document.getElementById('finance-modal').classList.remove('hidden');
-        };
-
-        window.closeFinanceModal = function() { document.getElementById('finance-modal').classList.add('hidden'); };
-
-        window.saveFinance = async function() {
-            const amt = parseInt(document.getElementById('finance-amount').value) || 0;
-            const desc = document.getElementById('finance-desc').value || 'Sin descripción';
-            const type = window.state.financeType;
-
-            const newFinances = { ...window.state.finances };
-            if(!newFinances.expenses) newFinances.expenses = [];
-
-            if (type === 'base') {
-                newFinances.base = amt;
-            } else {
-                if(amt <= 0) { window.showToast("Monto inválido", "error"); return; }
-                newFinances.expenses.push({ amount: amt, desc: desc, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
-            }
-
-            try {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'finances'), newFinances);
-                window.closeFinanceModal();
-                window.showToast(type === 'base' ? "Base actualizada" : "Gasto guardado");
-            } catch (e) {
-                console.error(e);
-                window.showToast("Error guardando finanzas", "error");
-            }
-        };
-
-        function renderFinances() {
-            const base = window.state.finances?.base || 0;
-            const expenses = window.state.finances?.expenses || [];
-            const totalExp = expenses.reduce((a,b) => a+b.amount, 0);
-
-            const elBase = document.getElementById('finance-base-display');
-            const elExp = document.getElementById('finance-expenses-display');
-            
-            if(elBase) elBase.innerText = formatCurrency(base);
-            if(elExp) elExp.innerText = formatCurrency(totalExp);
-        }
-
-        window.openSecurityModal = function() {
-            document.getElementById('security-pin').value = '';
-            document.getElementById('security-modal').classList.remove('hidden');
-        };
-        window.closeSecurityModal = function() { document.getElementById('security-modal').classList.add('hidden'); };
-
-        window.confirmSecurityAndReset = async function() {
-            const pin = document.getElementById('security-pin').value;
-            if (pin !== '1089607033') { window.showToast("Clave incorrecta.", "error"); return; }
-
-            document.getElementById('security-modal').classList.add('hidden');
-            window.showToast("Realizando cierre...", "success");
-
-            try {
-                const kitchenQuery = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets'));
-                kitchenQuery.forEach((d) => { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', d.id)); });
-                const cashierQuery = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'cashierOrders'));
-                cashierQuery.forEach((d) => { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', d.id)); });
-                const histCashierQuery = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders'));
-                histCashierQuery.forEach((d) => { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', d.id)); });
-                const histKitchenQuery = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets'));
-                histKitchenQuery.forEach((d) => { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets', d.id)); });
-
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), { value: 0 });
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'finances'), { base: 0, expenses: [] });
-                
-                window.state.isAdminUnlocked = false;
-                document.getElementById('admin-unlocked-badge').classList.add('hidden');
-                document.getElementById('admin-unlocked-badge').classList.remove('flex');
-                switchView('mesero');
-
-                window.showToast("Cierre exitoso. Inventario intacto.", "success");
-            } catch (error) { console.error("Error:", error); window.showToast("Error al limpiar.", "error"); }
-        };
-
-        window.actionNewOrderSameTable = function() { window.state.lastSubmittedOrder = null; document.getElementById('success-modal').classList.add('hidden'); };
-        window.actionNewOrderOtherTable = function() { window.state.lastSubmittedOrder = null; window.state.selectedTables = []; document.getElementById('success-modal').classList.add('hidden'); renderCart(); window.openMapModal(); };
-
-        // ==========================================
-        // FUNCIONES DE RENDERIZADO INTERNAS
-        // ==========================================
-        function renderCategories() {
-            const container = document.getElementById('categories-container');
-            container.innerHTML = MENU_CATEGORIES.map(category => `<button onclick="changeCategory('${category}')" class="px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${window.state.activeCategory === category ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-700 border hover:bg-red-50'}">${category}</button>`).join('');
-        }
-
-        function renderProducts() {
-            const container = document.getElementById('products-container');
-            const products = MOCK_MENU[window.state.activeCategory] || [];
-            container.innerHTML = products.map(p => `<button onclick="addItemToOrder('${p.id}')" class="bg-white border rounded-lg p-3 text-left shadow-sm hover:shadow-md hover:border-red-500 transition-all flex flex-col justify-between h-24 active:scale-95"><span class="font-bold text-gray-800 text-sm leading-tight line-clamp-2">${p.name}</span><span class="text-red-600 font-semibold text-sm">${formatCurrency(p.price)}</span></button>`).join('');
-        }
-
-        function renderCart() {
-            const container = document.getElementById('cart-items');
-            if (window.state.currentOrderItems.length === 0) {
-                container.innerHTML = `<div class="text-center text-gray-400 mt-10"><i data-lucide="utensils" class="mx-auto w-12 h-12 mb-2 opacity-50"></i><p>La orden está vacía</p></div>`;
-                document.getElementById('btn-clear-order').classList.add('hidden');
-            } else {
-                document.getElementById('btn-clear-order').classList.remove('hidden');
-                container.innerHTML = window.state.currentOrderItems.map((item, index) => `<div class="bg-white p-3 rounded-lg shadow-sm border text-sm relative group"><div class="flex justify-between items-start mb-2 pr-6"><span class="font-bold text-gray-800">${item.name}</span><span class="font-semibold text-gray-600 whitespace-nowrap">${formatCurrency(item.price * item.quantity)}</span></div><div class="flex justify-between items-center"><div class="flex items-center space-x-3 bg-gray-100 rounded-lg p-1"><button onclick="updateItemQuantity(${index}, -1)" class="p-1 bg-white rounded shadow-sm text-red-600 hover:bg-red-50"><i data-lucide="minus" class="w-4 h-4"></i></button><span class="font-bold w-4 text-center">${item.quantity}</span><button onclick="updateItemQuantity(${index}, 1)" class="p-1 bg-white rounded shadow-sm text-green-600 hover:bg-green-50"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div><button onclick="removeItem(${index})" class="absolute top-3 right-3 text-gray-300 hover:text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="mt-3 bg-gray-50 p-2 rounded-lg border border-gray-200 flex items-start gap-2 focus-within:border-red-400 focus-within:bg-white transition-all shadow-inner"><i data-lucide="message-square" class="text-gray-400 mt-0.5 flex-shrink-0 w-4 h-4"></i><textarea rows="1" placeholder="Especificaciones..." oninput="updateItemNoteText(${index}, this.value, this)" class="w-full text-sm bg-transparent outline-none resize-none overflow-hidden text-gray-700">${item.note}</textarea></div></div>`).join('');
-            }
-            
-            const total = window.state.currentOrderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-            document.getElementById('cart-total').innerText = formatCurrency(total);
-            
-            const headerBadge = document.getElementById('header-table-badge');
-            const tableStr = window.state.selectedTables.join(', ');
-            const labelStr = window.state.selectedTables.length > 1 ? 'Mesas ' : (tableStr.includes('Llevar:') ? '' : 'Mesa ');
-
-            if(window.state.selectedTables.length > 0) { headerBadge.innerText = labelStr + tableStr; headerBadge.classList.remove('hidden'); }
-            else { headerBadge.classList.add('hidden'); }
-
-            const tableBtn = document.getElementById('table-selector-btn');
-            const tableText = document.getElementById('table-selector-text');
-            const tableIconContainer = document.getElementById('table-selector-icon-container');
-            
-            if (tableIconContainer) {
-                if (window.state.selectedTables.length > 0) {
-                    tableBtn.className = "w-full border rounded-lg p-2 flex items-center justify-between focus:ring-2 focus:ring-red-500 outline-none transition-colors bg-red-50 border-red-200";
-                    tableText.className = "font-bold text-red-700"; tableText.innerText = labelStr + tableStr;
-                    tableIconContainer.innerHTML = '<i data-lucide="map" class="text-red-600 w-5 h-5"></i>';
-                } else {
-                    tableBtn.className = "w-full border rounded-lg p-2 flex items-center justify-between focus:ring-2 focus:ring-red-500 outline-none transition-colors bg-gray-50 hover:bg-red-50";
-                    tableText.className = "font-bold text-gray-500"; tableText.innerText = "Seleccionar Mesa...";
-                    tableIconContainer.innerHTML = '<i data-lucide="map" class="text-gray-400 w-5 h-5"></i>';
-                }
-            }
-            lucide.createIcons();
-        }
-
-        function renderMapTables() {
-            const container = document.getElementById('map-tables-container');
-            container.querySelectorAll('.table-btn').forEach(btn => btn.remove());
-            TABLE_POSITIONS.forEach(table => {
-                const isSelected = window.state.selectedTables.includes(table.id.toString());
-                const btn = document.createElement('button');
-                btn.className = `table-btn absolute w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-xl font-black text-lg shadow-md transition-all hover:scale-110 hover:shadow-lg ${isSelected ? 'bg-red-600 text-white ring-4 ring-red-300 scale-110 z-20' : 'bg-white text-gray-800 border-2 border-gray-300 hover:border-red-500 hover:text-red-600 z-10'}`;
-                btn.style.left = table.left; btn.style.top = table.top; btn.style.transform = 'translate(-50%, -50%)';
-                btn.innerText = table.id; btn.onclick = () => window.selectMapTable(table.id);
-                container.appendChild(btn);
-            });
-        }
-
+        // --- FUNCIONES DE RENDERIZADO VISUAL AÑADIDAS ---
         function updateBadges() {
             const kb = document.getElementById('badge-cocina'); const cb = document.getElementById('badge-caja');
             const mkb = document.getElementById('menu-badge-cocina'); const mcb = document.getElementById('menu-badge-caja');
-            
             if (window.state.kitchenTickets.length > 0) { 
                 if(kb) { kb.innerText = window.state.kitchenTickets.length; kb.classList.remove('hidden'); }
                 if(mkb) { mkb.innerText = window.state.kitchenTickets.length; mkb.classList.remove('hidden'); }
@@ -1742,7 +759,6 @@
                 if(kb) kb.classList.add('hidden'); 
                 if(mkb) mkb.classList.add('hidden'); 
             }
-            
             if (window.state.cashierOrders.length > 0) { 
                 if(cb) { cb.innerText = window.state.cashierOrders.length; cb.classList.remove('hidden'); }
                 if(mcb) { mcb.innerText = window.state.cashierOrders.length; mcb.classList.remove('hidden'); }
@@ -1751,6 +767,7 @@
                 if(mcb) mcb.classList.add('hidden'); 
             }
         }
+        window.updateBadges = updateBadges;
 
         function renderKitchen() {
             const container = document.getElementById('kitchen-container');
@@ -1796,8 +813,7 @@
                                 <i data-lucide="printer" class="w-8 h-8"></i>
                             </button>
                             <button onclick="completeKitchenTicket('${ticket.ticketId}')" class="w-3/4 bg-green-500 hover:bg-green-600 text-white font-black text-xl py-4 rounded-xl shadow transition-colors flex items-center justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-7 h-7"></i>
-                                TERMINAR
+                                <i data-lucide="check-circle" class="w-7 h-7"></i> TERMINAR
                             </button>
                         </div>
                     </div>`;
@@ -1805,8 +821,8 @@
             }
             lucide.createIcons();
         }
+        window.renderKitchen = renderKitchen;
 
-        // --- CAJA MEJORADA (CON DIVIDIR CUENTA) ---
         function renderCashier() {
             const container = document.getElementById('cashier-container');
             if (window.state.cashierOrders.length === 0) {
@@ -1834,15 +850,12 @@
                             </div>
                         </div>
                         <div class="p-4 pt-0 grid grid-cols-5 gap-2">
-                            <!-- Botón Editar -->
                             <button onclick="editOrder(${order.orderId})" class="col-span-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Editar orden">
                                 <i data-lucide="edit" class="w-5 h-5"></i>
                             </button>
-                            <!-- NUEVO: Botón Dividir -->
                             <button onclick="openSplitModal(${order.orderId})" class="col-span-1 bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Dividir / Pago Parcial">
                                 <i data-lucide="scissors" class="w-5 h-5"></i>
                             </button>
-                            
                             <button onclick="printTicket('caja', '${order.orderId}')" class="col-span-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Imprimir Cuenta">
                                 <i data-lucide="printer" class="w-5 h-5"></i>
                             </button>
@@ -1858,6 +871,7 @@
             }
             lucide.createIcons();
         }
+        window.renderCashier = renderCashier;
 
         function renderHistory() {
             const container = document.getElementById('history-container');
@@ -1877,7 +891,6 @@
                         paymentMethodBadge = `<span class="bg-gray-200 text-gray-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase">${mText}</span>`;
                     }
 
-                    // Para identificar si fue un pago parcial
                     const isSplit = order.isPartialPayment ? `<span class="bg-orange-100 text-orange-700 text-[10px] font-bold px-1.5 py-0.5 rounded ml-1">PARCIAL</span>` : '';
 
                     return `
@@ -1921,33 +934,7 @@
             }
             lucide.createIcons();
         }
-
-        window.openInventoryModal = function(invId) {
-            window.state.editingInvId = invId;
-            const name = INVENTORY_DICT[invId] || invId;
-            const currentStock = window.state.inventory[invId]?.stock || 0;
-            document.getElementById('inv-modal-item-name').innerText = name;
-            document.getElementById('inv-modal-input').value = currentStock;
-            document.getElementById('inventory-modal').classList.remove('hidden');
-        };
-
-        window.closeInventoryModal = function() { document.getElementById('inventory-modal').classList.add('hidden'); };
-
-        window.adjInvInput = function(delta) {
-            const input = document.getElementById('inv-modal-input');
-            let val = parseInt(input.value) || 0; val += delta; input.value = val;
-        };
-
-        window.saveInventoryStock = async function() {
-            const invId = window.state.editingInvId;
-            const input = document.getElementById('inv-modal-input');
-            let newStock = parseInt(input.value); if (isNaN(newStock)) newStock = 0;
-            try {
-                const name = INVENTORY_DICT[invId] || invId;
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', invId), { name: name, stock: newStock }, { merge: true });
-                window.closeInventoryModal(); window.showToast("Stock ajustado");
-            } catch (e) { console.error(e); window.showToast("Error ajustando stock", "error"); }
-        };
+        window.renderHistory = renderHistory;
 
         function renderInventory() {
             const container = document.getElementById('inventory-list');
@@ -1963,12 +950,644 @@
             }).join('');
             lucide.createIcons();
         }
+        window.renderInventory = renderInventory;
 
-        window.onload = () => {
-            renderCategories(); renderProducts(); renderCart(); lucide.createIcons();
-            if(window.state.waiterName) { document.getElementById('waiter-name').value = window.state.waiterName; }
-            initAuth();
+        window.renderFinances = function() {
+            const base = window.state.finances?.base || 0;
+            const expenses = window.state.finances?.expenses || [];
+            const totalExp = expenses.reduce((a,b) => a+b.amount, 0);
+
+            const elBase = document.getElementById('finance-base-display');
+            const elExp = document.getElementById('finance-expenses-display');
+            
+            if(elBase) elBase.innerText = formatCurrency(base);
+            if(elExp) elExp.innerText = formatCurrency(totalExp);
         };
+
+        window.generateReporteZ = function() {
+            if (window.state.historyOrders.length === 0 && window.state.finances.expenses.length === 0) { 
+                window.showToast("No hay movimientos para generar Reporte Z.", "error"); return; 
+            }
+            
+            let totalRecaudadoVentas = 0, totalEfectivoVentas = 0, totalTransfVentas = 0, totalFletesDomi = 0;
+            const itemsVendidos = {}; const waiterStats = {}; 
+
+            window.state.historyOrders.forEach(order => {
+                if (order.status === 'paid') {
+                    let vEfectivo = order.payment?.cashAmount || 0;
+                    let vTransf = order.payment?.transferAmount || 0;
+                    if(!order.payment) vEfectivo = order.total;
+
+                    if(order.type === 'domicilio') {
+                        const fee = order.domiFee || 0;
+                        totalFletesDomi += fee;
+                        const subtotalProductos = order.subtotal || (order.total - fee);
+                        totalRecaudadoVentas += subtotalProductos;
+                        if (vEfectivo >= fee) { vEfectivo -= fee; } 
+                        else { const restante = fee - vEfectivo; vEfectivo = 0; vTransf -= restante; }
+                    } else {
+                        totalRecaudadoVentas += order.total;
+                    }
+
+                    totalEfectivoVentas += vEfectivo; totalTransfVentas += vTransf;
+
+                    if(order.type !== 'domicilio') {
+                        const wName = order.waiter || 'Desconocido';
+                        if(!waiterStats[wName]) waiterStats[wName] = { tables: 0, items: 0, total: 0 };
+                        waiterStats[wName].tables += 1; waiterStats[wName].total += order.total;
+                        order.items.forEach(item => { waiterStats[wName].items += item.quantity; });
+                    }
+
+                    order.items.forEach(item => {
+                        if (!itemsVendidos[item.name]) itemsVendidos[item.name] = { qty: 0, revenue: 0 };
+                        itemsVendidos[item.name].qty += item.quantity; itemsVendidos[item.name].revenue += (item.price * item.quantity);
+                    });
+                }
+            });
+
+            const base = window.state.finances.base || 0;
+            const totalGastos = window.state.finances.expenses.reduce((sum, e) => sum + e.amount, 0);
+            const efectivoNeto = base + totalEfectivoVentas - totalGastos;
+
+            const sortedItems = Object.keys(itemsVendidos).map(name => ({ name, qty: itemsVendidos[name].qty, revenue: itemsVendidos[name].revenue })).sort((a, b) => b.qty - a.qty);
+            const sortedWaiters = Object.keys(waiterStats).map(name => ({name, ...waiterStats[name]})).sort((a,b) => b.total - a.total);
+            
+            window.state.zReportData = { 
+                date: new Date().toLocaleDateString('es-CO'), time: new Date().toLocaleTimeString('es-CO'), 
+                totalVentas: totalRecaudadoVentas, efectivo: totalEfectivoVentas, transferencia: totalTransfVentas, totalFletes: totalFletesDomi,
+                base: base, gastos: totalGastos, efectivoNeto: efectivoNeto, items: sortedItems, waiters: sortedWaiters 
+            };
+            
+            document.getElementById('z-ventas-efectivo').innerText = formatCurrency(totalEfectivoVentas);
+            document.getElementById('z-ventas-transf').innerText = formatCurrency(totalTransfVentas);
+            document.getElementById('z-fletes').innerText = formatCurrency(totalFletesDomi);
+            document.getElementById('z-base').innerText = "+" + formatCurrency(base);
+            document.getElementById('z-gastos').innerText = "-" + formatCurrency(totalGastos);
+            document.getElementById('z-efectivo-neto').innerText = formatCurrency(efectivoNeto);
+            
+            document.getElementById('reportez-waiters').innerHTML = sortedWaiters.map(w => `<div class="flex justify-between items-center bg-gray-100 p-2 rounded border border-gray-200 text-sm"><span class="font-bold text-gray-800">${w.name}</span><div class="text-right"><span class="block font-black text-green-700">${formatCurrency(w.total)}</span><span class="text-xs text-gray-500 font-semibold">${w.tables} mesas | ${w.items} items</span></div></div>`).join('');
+            document.getElementById('reportez-items').innerHTML = sortedItems.map(i => `<div class="flex justify-between items-center bg-white p-2 rounded border text-sm"><span class="font-semibold flex-1 text-gray-700">${i.name}</span><div class="flex gap-4 items-center"><span class="text-gray-500 font-medium">${formatCurrency(i.revenue)}</span><span class="bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-md min-w-[2rem] text-center">${i.qty}</span></div></div>`).join('');
+            document.getElementById('reportez-modal').classList.remove('hidden');
+        };
+
+        window.closeReporteZ = function() { document.getElementById('reportez-modal').classList.add('hidden'); };
+
+        window.printReporteZ = function() {
+            const data = window.state.zReportData; if (!data) return;
+            const printWindow = window.open('', '_blank', 'width=400,height=600');
+            let html = `<html><head><style>@page{margin:0;size:auto;} body{font-family:'Courier New',Courier,monospace;width:280px;margin:0;padding:10px;font-size:14px;} h1,p{margin:0;padding:2px 0;text-align:center;} .divider{border-top:1px dashed #000;margin:8px 0;} .item-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;} .item-qty{font-weight:bold;width:30px;} .item-name{flex:1;} .item-price{font-weight:bold;text-align:right;} .totals{margin-top:10px;font-weight:bold;font-size:16px;text-align:right;} .header-title{font-size:20px;font-weight:bold;text-align:center;} .summary-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;}</style></head><body><div class="header-title">PERROS LA 30</div><p>REPORTE Z (CIERRE DIARIO)</p><div class="divider"></div><p style="text-align:left;font-size:12px;"><b>Fecha:</b> ${data.date}</p><p style="text-align:left;font-size:12px;"><b>Hora:</b> ${data.time}</p><div class="divider"></div>`;
+            html += `<div class="summary-row"><span>Total Ventas Prod.:</span><b>${formatCurrency(data.totalVentas)}</b></div>`;
+            html += `<div class="summary-row"><span>Ventas Efectivo:</span><span>${formatCurrency(data.efectivo)}</span></div>`;
+            html += `<div class="summary-row"><span>Ventas Transf:</span><span>${formatCurrency(data.transferencia)}</span></div>`;
+            html += `<div class="summary-row" style="margin-top:5px;"><span>Fletes (Mensajero):</span><span>${formatCurrency(data.totalFletes)}</span></div><div class="divider"></div>`;
+            html += `<div class="summary-row"><span>Base Inicial:</span><span>+${formatCurrency(data.base)}</span></div>`;
+            html += `<div class="summary-row"><span>Gastos/Salidas:</span><span>-${formatCurrency(data.gastos)}</span></div>`;
+            html += `<div class="totals">EFECTIVO EN CAJA:<br>${formatCurrency(data.efectivoNeto)}</div><div class="divider"></div>`;
+            html += `<div style="text-align:center; font-weight:bold; margin-bottom:5px;">RENDIMIENTO MESEROS</div>`;
+            if(data.waiters.length === 0) html += `<div style="text-align:center; font-size:12px;">Sin datos</div>`;
+            data.waiters.forEach(w => { html += `<div class="summary-row"><span>${w.name} (${w.tables}m):</span><span>${formatCurrency(w.total)}</span></div>`; });
+            html += `<div class="divider"></div>`;
+            html += `<div style="margin-bottom:5px;font-weight:bold;display:flex;font-size:12px;"><span style="width:30px;">CANT</span><span style="flex:1;">PRODUCTO</span><span>TOTAL</span></div><div class="divider"></div>`;
+            data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.qty}x</span><span class="item-name">${item.name}</span><span class="item-price">${formatCurrency(item.revenue)}</span></div>`; });
+            html += `<div class="divider"></div><p style="font-size:12px;margin-top:20px;">Fin del Reporte</p><script>window.onload=function(){window.print();setTimeout(function(){window.close();},500);}<\/script></body></html>`;
+            printWindow.document.write(html); printWindow.document.close();
+        };
+
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
+                else await signInAnonymously(auth);
+            } catch (error) {
+                document.getElementById('connection-status').innerText = "Modo Local";
+                document.getElementById('connection-status').className = "ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1";
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            window.state.currentUser = user;
+            const statusEl = document.getElementById('connection-status');
+            if (user) {
+                statusEl.innerText = "Nube Conectada";
+                statusEl.className = "ml-2 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1";
+                setupFirebaseListeners();
+            } else {
+                statusEl.innerText = "Desconectado";
+                statusEl.className = "ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1";
+            }
+        });
+
+        function setupFirebaseListeners() {
+            if (!window.state.currentUser) return;
+            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), (snapshot) => {
+                if (snapshot.exists() && !window.state.editingOrderId) {
+                    window.state.orderCounter = snapshot.data().value + 1;
+                    document.getElementById('order-counter-display').innerText = window.state.orderCounter;
+                    document.getElementById('domi-order-counter-display').innerText = window.state.orderCounter;
+                } else if(!window.state.editingOrderId) {
+                    window.state.orderCounter = 1;
+                    document.getElementById('order-counter-display').innerText = window.state.orderCounter;
+                    document.getElementById('domi-order-counter-display').innerText = window.state.orderCounter;
+                }
+            }, (e) => console.error(e));
+
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets'), (snapshot) => {
+                window.state.kitchenTickets = [];
+                snapshot.forEach(doc => window.state.kitchenTickets.push(doc.data()));
+                window.state.kitchenTickets.sort((a,b) => a.orderId - b.orderId);
+                updateBadges(); if (window.state.currentView === 'cocina') renderKitchen();
+            }, (e) => console.error(e));
+
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'cashierOrders'), (snapshot) => {
+                window.state.cashierOrders = [];
+                snapshot.forEach(doc => window.state.cashierOrders.push(doc.data()));
+                window.state.cashierOrders.sort((a,b) => a.orderId - b.orderId);
+                updateBadges(); if (window.state.currentView === 'caja') renderCashier();
+                if(!document.getElementById('active-orders-modal').classList.contains('hidden')) window.renderActiveOrdersModal();
+            }, (e) => console.error(e));
+
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders'), (snapshot) => {
+                window.state.historyOrders = [];
+                snapshot.forEach(doc => window.state.historyOrders.push(doc.data()));
+                window.state.historyOrders.sort((a,b) => b.orderId - a.orderId);
+                if (window.state.currentView === 'historial') renderHistory();
+            }, (e) => console.error(e));
+
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'inventory'), (snapshot) => {
+                window.state.inventory = {};
+                snapshot.forEach(doc => { window.state.inventory[doc.id] = doc.data(); });
+                if (window.state.currentView === 'inventario') renderInventory();
+            }, (e) => console.error(e));
+
+            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'finances'), (snapshot) => {
+                if(snapshot.exists()) { window.state.finances = snapshot.data(); } 
+                else { window.state.finances = { base: 0, expenses: [] }; }
+                if (typeof window.renderFinances === 'function') window.renderFinances();
+            }, (e) => console.error(e));
+        }
+
+        window.attemptSwitchView = function(view) {
+            if (window.state.isAdminUnlocked) { switchView(view); } 
+            else { window.state.pendingView = view; document.getElementById('tab-security-pin').value = ''; document.getElementById('tab-security-modal').classList.remove('hidden'); }
+        };
+        window.closeTabSecurityModal = function() { document.getElementById('tab-security-modal').classList.add('hidden'); window.state.pendingView = null; };
+        window.confirmTabSecurity = function() {
+            const pin = document.getElementById('tab-security-pin').value;
+            if (pin === '1089607033') {
+                window.state.isAdminUnlocked = true; document.getElementById('tab-security-modal').classList.add('hidden');
+                document.getElementById('admin-unlocked-badge').classList.remove('hidden'); document.getElementById('admin-unlocked-badge').classList.add('flex');
+                if (window.state.pendingView) switchView(window.state.pendingView);
+                window.showToast("Sesión de Administrador Desbloqueada");
+            } else { window.showToast("PIN Incorrecto", "error"); }
+        };
+        
+        window.toggleSidebar = function() {
+            const sidebar = document.getElementById('sidebar'); const overlay = document.getElementById('sidebar-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) { sidebar.classList.remove('-translate-x-full'); overlay.classList.remove('hidden'); } 
+            else { sidebar.classList.add('-translate-x-full'); overlay.classList.add('hidden'); }
+        };
+
+        window.switchView = function(view) {
+            window.state.currentView = view;
+            ['mesero', 'cocina', 'caja', 'historial', 'inventario', 'domicilios'].forEach(v => {
+                const viewEl = document.getElementById(`view-${v}`); if(viewEl) viewEl.classList.add('hidden');
+                const menuBtn = document.getElementById(`menu-${v}`);
+                if(menuBtn) {
+                    if (v === view) menuBtn.className = "flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-colors bg-red-50 text-red-600";
+                    else menuBtn.className = "flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100";
+                }
+            });
+            const activeView = document.getElementById(`view-${view}`); if(activeView) activeView.classList.remove('hidden');
+            if(view === 'cocina') renderKitchen(); 
+            if(view === 'caja') renderCashier(); 
+            if(view === 'historial') renderHistory(); 
+            if(view === 'inventario') renderInventory(); 
+            if(view === 'domicilios') { renderDomiCategories(); renderDomiProducts(); renderDomiCart(); }
+            const sidebar = document.getElementById('sidebar'); if (!sidebar.classList.contains('-translate-x-full')) window.toggleSidebar();
+        };
+
+        window.setKitchenStation = function(station) {
+            window.state.kitchenStation = station;
+            ['perrero', 'hamburguesero', 'general'].forEach(s => {
+                const btn = document.getElementById(`tab-station-${s}`);
+                if (s === station) btn.className = "px-4 py-2 bg-white font-bold text-red-600 rounded-lg shadow transition-all whitespace-nowrap";
+                else btn.className = "px-4 py-2 font-bold text-gray-600 hover:text-gray-800 rounded-lg transition-all whitespace-nowrap";
+            });
+            renderKitchen();
+        };
+
+        window.changeCategory = function(category) { window.state.activeCategory = category; renderCategories(); renderProducts(); };
+        window.addItemToOrder = function(productId) {
+            const product = FLAT_MENU.find(p => p.id === productId); if (!product) return;
+            const existingIndex = window.state.currentOrderItems.findIndex(item => item.id === productId && item.note === '');
+            if (existingIndex >= 0) window.state.currentOrderItems[existingIndex].quantity += 1;
+            else window.state.currentOrderItems.push({ ...product, quantity: 1, note: '' });
+            renderCart();
+        };
+        window.updateItemQuantity = function(index, delta) {
+            const newQty = window.state.currentOrderItems[index].quantity + delta;
+            if (newQty > 0) window.state.currentOrderItems[index].quantity = newQty; else window.state.currentOrderItems.splice(index, 1);
+            renderCart();
+        };
+        window.updateItemNoteText = function(index, value, element) { window.state.currentOrderItems[index].note = value; element.style.height = 'auto'; element.style.height = element.scrollHeight + 'px'; };
+        window.removeItem = function(index) { window.state.currentOrderItems.splice(index, 1); renderCart(); };
+        window.clearCurrentOrder = function() {
+            window.state.currentOrderItems = []; window.state.generalNote = ''; document.getElementById('general-note').value = '';
+            renderCart(); if(!window.state.editingOrderId) window.showToast('Orden vaciada.', 'error');
+        };
+
+        function renderCategories() {
+            const container = document.getElementById('categories-container');
+            container.innerHTML = MENU_CATEGORIES.map(category => `<button onclick="changeCategory('${category}')" class="px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${window.state.activeCategory === category ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-700 border hover:bg-red-50'}">${category}</button>`).join('');
+        }
+        function renderProducts() {
+            const container = document.getElementById('products-container'); const products = MOCK_MENU[window.state.activeCategory] || [];
+            container.innerHTML = products.map(p => `<button onclick="addItemToOrder('${p.id}')" class="bg-white border rounded-lg p-3 text-left shadow-sm hover:shadow-md hover:border-red-500 transition-all flex flex-col justify-between h-24 active:scale-95"><span class="font-bold text-gray-800 text-sm leading-tight line-clamp-2">${p.name}</span><span class="text-red-600 font-semibold text-sm">${formatCurrency(p.price)}</span></button>`).join('');
+        }
+        function renderCart() {
+            const container = document.getElementById('cart-items');
+            if (window.state.currentOrderItems.length === 0) {
+                container.innerHTML = `<div class="text-center text-gray-400 mt-10"><i data-lucide="utensils" class="mx-auto w-12 h-12 mb-2 opacity-50"></i><p>La orden está vacía</p></div>`;
+                document.getElementById('btn-clear-order').classList.add('hidden');
+            } else {
+                document.getElementById('btn-clear-order').classList.remove('hidden');
+                container.innerHTML = window.state.currentOrderItems.map((item, index) => `<div class="bg-white p-3 rounded-lg shadow-sm border text-sm relative group"><div class="flex justify-between items-start mb-2 pr-6"><span class="font-bold text-gray-800">${item.name}</span><span class="font-semibold text-gray-600 whitespace-nowrap">${formatCurrency(item.price * item.quantity)}</span></div><div class="flex justify-between items-center"><div class="flex items-center space-x-3 bg-gray-100 rounded-lg p-1"><button onclick="updateItemQuantity(${index}, -1)" class="p-1 bg-white rounded shadow-sm text-red-600 hover:bg-red-50"><i data-lucide="minus" class="w-4 h-4"></i></button><span class="font-bold w-4 text-center">${item.quantity}</span><button onclick="updateItemQuantity(${index}, 1)" class="p-1 bg-white rounded shadow-sm text-green-600 hover:bg-green-50"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div><button onclick="removeItem(${index})" class="absolute top-3 right-3 text-gray-300 hover:text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="mt-3 bg-gray-50 p-2 rounded-lg border border-gray-200 flex items-start gap-2 focus-within:border-red-400 focus-within:bg-white transition-all shadow-inner"><i data-lucide="message-square" class="text-gray-400 mt-0.5 flex-shrink-0 w-4 h-4"></i><textarea rows="1" placeholder="Especificaciones..." oninput="updateItemNoteText(${index}, this.value, this)" class="w-full text-sm bg-transparent outline-none resize-none overflow-hidden text-gray-700">${item.note}</textarea></div></div>`).join('');
+            }
+            const total = window.state.currentOrderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+            document.getElementById('cart-total').innerText = formatCurrency(total);
+            const headerBadge = document.getElementById('header-table-badge');
+            const tableStr = window.state.selectedTables.join(', ');
+            const labelStr = window.state.selectedTables.length > 1 ? 'Mesas ' : (tableStr.includes('Llevar:') ? '' : 'Mesa ');
+            if(window.state.selectedTables.length > 0) { headerBadge.innerText = labelStr + tableStr; headerBadge.classList.remove('hidden'); } else { headerBadge.classList.add('hidden'); }
+            const tableBtn = document.getElementById('table-selector-btn'); const tableText = document.getElementById('table-selector-text'); const tableIconContainer = document.getElementById('table-selector-icon-container');
+            if (tableIconContainer) {
+                if (window.state.selectedTables.length > 0) {
+                    tableBtn.className = "w-full border rounded-lg p-2 flex items-center justify-between focus:ring-2 focus:ring-red-500 outline-none transition-colors bg-red-50 border-red-200";
+                    tableText.className = "font-bold text-red-700"; tableText.innerText = labelStr + tableStr;
+                    tableIconContainer.innerHTML = '<i data-lucide="map" class="text-red-600 w-5 h-5"></i>';
+                } else {
+                    tableBtn.className = "w-full border rounded-lg p-2 flex items-center justify-between focus:ring-2 focus:ring-red-500 outline-none transition-colors bg-gray-50 hover:bg-red-50";
+                    tableText.className = "font-bold text-gray-500"; tableText.innerText = "Seleccionar Mesa...";
+                    tableIconContainer.innerHTML = '<i data-lucide="map" class="text-gray-400 w-5 h-5"></i>';
+                }
+            }
+            lucide.createIcons();
+        }
+
+        window.changeDomiCategory = function(category) { window.state.domiCategory = category; renderDomiCategories(); renderDomiProducts(); };
+        window.addDomiItem = function(productId) {
+            const product = FLAT_MENU.find(p => p.id === productId); if (!product) return;
+            const existingIndex = window.state.domiOrderItems.findIndex(item => item.id === productId && item.note === '');
+            if (existingIndex >= 0) window.state.domiOrderItems[existingIndex].quantity += 1; else window.state.domiOrderItems.push({ ...product, quantity: 1, note: '' });
+            renderDomiCart();
+        };
+        window.updateDomiItemQty = function(index, delta) {
+            const newQty = window.state.domiOrderItems[index].quantity + delta;
+            if (newQty > 0) window.state.domiOrderItems[index].quantity = newQty; else window.state.domiOrderItems.splice(index, 1);
+            renderDomiCart();
+        };
+        window.updateDomiItemNote = function(index, value, element) { window.state.domiOrderItems[index].note = value; element.style.height = 'auto'; element.style.height = element.scrollHeight + 'px'; };
+        window.removeDomiItem = function(index) { window.state.domiOrderItems.splice(index, 1); renderDomiCart(); };
+        window.clearDomiOrder = function() {
+            window.state.domiOrderItems = []; window.state.domiAddress = ''; window.state.domiPhone = ''; window.state.domiName = ''; window.state.domiFee = 0; window.state.domiNote = '';
+            document.getElementById('domi-address').value = ''; document.getElementById('domi-phone').value = ''; document.getElementById('domi-name').value = '';
+            document.getElementById('domi-fee').value = '0'; document.getElementById('domi-general-note').value = '';
+            renderDomiCart();
+        };
+
+        function renderDomiCategories() {
+            const container = document.getElementById('domi-categories-container'); if(!container) return;
+            container.innerHTML = MENU_CATEGORIES.map(category => `<button onclick="changeDomiCategory('${category}')" class="px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${window.state.domiCategory === category ? 'bg-orange-600 text-white shadow-md' : 'bg-white text-gray-700 border hover:bg-orange-50'}">${category}</button>`).join('');
+        }
+        function renderDomiProducts() {
+            const container = document.getElementById('domi-products-container'); if(!container) return; const products = MOCK_MENU[window.state.domiCategory] || [];
+            container.innerHTML = products.map(p => `<button onclick="addDomiItem('${p.id}')" class="bg-white border border-gray-200 rounded-lg p-3 text-left shadow-sm hover:shadow-md hover:border-orange-500 transition-all flex flex-col justify-between h-24 active:scale-95"><span class="font-bold text-gray-800 text-sm leading-tight line-clamp-2">${p.name}</span><span class="text-orange-600 font-semibold text-sm">${formatCurrency(p.price)}</span></button>`).join('');
+        }
+        function renderDomiCart() {
+            const container = document.getElementById('domi-cart-items'); if(!container) return;
+            if (window.state.domiOrderItems.length === 0) {
+                container.innerHTML = `<div class="text-center text-gray-400 mt-10"><i data-lucide="bike" class="mx-auto w-12 h-12 mb-2 opacity-50"></i><p>Sin productos para el domicilio</p></div>`;
+                document.getElementById('domi-btn-clear-order').classList.add('hidden');
+            } else {
+                document.getElementById('domi-btn-clear-order').classList.remove('hidden');
+                container.innerHTML = window.state.domiOrderItems.map((item, index) => `<div class="bg-white p-3 rounded-lg shadow-sm border text-sm relative group"><div class="flex justify-between items-start mb-2 pr-6"><span class="font-bold text-gray-800">${item.name}</span><span class="font-semibold text-gray-600 whitespace-nowrap">${formatCurrency(item.price * item.quantity)}</span></div><div class="flex justify-between items-center"><div class="flex items-center space-x-3 bg-gray-100 rounded-lg p-1"><button onclick="updateDomiItemQty(${index}, -1)" class="p-1 bg-white rounded shadow-sm text-red-600 hover:bg-red-50"><i data-lucide="minus" class="w-4 h-4"></i></button><span class="font-bold w-4 text-center">${item.quantity}</span><button onclick="updateDomiItemQty(${index}, 1)" class="p-1 bg-white rounded shadow-sm text-green-600 hover:bg-green-50"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div><button onclick="removeDomiItem(${index})" class="absolute top-3 right-3 text-gray-300 hover:text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="mt-3 bg-orange-50/50 p-2 rounded-lg border border-gray-200 flex items-start gap-2 focus-within:border-orange-400 focus-within:bg-white transition-all shadow-inner"><i data-lucide="message-square" class="text-gray-400 mt-0.5 flex-shrink-0 w-4 h-4"></i><textarea rows="1" placeholder="Especificaciones..." oninput="updateDomiItemNote(${index}, this.value, this)" class="w-full text-sm bg-transparent outline-none resize-none overflow-hidden text-gray-700">${item.note}</textarea></div></div>`).join('');
+            }
+            const subtotal = window.state.domiOrderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+            const fee = window.state.domiFee || 0;
+            document.getElementById('domi-subtotal').innerText = formatCurrency(subtotal);
+            document.getElementById('domi-total').innerText = formatCurrency(subtotal + fee);
+            lucide.createIcons();
+        }
+
+        window.openMapModal = function() {
+            window.state.isMultipleTableMode = false;
+            document.getElementById('btn-multiple-tables').classList.remove('bg-gray-700', 'text-white');
+            document.getElementById('btn-multiple-tables').innerText = 'Juntar Mesas';
+            document.getElementById('btn-confirm-tables').classList.add('hidden');
+            document.getElementById('map-modal').classList.remove('hidden');
+            renderMapTables();
+        };
+
+        window.closeMapModal = function() { document.getElementById('map-modal').classList.add('hidden'); };
+
+        window.toggleMultipleTables = function() {
+            window.state.isMultipleTableMode = !window.state.isMultipleTableMode;
+            const btn = document.getElementById('btn-multiple-tables');
+            const confirmBtn = document.getElementById('btn-confirm-tables');
+            if (window.state.isMultipleTableMode) {
+                btn.classList.add('bg-gray-700', 'text-white'); btn.innerText = "Modo: Varias Mesas";
+                confirmBtn.classList.remove('hidden');
+            } else {
+                btn.classList.remove('bg-gray-700', 'text-white'); btn.innerText = "Juntar Mesas";
+                confirmBtn.classList.add('hidden');
+                if(window.state.selectedTables.length > 1) { window.state.selectedTables = [window.state.selectedTables[0]]; renderMapTables(); }
+            }
+        };
+
+        window.selectNoTable = function() {
+            const inputName = document.getElementById('no-table-name');
+            if(inputName) {
+                inputName.value = '';
+                document.getElementById('no-table-modal').classList.remove('hidden');
+            } else {
+                window.showToast("Error de interfaz. Por favor recarga.", "error");
+            }
+        };
+
+        window.closeNoTableModal = function() { document.getElementById('no-table-modal').classList.add('hidden'); };
+
+        window.confirmNoTable = function() {
+            const nombre = document.getElementById('no-table-name').value;
+            if (nombre && nombre.trim() !== "") {
+                window.state.selectedTables = ["Llevar: " + nombre.trim().toUpperCase()];
+                window.closeNoTableModal(); window.closeMapModal(); renderCart();
+            } else { window.showToast("Ingresa un nombre válido", "error"); }
+        };
+
+        window.confirmTableSelection = function() {
+            if (window.state.selectedTables.length === 0) { window.showToast("Selecciona una mesa.", "error"); return; }
+            window.closeMapModal(); renderCart();
+        };
+
+        window.selectMapTable = function(id) {
+            const tableId = id.toString();
+            if (window.state.isMultipleTableMode) {
+                const index = window.state.selectedTables.indexOf(tableId);
+                if (index > -1) window.state.selectedTables.splice(index, 1);
+                else window.state.selectedTables.push(tableId);
+                renderMapTables();
+            } else {
+                window.state.selectedTables = [tableId]; window.closeMapModal(); renderCart();
+            }
+        };
+
+        function renderMapTables() {
+            const container = document.getElementById('map-tables-container');
+            container.querySelectorAll('.table-btn').forEach(btn => btn.remove());
+            TABLE_POSITIONS.forEach(table => {
+                const isSelected = window.state.selectedTables.includes(table.id.toString());
+                const btn = document.createElement('button');
+                btn.className = `table-btn absolute w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-xl font-black text-lg shadow-md transition-all hover:scale-110 hover:shadow-lg ${isSelected ? 'bg-red-600 text-white ring-4 ring-red-300 scale-110 z-20' : 'bg-white text-gray-800 border-2 border-gray-300 hover:border-red-500 hover:text-red-600 z-10'}`;
+                btn.style.left = table.left; btn.style.top = table.top; btn.style.transform = 'translate(-50%, -50%)';
+                btn.innerText = table.id; btn.onclick = () => window.selectMapTable(table.id);
+                container.appendChild(btn);
+            });
+        }
+
+        window.openActiveOrdersModal = function() { window.renderActiveOrdersModal(); document.getElementById('active-orders-modal').classList.remove('hidden'); };
+        window.closeActiveOrdersModal = function() { document.getElementById('active-orders-modal').classList.add('hidden'); };
+
+        window.renderActiveOrdersModal = function() {
+            const container = document.getElementById('active-orders-list');
+            if (window.state.cashierOrders.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500 my-8 font-semibold">No hay órdenes en curso.</p>'; return;
+            }
+            container.innerHTML = window.state.cashierOrders.map(order => {
+                const isDomi = order.type === 'domicilio';
+                return `<div class="bg-white border border-gray-200 p-3 rounded-xl mb-3 flex justify-between items-center shadow-sm"><div><span class="font-bold ${isDomi ? 'text-orange-600' : 'text-gray-800'}">${isDomi ? 'DOMI: '+order.address : order.table}</span><p class="text-xs text-gray-500 font-medium">${isDomi ? 'Tel: '+order.phone : 'Mesero: '+order.waiter} | Orden #${order.orderId}</p></div><button onclick="editOrder('${order.orderId}'); closeActiveOrdersModal();" class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-lg font-bold hover:bg-yellow-200 transition-colors text-sm flex items-center gap-1 shadow-sm"><i data-lucide="edit-2" class="w-4 h-4"></i> Abrir</button></div>`;
+            }).join('');
+            lucide.createIcons();
+        };
+
+        window.editOrder = function(orderId) {
+            const order = window.state.cashierOrders.find(o => o.orderId == orderId); if(!order) return;
+            window.state.editingOrderId = orderId;
+            if (order.type === 'domicilio') {
+                window.state.domiOrderItems = JSON.parse(JSON.stringify(order.items));
+                window.state.domiAddress = order.address || ''; window.state.domiPhone = order.phone || ''; window.state.domiName = order.name || ''; window.state.domiFee = order.domiFee || 0; window.state.domiNote = order.generalNote || '';
+                document.getElementById('domi-address').value = window.state.domiAddress; document.getElementById('domi-phone').value = window.state.domiPhone; document.getElementById('domi-name').value = window.state.domiName; document.getElementById('domi-fee').value = window.state.domiFee; document.getElementById('domi-general-note').value = window.state.domiNote;
+                document.getElementById('domi-order-counter-display').innerText = orderId; document.getElementById('domi-badge-editing').classList.remove('hidden'); document.getElementById('domi-btn-cancel-edit').classList.remove('hidden'); document.getElementById('btn-submit-domi').innerHTML = `<i data-lucide="save" class="w-6 h-6"></i> Actualizar Domicilio`;
+                window.switchView('domicilios'); window.showToast(`Modificando Domicilio #${orderId}`);
+            } else {
+                window.state.currentOrderItems = JSON.parse(JSON.stringify(order.items));
+                window.state.waiterName = order.waiter; window.state.selectedTables = order.table.split(' y '); window.state.generalNote = order.generalNote || '';
+                document.getElementById('waiter-name').value = order.waiter; document.getElementById('general-note').value = window.state.generalNote;
+                document.getElementById('order-counter-display').innerText = orderId; document.getElementById('badge-editing').classList.remove('hidden'); document.getElementById('btn-cancel-edit').classList.remove('hidden'); document.getElementById('btn-submit-order').innerHTML = `<i data-lucide="save" class="w-6 h-6"></i> Actualizar Orden`;
+                window.switchView('mesero'); renderCart(); window.showToast(`Modificando Orden #${orderId}`);
+            }
+            lucide.createIcons();
+        };
+
+        window.cancelEditMode = function() {
+            window.state.editingOrderId = null; document.getElementById('badge-editing').classList.add('hidden'); document.getElementById('btn-cancel-edit').classList.add('hidden'); document.getElementById('btn-submit-order').innerHTML = `<i data-lucide="cloud-upload" class="w-6 h-6"></i> Enviar Orden a la Nube`; document.getElementById('order-counter-display').innerText = window.state.orderCounter;
+            window.clearCurrentOrder(); window.switchView('mesero'); lucide.createIcons();
+        };
+
+        window.cancelDomiEditMode = function() {
+            window.state.editingOrderId = null; document.getElementById('domi-badge-editing').classList.add('hidden'); document.getElementById('domi-btn-cancel-edit').classList.add('hidden'); document.getElementById('btn-submit-domi').innerHTML = `<i data-lucide="bike" class="w-6 h-6"></i> Confirmar Domicilio`; document.getElementById('domi-order-counter-display').innerText = window.state.orderCounter;
+            window.clearDomiOrder(); window.switchView('domicilios'); lucide.createIcons();
+        }
+
+        window.submitOrder = async function() {
+            if (!window.state.currentUser) { window.showToast('Esperando conexión...', 'error'); return; }
+            if (!window.state.waiterName.trim()) { window.showToast('Debes seleccionar un mesero.', 'error'); return; }
+            if (window.state.selectedTables.length === 0) { window.showToast('Selecciona una mesa o Para Llevar.', 'error'); return; }
+            if (window.state.currentOrderItems.length === 0) { window.showToast('La orden está vacía.', 'error'); return; }
+
+            const currentOrderId = window.state.editingOrderId ? window.state.editingOrderId : window.state.orderCounter;
+            const now = new Date(); const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const tableStr = window.state.selectedTables.join(' y ');
+            const preparedDrinksIds = ['b7', 'b8', 'b9', 'b10', 'b11', 'b12'];
+
+            const itemsPerrero = window.state.currentOrderItems.filter(i => i.category === 'Perros' || i.id === 'ad1');
+            const itemsHamburguesero = window.state.currentOrderItems.filter(i => i.category === 'Hamburguesas' || i.category === 'Arepas');
+            const itemsGeneral = window.state.currentOrderItems.filter(i => {
+                if (['Perros', 'Hamburguesas', 'Arepas'].includes(i.category)) return false;
+                if (i.id === 'ad1') return false;
+                if (i.category === 'Bebidas' && !preparedDrinksIds.includes(i.id)) return false;
+                return true; 
+            });
+
+            const baseOrderInfo = { orderId: currentOrderId, type: 'mesa', waiter: window.state.waiterName, table: tableStr, generalNote: window.state.generalNote, timestamp: timeString };
+            const ticketsToSave = [];
+            if (itemsPerrero.length > 0) ticketsToSave.push({ ...baseOrderInfo, ticketId: `${currentOrderId}-P`, station: 'perrero', items: JSON.parse(JSON.stringify(itemsPerrero)) });
+            if (itemsHamburguesero.length > 0) ticketsToSave.push({ ...baseOrderInfo, ticketId: `${currentOrderId}-H`, station: 'hamburguesero', items: JSON.parse(JSON.stringify(itemsHamburguesero)) });
+            if (itemsGeneral.length > 0) ticketsToSave.push({ ...baseOrderInfo, ticketId: `${currentOrderId}-G`, station: 'general', items: JSON.parse(JSON.stringify(itemsGeneral)) });
+
+            const total = window.state.currentOrderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+            const cashierOrderToSave = { orderId: currentOrderId, type: 'mesa', waiter: window.state.waiterName, table: tableStr, items: JSON.parse(JSON.stringify(window.state.currentOrderItems)), total: total, timestamp: timeString, status: 'unpaid' };
+
+            await finalizeSubmission(currentOrderId, ticketsToSave, cashierOrderToSave, tableStr);
+        };
+
+        window.submitDomiOrder = async function() {
+            if (!window.state.currentUser) { window.showToast('Esperando conexión...', 'error'); return; }
+            if (!window.state.domiAddress.trim()) { window.showToast('La dirección es obligatoria.', 'error'); return; }
+            if (window.state.domiOrderItems.length === 0) { window.showToast('El domicilio no tiene productos.', 'error'); return; }
+
+            const currentOrderId = window.state.editingOrderId ? window.state.editingOrderId : window.state.orderCounter;
+            const now = new Date(); const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const preparedDrinksIds = ['b7', 'b8', 'b9', 'b10', 'b11', 'b12'];
+            
+            const itemsPerrero = window.state.domiOrderItems.filter(i => i.category === 'Perros' || i.id === 'ad1');
+            const itemsHamburguesero = window.state.domiOrderItems.filter(i => i.category === 'Hamburguesas' || i.category === 'Arepas');
+            const itemsGeneral = window.state.domiOrderItems.filter(i => {
+                if (['Perros', 'Hamburguesas', 'Arepas'].includes(i.category)) return false;
+                if (i.id === 'ad1') return false;
+                if (i.category === 'Bebidas' && !preparedDrinksIds.includes(i.id)) return false;
+                return true; 
+            });
+
+            const domiTableStr = `DOMI: ${window.state.domiAddress}`;
+            const baseOrderInfo = { orderId: currentOrderId, type: 'domicilio', waiter: 'Recepcionista', address: window.state.domiAddress, phone: window.state.domiPhone, name: window.state.domiName, table: domiTableStr, generalNote: window.state.domiNote, timestamp: timeString };
+
+            const ticketsToSave = [];
+            if (itemsPerrero.length > 0) ticketsToSave.push({ ...baseOrderInfo, ticketId: `${currentOrderId}-P`, station: 'perrero', items: JSON.parse(JSON.stringify(itemsPerrero)) });
+            if (itemsHamburguesero.length > 0) ticketsToSave.push({ ...baseOrderInfo, ticketId: `${currentOrderId}-H`, station: 'hamburguesero', items: JSON.parse(JSON.stringify(itemsHamburguesero)) });
+            if (itemsGeneral.length > 0) ticketsToSave.push({ ...baseOrderInfo, ticketId: `${currentOrderId}-G`, station: 'general', items: JSON.parse(JSON.stringify(itemsGeneral)) });
+
+            const subtotal = window.state.domiOrderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+            const fee = window.state.domiFee || 0;
+
+            const cashierOrderToSave = {
+                orderId: currentOrderId, type: 'domicilio', waiter: 'Recepcionista', table: domiTableStr, address: window.state.domiAddress, phone: window.state.domiPhone, name: window.state.domiName,
+                items: JSON.parse(JSON.stringify(window.state.domiOrderItems)), subtotal: subtotal, domiFee: fee, total: subtotal + fee, timestamp: timeString, status: 'unpaid'
+            };
+
+            await finalizeSubmission(currentOrderId, ticketsToSave, cashierOrderToSave, domiTableStr, true);
+        };
+
+        async function finalizeSubmission(currentOrderId, ticketsToSave, cashierOrderToSave, tableStr, isDomi = false) {
+            try {
+                if (!window.state.editingOrderId) {
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), { value: currentOrderId });
+                } else {
+                    const oldTickets = window.state.kitchenTickets.filter(t => t.orderId == currentOrderId);
+                    for (const t of oldTickets) await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', t.ticketId));
+                }
+
+                for (const t of ticketsToSave) await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', t.ticketId), t);
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', currentOrderId.toString()), cashierOrderToSave);
+
+                window.state.lastSubmittedOrder = { id: currentOrderId, table: tableStr, cashier: cashierOrderToSave, kitchen: ticketsToSave };
+                
+                const wasEditing = window.state.editingOrderId !== null;
+                if (wasEditing) {
+                    isDomi ? window.cancelDomiEditMode() : window.cancelEditMode();
+                    window.showToast("Orden actualizada con éxito", "success");
+                } else {
+                    if(isDomi) window.clearDomiOrder(); else { window.clearCurrentOrder(); renderCart(); }
+                    document.getElementById('success-title').innerText = `¡Orden #${window.state.lastSubmittedOrder.id} Enviada!`;
+                    document.getElementById('success-subtitle').innerText = `¿Qué deseas hacer ahora?`;
+                    document.getElementById('btn-same-table').innerText = `Nueva Orden (Misma Mesa)`;
+                    document.getElementById('success-modal').classList.remove('hidden');
+                    lucide.createIcons();
+                }
+            } catch (error) { console.error("Error guardando orden:", error); window.showToast("Error al subir la orden.", "error"); }
+        }
+
+        window.completeKitchenTicket = async function(ticketId) {
+            if (!window.state.currentUser) return;
+            try {
+                const ticketToArchive = window.state.kitchenTickets.find(t => t.ticketId === ticketId);
+                if (ticketToArchive) {
+                    ticketToArchive.status = 'completed'; ticketToArchive.completedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets', ticketId), ticketToArchive);
+                }
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', ticketId));
+            } catch (error) { console.error("Error completando ticket:", error); }
+        };
+
+        window.openPayModal = function(orderId) {
+            const order = window.state.cashierOrders.find(o => o.orderId == orderId); if (!order) return;
+            window.state.pendingPayOrder = { ...order, isPartial: false }; document.getElementById('pay-modal-total').innerText = formatCurrency(order.total); window.setPaymentMethod('efectivo'); document.getElementById('pay-modal').classList.remove('hidden');
+        };
+        window.closePayModal = function() { window.state.pendingPayOrder = null; document.getElementById('pay-modal').classList.add('hidden'); };
+        window.setPaymentMethod = function(method) {
+            window.state.paymentMethod = method;
+            const btnEfectivo = document.getElementById('btn-pay-efectivo'); const btnTransf = document.getElementById('btn-pay-transferencia'); const btnMixto = document.getElementById('btn-pay-dividido'); const mixedSection = document.getElementById('pay-mixed-section');
+            btnEfectivo.className = "border-2 border-gray-200 hover:border-green-500 hover:bg-green-50 text-gray-600 font-bold py-2 rounded-xl transition-colors"; btnTransf.className = "border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-gray-600 font-bold py-2 rounded-xl transition-colors"; btnMixto.className = "w-full border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 text-gray-600 font-bold py-2 rounded-xl transition-colors mb-4"; mixedSection.classList.add('hidden');
+            if (method === 'efectivo') { btnEfectivo.className = "border-2 border-green-500 bg-green-50 text-green-700 font-bold py-2 rounded-xl transition-colors"; } 
+            else if (method === 'transferencia') { btnTransf.className = "border-2 border-purple-500 bg-purple-50 text-purple-700 font-bold py-2 rounded-xl transition-colors"; } 
+            else if (method === 'dividido') { btnMixto.className = "w-full border-2 border-blue-500 bg-blue-50 text-blue-700 font-bold py-2 rounded-xl transition-colors mb-4"; mixedSection.classList.remove('hidden'); document.getElementById('mixed-cash-input').value = ''; document.getElementById('mixed-transfer-display').innerText = formatCurrency(window.state.pendingPayOrder.total); }
+        };
+        window.updateMixedTransfer = function() {
+            if (!window.state.pendingPayOrder) return;
+            const total = window.state.pendingPayOrder.total; const cash = parseInt(document.getElementById('mixed-cash-input').value) || 0; const transfer = total - cash;
+            document.getElementById('mixed-transfer-display').innerText = formatCurrency(transfer > 0 ? transfer : 0);
+        };
+        
+        window.openSplitModal = function(orderId) {
+            const order = window.state.cashierOrders.find(o => o.orderId == orderId); if (!order) return;
+            window.state.pendingSplitOrder = JSON.parse(JSON.stringify(order)); window.state.splitSelection = order.items.map(item => ({ ...item, selectedQty: 0 }));
+            renderSplitModal(); document.getElementById('split-modal').classList.remove('hidden');
+        };
+        window.closeSplitModal = function() { window.state.pendingSplitOrder = null; document.getElementById('split-modal').classList.add('hidden'); };
+        window.updateSplitQty = function(index, delta) {
+            const item = window.state.splitSelection[index]; let newQty = item.selectedQty + delta;
+            if(newQty >= 0 && newQty <= item.quantity) { window.state.splitSelection[index].selectedQty = newQty; renderSplitModal(); }
+        };
+        window.renderSplitModal = function() {
+            const container = document.getElementById('split-items-list'); let splitTotal = 0;
+            container.innerHTML = window.state.splitSelection.map((item, index) => {
+                splitTotal += (item.price * item.selectedQty);
+                return `<div class="bg-gray-50 p-3 rounded-lg border border-gray-200 flex justify-between items-center shadow-sm"><div class="flex-1 pr-2"><p class="font-bold text-gray-800 text-sm">${item.name}</p><p class="text-xs text-gray-500 font-medium">Restan: ${item.quantity - item.selectedQty} | ${formatCurrency(item.price)} c/u</p></div><div class="flex items-center space-x-3 bg-white border border-gray-300 rounded-lg p-1"><button onclick="updateSplitQty(${index}, -1)" class="p-1 bg-gray-100 rounded text-orange-600 hover:bg-orange-100 transition-colors"><i data-lucide="minus" class="w-4 h-4"></i></button><span class="font-black w-4 text-center text-lg text-gray-800">${item.selectedQty}</span><button onclick="updateSplitQty(${index}, 1)" class="p-1 bg-gray-100 rounded text-green-600 hover:bg-green-100 transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div>`;
+            }).join('');
+            document.getElementById('split-total-display').innerText = formatCurrency(splitTotal); lucide.createIcons();
+        };
+        window.proceedSplitPayment = function() {
+            const selectedItems = window.state.splitSelection.filter(i => i.selectedQty > 0).map(i => ({...i, quantity: i.selectedQty}));
+            if(selectedItems.length === 0) { window.showToast("Añade al menos un producto para pagar", "error"); return; }
+            const splitTotal = selectedItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+            window.state.pendingPayOrder = { ...window.state.pendingSplitOrder, items: selectedItems, total: splitTotal, isPartial: true, originalOrder: window.state.pendingSplitOrder };
+            window.closeSplitModal(); document.getElementById('pay-modal-total').innerText = formatCurrency(splitTotal); window.setPaymentMethod('efectivo'); document.getElementById('pay-modal').classList.remove('hidden');
+        };
+
+        window.confirmPayment = async function() {
+            const order = window.state.pendingPayOrder; const method = window.state.paymentMethod; if (!order) return;
+            let cashAmount = 0; let transferAmount = 0;
+            if (method === 'efectivo') { cashAmount = order.total; } else if (method === 'transferencia') { transferAmount = order.total; } else if (method === 'dividido') { cashAmount = parseInt(document.getElementById('mixed-cash-input').value) || 0; transferAmount = order.total - cashAmount; if(transferAmount < 0) transferAmount = 0; }
+            const paymentData = { method: method, cashAmount: cashAmount, transferAmount: transferAmount };
+            await processPayOrder(order, paymentData); window.closePayModal();
+        };
+
+        async function processPayOrder(payOrder, paymentData) {
+            if (!window.state.currentUser) return;
+            try {
+                const updates = {};
+                payOrder.items.forEach(item => { const recipe = RECIPES[item.id]; if (recipe) { for (const [invId, qtyNeeded] of Object.entries(recipe)) { if (!updates[invId]) updates[invId] = 0; updates[invId] += (qtyNeeded * item.quantity); } } });
+                for (const [invId, deductedQty] of Object.entries(updates)) { let currentStock = window.state.inventory[invId]?.stock || 0; let newStock = currentStock - deductedQty; const name = INVENTORY_DICT[invId] || invId; await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', invId), { name: name, stock: newStock }, { merge: true }); }
+                if (payOrder.isPartial) {
+                    const originalOrder = payOrder.originalOrder; const paidItems = payOrder.items; let remainingItems = [];
+                    originalOrder.items.forEach(origItem => { const paidItem = paidItems.find(pi => pi.id === origItem.id && pi.note === origItem.note); const paidQty = paidItem ? paidItem.quantity : 0; const remainingQty = origItem.quantity - paidQty; if (remainingQty > 0) { remainingItems.push({...origItem, quantity: remainingQty}); } });
+                    if (remainingItems.length > 0) {
+                        const remainingTotal = remainingItems.reduce((acc, item) => acc + (item.price * item.quantity), 0); originalOrder.items = remainingItems;
+                        if(originalOrder.type === 'domicilio') { originalOrder.subtotal = remainingTotal; originalOrder.total = remainingTotal + (originalOrder.domiFee || 0); } else { originalOrder.total = remainingTotal; }
+                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', originalOrder.orderId.toString()), originalOrder);
+                    } else { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', originalOrder.orderId.toString())); }
+                    const historyRecord = { ...originalOrder, orderId: originalOrder.orderId + '-P' + Math.floor(Math.random()*1000), items: paidItems, total: payOrder.total, isPartialPayment: true, status: 'paid', payment: paymentData, actionAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
+                    if(historyRecord.type === 'domicilio') { historyRecord.domiFee = 0; }
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', historyRecord.orderId.toString()), historyRecord);
+                    window.showToast("Pago Parcial registrado.");
+                } else {
+                    payOrder.status = 'paid'; payOrder.payment = paymentData; payOrder.actionAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', payOrder.orderId.toString()), payOrder);
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', payOrder.orderId.toString()));
+                    window.showToast("Pago registrado con éxito.");
+                }
+            } catch (error) { console.error("Error pagando:", error); window.showToast("Error en el pago.", "error"); }
+        }
+
+        window.onload = () => { renderCategories(); renderProducts(); renderCart(); lucide.createIcons(); if(window.state.waiterName) { document.getElementById('waiter-name').value = window.state.waiterName; } initAuth(); };
 
     </script>
 </body>
