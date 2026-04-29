@@ -95,7 +95,7 @@
                     </div>
                     <div class="flex items-center gap-3">
                         <button onclick="cancelEditMode()" id="btn-cancel-edit" class="hidden text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-white font-bold transition-colors">Cancelar</button>
-                        <button onclick="clearCurrentOrder()" id="btn-clear-order" class="hidden text-gray-400 hover:text-red-400 p-1.5 bg-gray-800 rounded-full transition-colors flex items-center justify-center">
+                        <button onclick="clearCurrentOrder(true)" id="btn-clear-order" class="hidden text-gray-400 hover:text-red-400 p-1.5 bg-gray-800 rounded-full transition-colors flex items-center justify-center">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                         <span id="header-table-badge" class="hidden bg-red-600 px-3 py-1 rounded-full text-sm font-bold"></span>
@@ -345,7 +345,7 @@
     <div id="success-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
         <div class="bg-white rounded-2xl p-6 md:p-8 max-w-sm w-full text-center shadow-2xl">
             <i data-lucide="check-circle" class="text-green-500 w-20 h-20 mx-auto mb-4"></i>
-            <h3 id="success-title" class="text-2xl font-bold text-gray-800 mb-2">¡Orden Enviada!</h3>
+            <h3 id="success-title" class="text-2xl font-bold text-gray-800 mb-2">¡Orden Registrada!</h3>
             <p id="success-subtitle" class="text-gray-600 mb-6">¿Qué deseas hacer ahora?</p>
             <div class="space-y-3">
                 <div class="flex gap-2">
@@ -523,7 +523,7 @@
         </div>
     </div>
 
-
+    <!-- LOGICA FIREBASE Y APP -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -749,7 +749,7 @@
         };
 
         // --- FUNCIONES DE RENDERIZADO VISUAL AÑADIDAS ---
-        function updateBadges() {
+        window.updateBadges = function() {
             const kb = document.getElementById('badge-cocina'); const cb = document.getElementById('badge-caja');
             const mkb = document.getElementById('menu-badge-cocina'); const mcb = document.getElementById('menu-badge-caja');
             if (window.state.kitchenTickets.length > 0) { 
@@ -766,10 +766,9 @@
                 if(cb) cb.classList.add('hidden'); 
                 if(mcb) mcb.classList.add('hidden'); 
             }
-        }
-        window.updateBadges = updateBadges;
+        };
 
-        function renderKitchen() {
+        window.renderKitchen = function() {
             const container = document.getElementById('kitchen-container');
             const tickets = window.state.kitchenTickets.filter(t => t.station === window.state.kitchenStation);
             if (tickets.length === 0) {
@@ -820,10 +819,9 @@
                 }).join('');
             }
             lucide.createIcons();
-        }
-        window.renderKitchen = renderKitchen;
+        };
 
-        function renderCashier() {
+        window.renderCashier = function() {
             const container = document.getElementById('cashier-container');
             if (window.state.cashierOrders.length === 0) {
                 container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center text-gray-400 mt-20"><i data-lucide="check-circle" class="w-16 h-16 mb-4 text-green-200"></i><p class="text-xl">No hay cuentas pendientes por cobrar.</p></div>`;
@@ -870,10 +868,9 @@
                 `).join('');
             }
             lucide.createIcons();
-        }
-        window.renderCashier = renderCashier;
+        };
 
-        function renderHistory() {
+        window.renderHistory = function() {
             const container = document.getElementById('history-container');
             if (window.state.historyOrders.length === 0) {
                 container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center text-gray-400 mt-20"><i data-lucide="history" class="w-16 h-16 mb-4 text-blue-200"></i><p class="text-xl">Aún no hay ventas registradas.</p></div>`;
@@ -933,10 +930,9 @@
                 `}).join('');
             }
             lucide.createIcons();
-        }
-        window.renderHistory = renderHistory;
+        };
 
-        function renderInventory() {
+        window.renderInventory = function() {
             const container = document.getElementById('inventory-list');
             const invList = Object.keys(INVENTORY_DICT).map(id => {
                 const stockInfo = window.state.inventory[id];
@@ -949,8 +945,7 @@
                 return `<div class="bg-white border border-gray-200 rounded-lg p-3 flex justify-between items-center shadow-sm"><div class="flex-1"><h4 class="font-bold text-gray-800 text-sm leading-tight">${item.name}</h4></div><div class="flex items-center gap-3"><div class="${stockColor} font-black px-3 py-1 rounded-lg text-lg min-w-[3rem] text-center">${item.stock}</div><button onclick="openInventoryModal('${item.id}')" class="p-2 bg-gray-100 hover:bg-purple-50 text-gray-600 hover:text-purple-600 rounded-lg transition-colors border border-gray-200"><i data-lucide="edit-3" class="w-4 h-4"></i></button></div></div>`;
             }).join('');
             lucide.createIcons();
-        }
-        window.renderInventory = renderInventory;
+        };
 
         window.renderFinances = function() {
             const base = window.state.finances?.base || 0;
@@ -1048,7 +1043,7 @@
             data.waiters.forEach(w => { html += `<div class="summary-row"><span>${w.name} (${w.tables}m):</span><span>${formatCurrency(w.total)}</span></div>`; });
             html += `<div class="divider"></div>`;
             html += `<div style="margin-bottom:5px;font-weight:bold;display:flex;font-size:12px;"><span style="width:30px;">CANT</span><span style="flex:1;">PRODUCTO</span><span>TOTAL</span></div><div class="divider"></div>`;
-            data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.qty}x</span><span class="item-name">${item.name}</span><span class="item-price">${formatCurrency(item.revenue)}</span></div>`; });
+            data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.qty}x</span><span class="item-name">${item.name}</span><span class="item-price">${formatCurrency(item.price * item.quantity)}</span></div>`; });
             html += `<div class="divider"></div><p style="font-size:12px;margin-top:20px;">Fin del Reporte</p><script>window.onload=function(){window.print();setTimeout(function(){window.close();},500);}<\/script></body></html>`;
             printWindow.document.write(html); printWindow.document.close();
         };
@@ -1094,14 +1089,14 @@
                 window.state.kitchenTickets = [];
                 snapshot.forEach(doc => window.state.kitchenTickets.push(doc.data()));
                 window.state.kitchenTickets.sort((a,b) => a.orderId - b.orderId);
-                updateBadges(); if (window.state.currentView === 'cocina') renderKitchen();
+                window.updateBadges(); if (window.state.currentView === 'cocina') window.renderKitchen();
             }, (e) => console.error(e));
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'cashierOrders'), (snapshot) => {
                 window.state.cashierOrders = [];
                 snapshot.forEach(doc => window.state.cashierOrders.push(doc.data()));
                 window.state.cashierOrders.sort((a,b) => a.orderId - b.orderId);
-                updateBadges(); if (window.state.currentView === 'caja') renderCashier();
+                window.updateBadges(); if (window.state.currentView === 'caja') window.renderCashier();
                 if(!document.getElementById('active-orders-modal').classList.contains('hidden')) window.renderActiveOrdersModal();
             }, (e) => console.error(e));
 
@@ -1109,13 +1104,13 @@
                 window.state.historyOrders = [];
                 snapshot.forEach(doc => window.state.historyOrders.push(doc.data()));
                 window.state.historyOrders.sort((a,b) => b.orderId - a.orderId);
-                if (window.state.currentView === 'historial') renderHistory();
+                if (window.state.currentView === 'historial') window.renderHistory();
             }, (e) => console.error(e));
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'inventory'), (snapshot) => {
                 window.state.inventory = {};
                 snapshot.forEach(doc => { window.state.inventory[doc.id] = doc.data(); });
-                if (window.state.currentView === 'inventario') renderInventory();
+                if (window.state.currentView === 'inventario') window.renderInventory();
             }, (e) => console.error(e));
 
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'finances'), (snapshot) => {
@@ -1126,7 +1121,7 @@
         }
 
         window.attemptSwitchView = function(view) {
-            if (window.state.isAdminUnlocked) { switchView(view); } 
+            if (window.state.isAdminUnlocked) { window.switchView(view); } 
             else { window.state.pendingView = view; document.getElementById('tab-security-pin').value = ''; document.getElementById('tab-security-modal').classList.remove('hidden'); }
         };
         window.closeTabSecurityModal = function() { document.getElementById('tab-security-modal').classList.add('hidden'); window.state.pendingView = null; };
@@ -1135,7 +1130,7 @@
             if (pin === '1089607033') {
                 window.state.isAdminUnlocked = true; document.getElementById('tab-security-modal').classList.add('hidden');
                 document.getElementById('admin-unlocked-badge').classList.remove('hidden'); document.getElementById('admin-unlocked-badge').classList.add('flex');
-                if (window.state.pendingView) switchView(window.state.pendingView);
+                if (window.state.pendingView) window.switchView(window.state.pendingView);
                 window.showToast("Sesión de Administrador Desbloqueada");
             } else { window.showToast("PIN Incorrecto", "error"); }
         };
@@ -1157,11 +1152,11 @@
                 }
             });
             const activeView = document.getElementById(`view-${view}`); if(activeView) activeView.classList.remove('hidden');
-            if(view === 'cocina') renderKitchen(); 
-            if(view === 'caja') renderCashier(); 
-            if(view === 'historial') renderHistory(); 
-            if(view === 'inventario') renderInventory(); 
-            if(view === 'domicilios') { renderDomiCategories(); renderDomiProducts(); renderDomiCart(); }
+            if(view === 'cocina') window.renderKitchen(); 
+            if(view === 'caja') window.renderCashier(); 
+            if(view === 'historial') window.renderHistory(); 
+            if(view === 'inventario') window.renderInventory(); 
+            if(view === 'domicilios') { window.renderDomiCategories(); window.renderDomiProducts(); window.renderDomiCart(); }
             const sidebar = document.getElementById('sidebar'); if (!sidebar.classList.contains('-translate-x-full')) window.toggleSidebar();
         };
 
@@ -1172,38 +1167,38 @@
                 if (s === station) btn.className = "px-4 py-2 bg-white font-bold text-red-600 rounded-lg shadow transition-all whitespace-nowrap";
                 else btn.className = "px-4 py-2 font-bold text-gray-600 hover:text-gray-800 rounded-lg transition-all whitespace-nowrap";
             });
-            renderKitchen();
+            window.renderKitchen();
         };
 
-        window.changeCategory = function(category) { window.state.activeCategory = category; renderCategories(); renderProducts(); };
+        window.changeCategory = function(category) { window.state.activeCategory = category; window.renderCategories(); window.renderProducts(); };
         window.addItemToOrder = function(productId) {
             const product = FLAT_MENU.find(p => p.id === productId); if (!product) return;
             const existingIndex = window.state.currentOrderItems.findIndex(item => item.id === productId && item.note === '');
             if (existingIndex >= 0) window.state.currentOrderItems[existingIndex].quantity += 1;
             else window.state.currentOrderItems.push({ ...product, quantity: 1, note: '' });
-            renderCart();
+            window.renderCart();
         };
         window.updateItemQuantity = function(index, delta) {
             const newQty = window.state.currentOrderItems[index].quantity + delta;
             if (newQty > 0) window.state.currentOrderItems[index].quantity = newQty; else window.state.currentOrderItems.splice(index, 1);
-            renderCart();
+            window.renderCart();
         };
         window.updateItemNoteText = function(index, value, element) { window.state.currentOrderItems[index].note = value; element.style.height = 'auto'; element.style.height = element.scrollHeight + 'px'; };
-        window.removeItem = function(index) { window.state.currentOrderItems.splice(index, 1); renderCart(); };
-        window.clearCurrentOrder = function() {
+        window.removeItem = function(index) { window.state.currentOrderItems.splice(index, 1); window.renderCart(); };
+        window.clearCurrentOrder = function(showToast = true) {
             window.state.currentOrderItems = []; window.state.generalNote = ''; document.getElementById('general-note').value = '';
-            renderCart(); if(!window.state.editingOrderId) window.showToast('Orden vaciada.', 'error');
+            window.renderCart(); if(!window.state.editingOrderId && showToast === true) window.showToast('Orden vaciada.', 'error');
         };
 
-        function renderCategories() {
+        window.renderCategories = function() {
             const container = document.getElementById('categories-container');
             container.innerHTML = MENU_CATEGORIES.map(category => `<button onclick="changeCategory('${category}')" class="px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${window.state.activeCategory === category ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-700 border hover:bg-red-50'}">${category}</button>`).join('');
-        }
-        function renderProducts() {
+        };
+        window.renderProducts = function() {
             const container = document.getElementById('products-container'); const products = MOCK_MENU[window.state.activeCategory] || [];
             container.innerHTML = products.map(p => `<button onclick="addItemToOrder('${p.id}')" class="bg-white border rounded-lg p-3 text-left shadow-sm hover:shadow-md hover:border-red-500 transition-all flex flex-col justify-between h-24 active:scale-95"><span class="font-bold text-gray-800 text-sm leading-tight line-clamp-2">${p.name}</span><span class="text-red-600 font-semibold text-sm">${formatCurrency(p.price)}</span></button>`).join('');
-        }
-        function renderCart() {
+        };
+        window.renderCart = function() {
             const container = document.getElementById('cart-items');
             if (window.state.currentOrderItems.length === 0) {
                 container.innerHTML = `<div class="text-center text-gray-400 mt-10"><i data-lucide="utensils" class="mx-auto w-12 h-12 mb-2 opacity-50"></i><p>La orden está vacía</p></div>`;
@@ -1231,38 +1226,38 @@
                 }
             }
             lucide.createIcons();
-        }
+        };
 
-        window.changeDomiCategory = function(category) { window.state.domiCategory = category; renderDomiCategories(); renderDomiProducts(); };
+        window.changeDomiCategory = function(category) { window.state.domiCategory = category; window.renderDomiCategories(); window.renderDomiProducts(); };
         window.addDomiItem = function(productId) {
             const product = FLAT_MENU.find(p => p.id === productId); if (!product) return;
             const existingIndex = window.state.domiOrderItems.findIndex(item => item.id === productId && item.note === '');
             if (existingIndex >= 0) window.state.domiOrderItems[existingIndex].quantity += 1; else window.state.domiOrderItems.push({ ...product, quantity: 1, note: '' });
-            renderDomiCart();
+            window.renderDomiCart();
         };
         window.updateDomiItemQty = function(index, delta) {
             const newQty = window.state.domiOrderItems[index].quantity + delta;
             if (newQty > 0) window.state.domiOrderItems[index].quantity = newQty; else window.state.domiOrderItems.splice(index, 1);
-            renderDomiCart();
+            window.renderDomiCart();
         };
         window.updateDomiItemNote = function(index, value, element) { window.state.domiOrderItems[index].note = value; element.style.height = 'auto'; element.style.height = element.scrollHeight + 'px'; };
-        window.removeDomiItem = function(index) { window.state.domiOrderItems.splice(index, 1); renderDomiCart(); };
+        window.removeDomiItem = function(index) { window.state.domiOrderItems.splice(index, 1); window.renderDomiCart(); };
         window.clearDomiOrder = function() {
             window.state.domiOrderItems = []; window.state.domiAddress = ''; window.state.domiPhone = ''; window.state.domiName = ''; window.state.domiFee = 0; window.state.domiNote = '';
             document.getElementById('domi-address').value = ''; document.getElementById('domi-phone').value = ''; document.getElementById('domi-name').value = '';
             document.getElementById('domi-fee').value = '0'; document.getElementById('domi-general-note').value = '';
-            renderDomiCart();
+            window.renderDomiCart();
         };
 
-        function renderDomiCategories() {
+        window.renderDomiCategories = function() {
             const container = document.getElementById('domi-categories-container'); if(!container) return;
             container.innerHTML = MENU_CATEGORIES.map(category => `<button onclick="changeDomiCategory('${category}')" class="px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${window.state.domiCategory === category ? 'bg-orange-600 text-white shadow-md' : 'bg-white text-gray-700 border hover:bg-orange-50'}">${category}</button>`).join('');
-        }
-        function renderDomiProducts() {
+        };
+        window.renderDomiProducts = function() {
             const container = document.getElementById('domi-products-container'); if(!container) return; const products = MOCK_MENU[window.state.domiCategory] || [];
             container.innerHTML = products.map(p => `<button onclick="addDomiItem('${p.id}')" class="bg-white border border-gray-200 rounded-lg p-3 text-left shadow-sm hover:shadow-md hover:border-orange-500 transition-all flex flex-col justify-between h-24 active:scale-95"><span class="font-bold text-gray-800 text-sm leading-tight line-clamp-2">${p.name}</span><span class="text-orange-600 font-semibold text-sm">${formatCurrency(p.price)}</span></button>`).join('');
-        }
-        function renderDomiCart() {
+        };
+        window.renderDomiCart = function() {
             const container = document.getElementById('domi-cart-items'); if(!container) return;
             if (window.state.domiOrderItems.length === 0) {
                 container.innerHTML = `<div class="text-center text-gray-400 mt-10"><i data-lucide="bike" class="mx-auto w-12 h-12 mb-2 opacity-50"></i><p>Sin productos para el domicilio</p></div>`;
@@ -1276,7 +1271,7 @@
             document.getElementById('domi-subtotal').innerText = formatCurrency(subtotal);
             document.getElementById('domi-total').innerText = formatCurrency(subtotal + fee);
             lucide.createIcons();
-        }
+        };
 
         window.openMapModal = function() {
             window.state.isMultipleTableMode = false;
@@ -1284,7 +1279,7 @@
             document.getElementById('btn-multiple-tables').innerText = 'Juntar Mesas';
             document.getElementById('btn-confirm-tables').classList.add('hidden');
             document.getElementById('map-modal').classList.remove('hidden');
-            renderMapTables();
+            window.renderMapTables();
         };
 
         window.closeMapModal = function() { document.getElementById('map-modal').classList.add('hidden'); };
@@ -1299,7 +1294,7 @@
             } else {
                 btn.classList.remove('bg-gray-700', 'text-white'); btn.innerText = "Juntar Mesas";
                 confirmBtn.classList.add('hidden');
-                if(window.state.selectedTables.length > 1) { window.state.selectedTables = [window.state.selectedTables[0]]; renderMapTables(); }
+                if(window.state.selectedTables.length > 1) { window.state.selectedTables = [window.state.selectedTables[0]]; window.renderMapTables(); }
             }
         };
 
@@ -1319,13 +1314,13 @@
             const nombre = document.getElementById('no-table-name').value;
             if (nombre && nombre.trim() !== "") {
                 window.state.selectedTables = ["Llevar: " + nombre.trim().toUpperCase()];
-                window.closeNoTableModal(); window.closeMapModal(); renderCart();
+                window.closeNoTableModal(); window.closeMapModal(); window.renderCart();
             } else { window.showToast("Ingresa un nombre válido", "error"); }
         };
 
         window.confirmTableSelection = function() {
             if (window.state.selectedTables.length === 0) { window.showToast("Selecciona una mesa.", "error"); return; }
-            window.closeMapModal(); renderCart();
+            window.closeMapModal(); window.renderCart();
         };
 
         window.selectMapTable = function(id) {
@@ -1334,13 +1329,13 @@
                 const index = window.state.selectedTables.indexOf(tableId);
                 if (index > -1) window.state.selectedTables.splice(index, 1);
                 else window.state.selectedTables.push(tableId);
-                renderMapTables();
+                window.renderMapTables();
             } else {
-                window.state.selectedTables = [tableId]; window.closeMapModal(); renderCart();
+                window.state.selectedTables = [tableId]; window.closeMapModal(); window.renderCart();
             }
         };
 
-        function renderMapTables() {
+        window.renderMapTables = function() {
             const container = document.getElementById('map-tables-container');
             container.querySelectorAll('.table-btn').forEach(btn => btn.remove());
             TABLE_POSITIONS.forEach(table => {
@@ -1351,7 +1346,7 @@
                 btn.innerText = table.id; btn.onclick = () => window.selectMapTable(table.id);
                 container.appendChild(btn);
             });
-        }
+        };
 
         window.openActiveOrdersModal = function() { window.renderActiveOrdersModal(); document.getElementById('active-orders-modal').classList.remove('hidden'); };
         window.closeActiveOrdersModal = function() { document.getElementById('active-orders-modal').classList.add('hidden'); };
@@ -1382,7 +1377,7 @@
                 window.state.waiterName = order.waiter; window.state.selectedTables = order.table.split(' y '); window.state.generalNote = order.generalNote || '';
                 document.getElementById('waiter-name').value = order.waiter; document.getElementById('general-note').value = window.state.generalNote;
                 document.getElementById('order-counter-display').innerText = orderId; document.getElementById('badge-editing').classList.remove('hidden'); document.getElementById('btn-cancel-edit').classList.remove('hidden'); document.getElementById('btn-submit-order').innerHTML = `<i data-lucide="save" class="w-6 h-6"></i> Actualizar Orden`;
-                window.switchView('mesero'); renderCart(); window.showToast(`Modificando Orden #${orderId}`);
+                window.switchView('mesero'); window.renderCart(); window.showToast(`Modificando Orden #${orderId}`);
             }
             lucide.createIcons();
         };
@@ -1397,7 +1392,10 @@
             window.clearDomiOrder(); window.switchView('domicilios'); lucide.createIcons();
         }
 
-        window.submitOrder = async function() {
+        // ==========================================
+        // ESCRITURA EN LA NUBE (FIREBASE) - OPTIMISTIC UI
+        // ==========================================
+        window.submitOrder = function() {
             if (!window.state.currentUser) { window.showToast('Esperando conexión...', 'error'); return; }
             if (!window.state.waiterName.trim()) { window.showToast('Debes seleccionar un mesero.', 'error'); return; }
             if (window.state.selectedTables.length === 0) { window.showToast('Selecciona una mesa o Para Llevar.', 'error'); return; }
@@ -1426,10 +1424,10 @@
             const total = window.state.currentOrderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
             const cashierOrderToSave = { orderId: currentOrderId, type: 'mesa', waiter: window.state.waiterName, table: tableStr, items: JSON.parse(JSON.stringify(window.state.currentOrderItems)), total: total, timestamp: timeString, status: 'unpaid' };
 
-            await finalizeSubmission(currentOrderId, ticketsToSave, cashierOrderToSave, tableStr);
+            window.finalizeSubmission(currentOrderId, ticketsToSave, cashierOrderToSave, tableStr, false);
         };
 
-        window.submitDomiOrder = async function() {
+        window.submitDomiOrder = function() {
             if (!window.state.currentUser) { window.showToast('Esperando conexión...', 'error'); return; }
             if (!window.state.domiAddress.trim()) { window.showToast('La dirección es obligatoria.', 'error'); return; }
             if (window.state.domiOrderItems.length === 0) { window.showToast('El domicilio no tiene productos.', 'error'); return; }
@@ -1463,47 +1461,61 @@
                 items: JSON.parse(JSON.stringify(window.state.domiOrderItems)), subtotal: subtotal, domiFee: fee, total: subtotal + fee, timestamp: timeString, status: 'unpaid'
             };
 
-            await finalizeSubmission(currentOrderId, ticketsToSave, cashierOrderToSave, domiTableStr, true);
+            window.finalizeSubmission(currentOrderId, ticketsToSave, cashierOrderToSave, domiTableStr, true);
         };
 
-        async function finalizeSubmission(currentOrderId, ticketsToSave, cashierOrderToSave, tableStr, isDomi = false) {
-            try {
-                if (!window.state.editingOrderId) {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), { value: currentOrderId });
-                } else {
-                    const oldTickets = window.state.kitchenTickets.filter(t => t.orderId == currentOrderId);
-                    for (const t of oldTickets) await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', t.ticketId));
-                }
-
-                for (const t of ticketsToSave) await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', t.ticketId), t);
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', currentOrderId.toString()), cashierOrderToSave);
-
-                window.state.lastSubmittedOrder = { id: currentOrderId, table: tableStr, cashier: cashierOrderToSave, kitchen: ticketsToSave };
+        window.finalizeSubmission = function(currentOrderId, ticketsToSave, cashierOrderToSave, tableStr, isDomi = false) {
+            // 1. RENDER OPTIMISTA INMEDIATO (SIN ESPERAR A INTERNET)
+            const wasEditing = window.state.editingOrderId !== null;
+            window.state.lastSubmittedOrder = { id: currentOrderId, table: tableStr, cashier: cashierOrderToSave, kitchen: ticketsToSave };
+            
+            if (wasEditing) {
+                isDomi ? window.cancelDomiEditMode() : window.cancelEditMode();
+                window.showToast("Orden actualizada en la nube", "success");
+            } else {
+                if(isDomi) { window.clearDomiOrder(); } 
+                else { window.clearCurrentOrder(false); window.renderCart(); }
                 
-                const wasEditing = window.state.editingOrderId !== null;
-                if (wasEditing) {
-                    isDomi ? window.cancelDomiEditMode() : window.cancelEditMode();
-                    window.showToast("Orden actualizada con éxito", "success");
-                } else {
-                    if(isDomi) window.clearDomiOrder(); else { window.clearCurrentOrder(); renderCart(); }
-                    document.getElementById('success-title').innerText = `¡Orden #${window.state.lastSubmittedOrder.id} Enviada!`;
-                    document.getElementById('success-subtitle').innerText = `¿Qué deseas hacer ahora?`;
-                    document.getElementById('btn-same-table').innerText = `Nueva Orden (Misma Mesa)`;
-                    document.getElementById('success-modal').classList.remove('hidden');
-                    lucide.createIcons();
-                }
-            } catch (error) { console.error("Error guardando orden:", error); window.showToast("Error al subir la orden.", "error"); }
-        }
+                document.getElementById('success-title').innerText = `¡Orden #${window.state.lastSubmittedOrder.id} Registrada!`;
+                document.getElementById('success-subtitle').innerText = `¿Qué deseas hacer ahora?`;
+                document.getElementById('btn-same-table').innerText = `Nueva Orden (Misma Mesa)`;
+                document.getElementById('success-modal').classList.remove('hidden');
+                lucide.createIcons();
+            }
 
-        window.completeKitchenTicket = async function(ticketId) {
+            // 2. SINCRONIZACIÓN EN SEGUNDO PLANO
+            setTimeout(async () => {
+                try {
+                    if (!wasEditing) {
+                        setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), { value: currentOrderId });
+                    } else {
+                        const oldTickets = window.state.kitchenTickets.filter(t => t.orderId == currentOrderId);
+                        oldTickets.forEach(t => deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', t.ticketId)));
+                    }
+
+                    ticketsToSave.forEach(t => setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', t.ticketId), t));
+                    setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', currentOrderId.toString()), cashierOrderToSave);
+                } catch (error) { 
+                    console.error("Error en sincronización Firebase:", error); 
+                    window.showToast("Problemas de red. Sincronizando...", "error"); 
+                }
+            }, 10);
+        };
+
+        window.completeKitchenTicket = function(ticketId) {
             if (!window.state.currentUser) return;
+            const ticketToArchive = window.state.kitchenTickets.find(t => t.ticketId === ticketId);
+            
+            // Optimistic Update
+            window.state.kitchenTickets = window.state.kitchenTickets.filter(t => t.ticketId !== ticketId);
+            window.renderKitchen();
+
             try {
-                const ticketToArchive = window.state.kitchenTickets.find(t => t.ticketId === ticketId);
                 if (ticketToArchive) {
                     ticketToArchive.status = 'completed'; ticketToArchive.completedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets', ticketId), ticketToArchive);
+                    setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets', ticketId), ticketToArchive);
                 }
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', ticketId));
+                deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', ticketId));
             } catch (error) { console.error("Error completando ticket:", error); }
         };
 
@@ -1529,12 +1541,12 @@
         window.openSplitModal = function(orderId) {
             const order = window.state.cashierOrders.find(o => o.orderId == orderId); if (!order) return;
             window.state.pendingSplitOrder = JSON.parse(JSON.stringify(order)); window.state.splitSelection = order.items.map(item => ({ ...item, selectedQty: 0 }));
-            renderSplitModal(); document.getElementById('split-modal').classList.remove('hidden');
+            window.renderSplitModal(); document.getElementById('split-modal').classList.remove('hidden');
         };
         window.closeSplitModal = function() { window.state.pendingSplitOrder = null; document.getElementById('split-modal').classList.add('hidden'); };
         window.updateSplitQty = function(index, delta) {
             const item = window.state.splitSelection[index]; let newQty = item.selectedQty + delta;
-            if(newQty >= 0 && newQty <= item.quantity) { window.state.splitSelection[index].selectedQty = newQty; renderSplitModal(); }
+            if(newQty >= 0 && newQty <= item.quantity) { window.state.splitSelection[index].selectedQty = newQty; window.renderSplitModal(); }
         };
         window.renderSplitModal = function() {
             const container = document.getElementById('split-items-list'); let splitTotal = 0;
@@ -1552,42 +1564,66 @@
             window.closeSplitModal(); document.getElementById('pay-modal-total').innerText = formatCurrency(splitTotal); window.setPaymentMethod('efectivo'); document.getElementById('pay-modal').classList.remove('hidden');
         };
 
-        window.confirmPayment = async function() {
+        window.confirmPayment = function() {
             const order = window.state.pendingPayOrder; const method = window.state.paymentMethod; if (!order) return;
             let cashAmount = 0; let transferAmount = 0;
             if (method === 'efectivo') { cashAmount = order.total; } else if (method === 'transferencia') { transferAmount = order.total; } else if (method === 'dividido') { cashAmount = parseInt(document.getElementById('mixed-cash-input').value) || 0; transferAmount = order.total - cashAmount; if(transferAmount < 0) transferAmount = 0; }
             const paymentData = { method: method, cashAmount: cashAmount, transferAmount: transferAmount };
-            await processPayOrder(order, paymentData); window.closePayModal();
+            window.processPayOrder(order, paymentData); window.closePayModal();
         };
 
-        async function processPayOrder(payOrder, paymentData) {
+        window.processPayOrder = function(payOrder, paymentData) {
             if (!window.state.currentUser) return;
             try {
                 const updates = {};
                 payOrder.items.forEach(item => { const recipe = RECIPES[item.id]; if (recipe) { for (const [invId, qtyNeeded] of Object.entries(recipe)) { if (!updates[invId]) updates[invId] = 0; updates[invId] += (qtyNeeded * item.quantity); } } });
-                for (const [invId, deductedQty] of Object.entries(updates)) { let currentStock = window.state.inventory[invId]?.stock || 0; let newStock = currentStock - deductedQty; const name = INVENTORY_DICT[invId] || invId; await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', invId), { name: name, stock: newStock }, { merge: true }); }
+                for (const [invId, deductedQty] of Object.entries(updates)) { let currentStock = window.state.inventory[invId]?.stock || 0; let newStock = currentStock - deductedQty; const name = INVENTORY_DICT[invId] || invId; setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', invId), { name: name, stock: newStock }, { merge: true }); }
                 if (payOrder.isPartial) {
                     const originalOrder = payOrder.originalOrder; const paidItems = payOrder.items; let remainingItems = [];
                     originalOrder.items.forEach(origItem => { const paidItem = paidItems.find(pi => pi.id === origItem.id && pi.note === origItem.note); const paidQty = paidItem ? paidItem.quantity : 0; const remainingQty = origItem.quantity - paidQty; if (remainingQty > 0) { remainingItems.push({...origItem, quantity: remainingQty}); } });
                     if (remainingItems.length > 0) {
                         const remainingTotal = remainingItems.reduce((acc, item) => acc + (item.price * item.quantity), 0); originalOrder.items = remainingItems;
                         if(originalOrder.type === 'domicilio') { originalOrder.subtotal = remainingTotal; originalOrder.total = remainingTotal + (originalOrder.domiFee || 0); } else { originalOrder.total = remainingTotal; }
-                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', originalOrder.orderId.toString()), originalOrder);
-                    } else { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', originalOrder.orderId.toString())); }
+                        setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', originalOrder.orderId.toString()), originalOrder);
+                    } else { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', originalOrder.orderId.toString())); }
                     const historyRecord = { ...originalOrder, orderId: originalOrder.orderId + '-P' + Math.floor(Math.random()*1000), items: paidItems, total: payOrder.total, isPartialPayment: true, status: 'paid', payment: paymentData, actionAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
                     if(historyRecord.type === 'domicilio') { historyRecord.domiFee = 0; }
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', historyRecord.orderId.toString()), historyRecord);
+                    setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', historyRecord.orderId.toString()), historyRecord);
                     window.showToast("Pago Parcial registrado.");
                 } else {
                     payOrder.status = 'paid'; payOrder.payment = paymentData; payOrder.actionAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', payOrder.orderId.toString()), payOrder);
-                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', payOrder.orderId.toString()));
+                    setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', payOrder.orderId.toString()), payOrder);
+                    deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', payOrder.orderId.toString()));
                     window.showToast("Pago registrado con éxito.");
                 }
             } catch (error) { console.error("Error pagando:", error); window.showToast("Error en el pago.", "error"); }
-        }
+        };
 
-        window.onload = () => { renderCategories(); renderProducts(); renderCart(); lucide.createIcons(); if(window.state.waiterName) { document.getElementById('waiter-name').value = window.state.waiterName; } initAuth(); };
+        window.cancelOrder = function(id) {
+            if (!window.state.currentUser) return;
+            try {
+                const orderToArchive = window.state.cashierOrders.find(o => o.orderId == id);
+                if (orderToArchive) {
+                    orderToArchive.status = 'cancelled';
+                    orderToArchive.actionAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', id.toString()), orderToArchive);
+                }
+                deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', id.toString()));
+                
+                const ticketsToDelete = window.state.kitchenTickets.filter(t => t.orderId == id);
+                for (const t of ticketsToDelete) {
+                    t.status = 'cancelled'; t.actionAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets', t.ticketId), t);
+                    deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', t.ticketId));
+                }
+                window.showToast(`Orden #${id} anulada.`, 'error');
+            } catch (error) { console.error("Error anulando:", error); }
+        };
+
+        window.actionNewOrderSameTable = function() { window.state.lastSubmittedOrder = null; document.getElementById('success-modal').classList.add('hidden'); };
+        window.actionNewOrderOtherTable = function() { window.state.lastSubmittedOrder = null; window.state.selectedTables = []; document.getElementById('success-modal').classList.add('hidden'); window.renderCart(); window.openMapModal(); };
+
+        window.onload = () => { window.renderCategories(); window.renderProducts(); window.renderCart(); lucide.createIcons(); if(window.state.waiterName) { document.getElementById('waiter-name').value = window.state.waiterName; } initAuth(); };
 
     </script>
 </body>
