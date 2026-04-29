@@ -24,7 +24,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center gap-2">
-                    <button onclick="toggleSidebar()" class="p-1 mr-1 text-white hover:bg-red-700 rounded transition-colors">
+                    <button onclick="window.toggleSidebar()" class="p-1 mr-1 text-white hover:bg-red-700 rounded transition-colors">
                         <i data-lucide="menu" class="w-7 h-7"></i>
                     </button>
                     <span class="font-black text-2xl tracking-tighter">PERROS LA 30</span>
@@ -43,33 +43,33 @@
     </header>
 
     <!-- SIDEBAR MENÚ LATERAL -->
-    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-[110] hidden fade-in"></div>
+    <div id="sidebar-overlay" onclick="window.toggleSidebar()" class="fixed inset-0 bg-black/50 z-[110] hidden fade-in"></div>
     <div id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-white shadow-2xl z-[120] transform -translate-x-full transition-transform duration-300 flex flex-col">
         <div class="p-4 bg-red-600 text-white flex justify-between items-center shrink-0">
             <span class="font-black text-xl tracking-widest">MENÚ</span>
-            <button onclick="toggleSidebar()" class="hover:bg-red-700 p-1 rounded transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+            <button onclick="window.toggleSidebar()" class="hover:bg-red-700 p-1 rounded transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
         </div>
         <div class="flex flex-col p-4 space-y-2 overflow-y-auto flex-1">
-            <button onclick="switchView('mesero')" id="menu-mesero" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-colors bg-red-50 text-red-600">
+            <button onclick="window.switchView('mesero')" id="menu-mesero" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-colors bg-red-50 text-red-600">
                 <i data-lucide="utensils" class="w-5 h-5"></i> Mesas / Barra
             </button>
-            <button onclick="switchView('domicilios')" id="menu-domicilios" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100">
+            <button onclick="window.switchView('domicilios')" id="menu-domicilios" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100">
                 <i data-lucide="bike" class="w-5 h-5"></i> Domicilios
             </button>
             <div class="h-px bg-gray-200 my-2"></div>
-            <button onclick="switchView('cocina')" id="menu-cocina" class="flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100">
+            <button onclick="window.switchView('cocina')" id="menu-cocina" class="flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100">
                 <div class="flex items-center gap-3"><i data-lucide="chef-hat" class="w-5 h-5"></i> Cocina</div>
                 <span id="menu-badge-cocina" class="hidden bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
             </button>
-            <button onclick="attemptSwitchView('caja')" id="menu-caja" class="flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100">
+            <button onclick="window.attemptSwitchView('caja')" id="menu-caja" class="flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100">
                 <div class="flex items-center gap-3"><i data-lucide="receipt" class="w-5 h-5"></i> Caja & Pagos</div>
                 <span id="menu-badge-caja" class="hidden bg-green-400 text-green-900 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
             </button>
             <div class="h-px bg-gray-200 my-2"></div>
-            <button onclick="attemptSwitchView('historial')" id="menu-historial" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100">
+            <button onclick="window.attemptSwitchView('historial')" id="menu-historial" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100">
                 <i data-lucide="history" class="w-5 h-5"></i> Historial
             </button>
-            <button onclick="attemptSwitchView('inventario')" id="menu-inventario" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100">
+            <button onclick="window.attemptSwitchView('inventario')" id="menu-inventario" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100">
                 <i data-lucide="boxes" class="w-5 h-5"></i> Inventario
             </button>
         </div>
@@ -94,8 +94,8 @@
                         <span id="badge-editing" class="hidden bg-yellow-500 text-yellow-900 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider animate-pulse">Editando</span>
                     </div>
                     <div class="flex items-center gap-3">
-                        <button onclick="cancelEditMode()" id="btn-cancel-edit" class="hidden text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-white font-bold transition-colors">Cancelar</button>
-                        <button onclick="clearCurrentOrder(true)" id="btn-clear-order" class="hidden text-gray-400 hover:text-red-400 p-1.5 bg-gray-800 rounded-full transition-colors flex items-center justify-center">
+                        <button onclick="window.cancelEditMode()" id="btn-cancel-edit" class="hidden text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-white font-bold transition-colors">Cancelar</button>
+                        <button onclick="window.clearCurrentOrder(true)" id="btn-clear-order" class="hidden text-gray-400 hover:text-red-400 p-1.5 bg-gray-800 rounded-full transition-colors flex items-center justify-center">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                         <span id="header-table-badge" class="hidden bg-red-600 px-3 py-1 rounded-full text-sm font-bold"></span>
@@ -116,11 +116,11 @@
                     </div>
                     <div class="flex flex-col gap-2">
                         <label class="block text-sm font-medium text-gray-700 mb-0">Mesa / Cliente</label>
-                        <button onclick="openMapModal()" id="table-selector-btn" class="w-full border rounded-lg p-2 flex items-center justify-between focus:ring-2 focus:ring-red-500 outline-none transition-colors bg-gray-50 hover:bg-red-50">
+                        <button onclick="window.openMapModal()" id="table-selector-btn" class="w-full border rounded-lg p-2 flex items-center justify-between focus:ring-2 focus:ring-red-500 outline-none transition-colors bg-gray-50 hover:bg-red-50">
                             <span id="table-selector-text" class="font-bold text-gray-500">Seleccionar Mesa...</span>
                             <span id="table-selector-icon-container"><i data-lucide="map" class="text-gray-400 w-5 h-5"></i></span>
                         </button>
-                        <button onclick="openActiveOrdersModal()" id="btn-waiter-edit" class="w-full bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-bold py-2 rounded-lg border border-yellow-300 transition-colors flex items-center justify-center gap-2 text-sm mt-1">
+                        <button onclick="window.openActiveOrdersModal()" id="btn-waiter-edit" class="w-full bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-bold py-2 rounded-lg border border-yellow-300 transition-colors flex items-center justify-center gap-2 text-sm mt-1">
                             <i data-lucide="list-checks" class="w-4 h-4"></i> Editar Orden Activa
                         </button>
                     </div>
@@ -134,7 +134,7 @@
                         <span class="font-bold text-gray-600">Total:</span>
                         <span id="cart-total" class="font-extrabold text-2xl text-red-600">$0</span>
                     </div>
-                    <button id="btn-submit-order" onclick="submitOrder()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 text-lg">
+                    <button id="btn-submit-order" onclick="window.submitOrder()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 text-lg">
                         <i data-lucide="cloud-upload" class="w-6 h-6"></i> Enviar Orden a la Nube
                     </button>
                 </div>
@@ -158,8 +158,8 @@
                         <span id="domi-badge-editing" class="hidden bg-yellow-400 text-yellow-900 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider animate-pulse">Editando</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="cancelDomiEditMode()" id="domi-btn-cancel-edit" class="hidden text-xs bg-orange-800 hover:bg-orange-900 px-2 py-1 rounded text-white font-bold transition-colors">Cancelar</button>
-                        <button onclick="clearDomiOrder()" id="domi-btn-clear-order" class="hidden text-white hover:text-orange-200 p-1.5 rounded-full transition-colors flex items-center justify-center">
+                        <button onclick="window.cancelDomiEditMode()" id="domi-btn-cancel-edit" class="hidden text-xs bg-orange-800 hover:bg-orange-900 px-2 py-1 rounded text-white font-bold transition-colors">Cancelar</button>
+                        <button onclick="window.clearDomiOrder()" id="domi-btn-clear-order" class="hidden text-white hover:text-orange-200 p-1.5 rounded-full transition-colors flex items-center justify-center">
                             <i data-lucide="trash-2" class="w-5 h-5"></i>
                         </button>
                     </div>
@@ -173,7 +173,7 @@
                     </div>
                     <div class="flex items-center justify-between bg-orange-100 p-3 rounded-lg border border-orange-200 mt-2">
                         <label class="font-bold text-orange-900 text-sm">Precio Domicilio $</label>
-                        <input type="number" id="domi-fee" value="0" oninput="window.state.domiFee = parseInt(this.value) || 0; renderDomiCart();" class="w-24 border border-orange-300 rounded-md p-1.5 text-right font-black text-orange-700 outline-none bg-white">
+                        <input type="number" id="domi-fee" value="0" oninput="window.state.domiFee = parseInt(this.value) || 0; window.renderDomiCart();" class="w-24 border border-orange-300 rounded-md p-1.5 text-right font-black text-orange-700 outline-none bg-white">
                     </div>
                 </div>
 
@@ -189,7 +189,7 @@
                         <span class="font-black text-gray-700">Total a Cobrar:</span>
                         <span id="domi-total" class="font-extrabold text-2xl text-orange-600">$0</span>
                     </div>
-                    <button id="btn-submit-domi" onclick="submitDomiOrder()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 text-lg">
+                    <button id="btn-submit-domi" onclick="window.submitDomiOrder()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 text-lg">
                         <i data-lucide="bike" class="w-6 h-6"></i> Confirmar Domicilio
                     </button>
                 </div>
@@ -206,9 +206,9 @@
                     <p class="text-gray-500">Órdenes y domicilios pendientes</p>
                 </div>
                 <div class="flex space-x-1 sm:space-x-2 bg-gray-200 p-1.5 rounded-xl overflow-x-auto">
-                    <button onclick="setKitchenStation('perrero')" id="tab-station-perrero" class="px-4 py-2 bg-white font-bold text-red-600 rounded-lg shadow transition-all whitespace-nowrap">Perrero</button>
-                    <button onclick="setKitchenStation('hamburguesero')" id="tab-station-hamburguesero" class="px-4 py-2 font-bold text-gray-600 hover:text-gray-800 rounded-lg transition-all whitespace-nowrap">Hamburguesero</button>
-                    <button onclick="setKitchenStation('general')" id="tab-station-general" class="px-4 py-2 font-bold text-gray-600 hover:text-gray-800 rounded-lg transition-all whitespace-nowrap">Otras Prep.</button>
+                    <button onclick="window.setKitchenStation('perrero')" id="tab-station-perrero" class="px-4 py-2 bg-white font-bold text-red-600 rounded-lg shadow transition-all whitespace-nowrap">Perrero</button>
+                    <button onclick="window.setKitchenStation('hamburguesero')" id="tab-station-hamburguesero" class="px-4 py-2 font-bold text-gray-600 hover:text-gray-800 rounded-lg transition-all whitespace-nowrap">Hamburguesero</button>
+                    <button onclick="window.setKitchenStation('general')" id="tab-station-general" class="px-4 py-2 font-bold text-gray-600 hover:text-gray-800 rounded-lg transition-all whitespace-nowrap">Otras Prep.</button>
                 </div>
             </div>
             <div id="kitchen-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start pb-6 content-start"></div>
@@ -224,10 +224,10 @@
                     <p class="text-gray-500">Órdenes pendientes de pago y finanzas</p>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="generateReporteZ()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 sm:px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-blue-200 text-sm shadow-sm whitespace-nowrap">
+                    <button onclick="window.generateReporteZ()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 sm:px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-blue-200 text-sm shadow-sm whitespace-nowrap">
                         <i data-lucide="calculator" class="w-4 h-4"></i> <span class="hidden sm:inline">Reporte Z</span>
                     </button>
-                    <button onclick="openSecurityModal()" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 sm:px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-red-200 text-sm shadow-sm whitespace-nowrap">
+                    <button onclick="window.openSecurityModal()" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 sm:px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-red-200 text-sm shadow-sm whitespace-nowrap">
                         <i data-lucide="lock" class="w-4 h-4"></i> <span class="hidden sm:inline">Limpiar Sistema</span>
                     </button>
                 </div>
@@ -238,7 +238,7 @@
                         <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Base de Caja Inicial</p>
                         <h3 id="finance-base-display" class="text-2xl font-black text-green-600">$0</h3>
                     </div>
-                    <button onclick="openFinanceModal('base')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+                    <button onclick="window.openFinanceModal('base')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
                         <i data-lucide="edit-2" class="w-4 h-4"></i> Ajustar Base
                     </button>
                 </div>
@@ -247,7 +247,7 @@
                         <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Gastos del Día</p>
                         <h3 id="finance-expenses-display" class="text-2xl font-black text-red-600">$0</h3>
                     </div>
-                    <button onclick="openFinanceModal('gasto')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+                    <button onclick="window.openFinanceModal('gasto')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
                         <i data-lucide="plus" class="w-4 h-4"></i> Registrar Gasto
                     </button>
                 </div>
@@ -298,10 +298,10 @@
             <div class="bg-gray-900 text-white p-4 flex justify-between items-center shrink-0">
                 <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="map" class="text-red-500"></i> Selecciona Mesa</h3>
                 <div class="flex items-center gap-2 sm:gap-4">
-                    <button onclick="toggleMultipleTables()" id="btn-multiple-tables" class="text-xs sm:text-sm px-2 sm:px-3 py-1 rounded border border-gray-500 text-gray-200 hover:bg-gray-800 transition-colors">Juntar Mesas</button>
-                    <button onclick="selectNoTable()" class="text-xs sm:text-sm px-2 sm:px-3 py-1 rounded border border-orange-500 text-orange-400 hover:bg-orange-50 hover:text-white font-bold transition-colors">Para Llevar</button>
-                    <button onclick="confirmTableSelection()" id="btn-confirm-tables" class="hidden text-xs sm:text-sm px-2 sm:px-3 py-1 rounded bg-red-600 hover:bg-red-700 font-bold transition-colors">Confirmar</button>
-                    <button onclick="closeMapModal()" class="text-gray-400 hover:text-white transition-colors ml-2"><i data-lucide="x" class="w-6 h-6"></i></button>
+                    <button onclick="window.toggleMultipleTables()" id="btn-multiple-tables" class="text-xs sm:text-sm px-2 sm:px-3 py-1 rounded border border-gray-500 text-gray-200 hover:bg-gray-800 transition-colors">Juntar Mesas</button>
+                    <button onclick="window.selectNoTable()" class="text-xs sm:text-sm px-2 sm:px-3 py-1 rounded border border-orange-500 text-orange-400 hover:bg-orange-50 hover:text-white font-bold transition-colors">Para Llevar</button>
+                    <button onclick="window.confirmTableSelection()" id="btn-confirm-tables" class="hidden text-xs sm:text-sm px-2 sm:px-3 py-1 rounded bg-red-600 hover:bg-red-700 font-bold transition-colors">Confirmar</button>
+                    <button onclick="window.closeMapModal()" class="text-gray-400 hover:text-white transition-colors ml-2"><i data-lucide="x" class="w-6 h-6"></i></button>
                 </div>
             </div>
             <div class="p-6 bg-gray-100 overflow-auto flex-1 relative">
@@ -324,8 +324,8 @@
             <p class="text-sm text-gray-500 mb-4">Ingresa el nombre del cliente para identificar la orden.</p>
             <input type="text" id="no-table-name" placeholder="Ej. Carlos G..." class="w-full border-2 border-gray-300 rounded-xl p-3 text-lg focus:border-orange-500 outline-none mb-6 text-center font-bold">
             <div class="flex gap-2">
-                <button onclick="closeNoTableModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
-                <button onclick="confirmNoTable()" class="flex-1 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl shadow-md transition-colors">Confirmar</button>
+                <button onclick="window.closeNoTableModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
+                <button onclick="window.confirmNoTable()" class="flex-1 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl shadow-md transition-colors">Confirmar</button>
             </div>
         </div>
     </div>
@@ -335,7 +335,7 @@
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-[80vh]">
             <div class="bg-yellow-500 text-yellow-900 p-4 flex justify-between items-center shrink-0">
                 <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="list-checks" class="w-6 h-6"></i> Órdenes Activas</h3>
-                <button onclick="closeActiveOrdersModal()" class="text-yellow-800 hover:text-yellow-900 transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+                <button onclick="window.closeActiveOrdersModal()" class="text-yellow-800 hover:text-yellow-900 transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
             <div class="p-4 overflow-y-auto flex-1 bg-gray-50" id="active-orders-list"></div>
         </div>
@@ -349,12 +349,12 @@
             <p id="success-subtitle" class="text-gray-600 mb-6">¿Qué deseas hacer ahora?</p>
             <div class="space-y-3">
                 <div class="flex gap-2">
-                    <button onclick="printTicket('last-cocina')" class="flex-1 bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-2 rounded-xl transition-colors border border-orange-200 flex flex-col items-center justify-center gap-1 text-xs shadow-sm"><i data-lucide="chef-hat" class="w-5 h-5"></i>Imprimir Cocina</button>
-                    <button onclick="printTicket('last-caja')" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 rounded-xl transition-colors border border-gray-200 flex flex-col items-center justify-center gap-1 text-xs shadow-sm"><i data-lucide="receipt" class="w-5 h-5"></i>Imprimir Caja</button>
+                    <button onclick="window.printTicket('last-cocina')" class="flex-1 bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-2 rounded-xl transition-colors border border-orange-200 flex flex-col items-center justify-center gap-1 text-xs shadow-sm"><i data-lucide="chef-hat" class="w-5 h-5"></i>Imprimir Cocina</button>
+                    <button onclick="window.printTicket('last-caja')" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 rounded-xl transition-colors border border-gray-200 flex flex-col items-center justify-center gap-1 text-xs shadow-sm"><i data-lucide="receipt" class="w-5 h-5"></i>Imprimir Caja</button>
                 </div>
                 <div class="w-full h-px bg-gray-200 my-3"></div>
-                <button onclick="actionNewOrderSameTable()" id="btn-same-table" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors shadow-md">Nueva Orden</button>
-                <button onclick="actionNewOrderOtherTable()" class="w-full bg-white border-2 border-gray-200 hover:border-red-500 text-gray-800 hover:text-red-600 font-bold py-3 rounded-xl transition-colors">Atender Otra Mesa</button>
+                <button onclick="window.actionNewOrderSameTable()" id="btn-same-table" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors shadow-md">Nueva Orden</button>
+                <button onclick="window.actionNewOrderOtherTable()" class="w-full bg-white border-2 border-gray-200 hover:border-red-500 text-gray-800 hover:text-red-600 font-bold py-3 rounded-xl transition-colors">Atender Otra Mesa</button>
             </div>
         </div>
     </div>
@@ -369,14 +369,14 @@
                 <h2 id="pay-modal-total" class="text-3xl font-black text-green-600">$0</h2>
             </div>
             <div class="grid grid-cols-2 gap-2 mb-4">
-                <button onclick="setPaymentMethod('efectivo')" id="btn-pay-efectivo" class="border-2 border-green-500 bg-green-50 text-green-700 font-bold py-2 rounded-xl transition-colors">💵 Efectivo</button>
-                <button onclick="setPaymentMethod('transferencia')" id="btn-pay-transferencia" class="border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-gray-600 font-bold py-2 rounded-xl transition-colors">📱 Nequi / Transf.</button>
+                <button onclick="window.setPaymentMethod('efectivo')" id="btn-pay-efectivo" class="border-2 border-green-500 bg-green-50 text-green-700 font-bold py-2 rounded-xl transition-colors">💵 Efectivo</button>
+                <button onclick="window.setPaymentMethod('transferencia')" id="btn-pay-transferencia" class="border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-gray-600 font-bold py-2 rounded-xl transition-colors">📱 Nequi / Transf.</button>
             </div>
-            <button onclick="setPaymentMethod('dividido')" id="btn-pay-dividido" class="w-full border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 text-gray-600 font-bold py-2 rounded-xl transition-colors mb-4">⚖️ Pago Mixto / Dividido</button>
+            <button onclick="window.setPaymentMethod('dividido')" id="btn-pay-dividido" class="w-full border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 text-gray-600 font-bold py-2 rounded-xl transition-colors mb-4">⚖️ Pago Mixto / Dividido</button>
             <div id="pay-mixed-section" class="hidden bg-blue-50 p-4 rounded-xl mb-6 border border-blue-200">
                 <div class="flex items-center justify-between mb-3">
                     <label class="text-sm font-bold text-blue-900">Efectivo recibido:</label>
-                    <input type="number" id="mixed-cash-input" oninput="updateMixedTransfer()" placeholder="$" class="w-24 text-right border border-gray-300 rounded p-1 font-bold">
+                    <input type="number" id="mixed-cash-input" oninput="window.updateMixedTransfer()" placeholder="$" class="w-24 text-right border border-gray-300 rounded p-1 font-bold">
                 </div>
                 <div class="flex items-center justify-between pt-2 border-t border-blue-200">
                     <label class="text-sm font-bold text-purple-800">Restante en Nequi:</label>
@@ -384,8 +384,8 @@
                 </div>
             </div>
             <div class="flex gap-2">
-                <button onclick="closePayModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
-                <button onclick="confirmPayment()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-colors flex justify-center items-center gap-2"><i data-lucide="check" class="w-5 h-5"></i> Confirmar</button>
+                <button onclick="window.closePayModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
+                <button onclick="window.confirmPayment()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-colors flex justify-center items-center gap-2"><i data-lucide="check" class="w-5 h-5"></i> Confirmar</button>
             </div>
         </div>
     </div>
@@ -395,7 +395,7 @@
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-[85vh]">
             <div class="bg-orange-500 text-white p-4 flex justify-between items-center shrink-0">
                 <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="scissors" class="w-6 h-6"></i> Dividir Cuenta</h3>
-                <button onclick="closeSplitModal()" class="text-orange-100 hover:text-white transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+                <button onclick="window.closeSplitModal()" class="text-orange-100 hover:text-white transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
             <div class="p-4 bg-orange-50 shrink-0 border-b border-orange-100">
                 <p class="text-sm text-orange-800 font-medium leading-tight">Selecciona la cantidad de cada producto que la persona va a pagar ahora.</p>
@@ -407,8 +407,8 @@
                     <span id="split-total-display" class="font-extrabold text-2xl text-orange-600">$0</span>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="closeSplitModal()" class="flex-1 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
-                    <button onclick="proceedSplitPayment()" class="flex-[2] py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl shadow-md transition-colors flex justify-center items-center gap-2">Continuar Pago <i data-lucide="arrow-right" class="w-5 h-5"></i></button>
+                    <button onclick="window.closeSplitModal()" class="flex-1 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
+                    <button onclick="window.proceedSplitPayment()" class="flex-[2] py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl shadow-md transition-colors flex justify-center items-center gap-2">Continuar Pago <i data-lucide="arrow-right" class="w-5 h-5"></i></button>
                 </div>
             </div>
         </div>
@@ -428,8 +428,8 @@
                 <input type="text" id="finance-desc" placeholder="Ej: Compra de hielo..." class="w-full border-2 border-gray-300 rounded-xl p-3 text-sm focus:border-blue-500 outline-none">
             </div>
             <div class="flex gap-2">
-                <button onclick="closeFinanceModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
-                <button onclick="saveFinance()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-colors">Guardar</button>
+                <button onclick="window.closeFinanceModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
+                <button onclick="window.saveFinance()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-colors">Guardar</button>
             </div>
         </div>
     </div>
@@ -439,7 +439,7 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
             <div class="bg-blue-600 text-white p-4 flex justify-between items-center shrink-0">
                 <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="calculator" class="w-6 h-6"></i> Reporte Z (Cierre)</h3>
-                <button onclick="closeReporteZ()" class="text-blue-200 hover:text-white transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+                <button onclick="window.closeReporteZ()" class="text-blue-200 hover:text-white transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
             <div class="p-5 overflow-y-auto bg-gray-50 flex-1">
                 <div class="bg-white border border-gray-200 rounded-xl p-4 mb-5 shadow-sm">
@@ -471,8 +471,8 @@
                 </div>
             </div>
             <div class="p-4 bg-white border-t flex gap-2 shrink-0">
-                <button onclick="closeReporteZ()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-lg transition-colors">Cerrar</button>
-                <button onclick="printReporteZ()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md flex items-center justify-center gap-2 transition-colors"><i data-lucide="printer" class="w-5 h-5"></i> Imprimir Z</button>
+                <button onclick="window.closeReporteZ()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-lg transition-colors">Cerrar</button>
+                <button onclick="window.printReporteZ()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md flex items-center justify-center gap-2 transition-colors"><i data-lucide="printer" class="w-5 h-5"></i> Imprimir Z</button>
             </div>
         </div>
     </div>
@@ -485,8 +485,8 @@
             <p class="text-sm text-gray-500 mb-6">Ingresa el PIN para desbloquear Caja, Historial e Inventario.</p>
             <input type="password" id="tab-security-pin" placeholder="PIN..." class="w-full border-2 border-gray-300 rounded-xl p-3 text-center text-xl tracking-widest focus:border-red-500 focus:outline-none mb-6">
             <div class="flex gap-2">
-                <button onclick="closeTabSecurityModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
-                <button onclick="confirmTabSecurity()" class="flex-1 py-3 bg-gray-800 hover:bg-gray-900 text-white font-bold rounded-xl shadow-md transition-colors">Desbloquear</button>
+                <button onclick="window.closeTabSecurityModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
+                <button onclick="window.confirmTabSecurity()" class="flex-1 py-3 bg-gray-800 hover:bg-gray-900 text-white font-bold rounded-xl shadow-md transition-colors">Desbloquear</button>
             </div>
         </div>
     </div>
@@ -499,8 +499,8 @@
             <p class="text-sm text-gray-500 mb-6">Ingresa la clave para limpiar el sistema (El inventario NO se borrará).</p>
             <input type="password" id="security-pin" placeholder="Clave..." class="w-full border-2 border-gray-300 rounded-xl p-3 text-center text-xl tracking-widest focus:border-red-500 focus:outline-none mb-6">
             <div class="flex gap-2">
-                <button onclick="closeSecurityModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
-                <button onclick="confirmSecurityAndReset()" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-md transition-colors">Limpiar Todo</button>
+                <button onclick="window.closeSecurityModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
+                <button onclick="window.confirmSecurityAndReset()" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-md transition-colors">Limpiar Todo</button>
             </div>
         </div>
     </div>
@@ -512,13 +512,13 @@
             <h3 class="text-xl font-bold text-gray-800 mb-1">Ajustar Stock</h3>
             <p id="inv-modal-item-name" class="text-sm text-gray-500 mb-6 font-semibold">Cargando...</p>
             <div class="flex items-center justify-center gap-4 mb-6">
-                <button onclick="adjInvInput(-1)" class="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xl flex items-center justify-center transition-colors"><i data-lucide="minus" class="w-5 h-5"></i></button>
+                <button onclick="window.adjInvInput(-1)" class="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xl flex items-center justify-center transition-colors"><i data-lucide="minus" class="w-5 h-5"></i></button>
                 <input type="number" id="inv-modal-input" class="w-24 border-2 border-gray-300 rounded-xl p-2 text-center text-xl font-bold focus:border-purple-500 focus:outline-none appearance-none">
-                <button onclick="adjInvInput(1)" class="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xl flex items-center justify-center transition-colors"><i data-lucide="plus" class="w-5 h-5"></i></button>
+                <button onclick="window.adjInvInput(1)" class="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xl flex items-center justify-center transition-colors"><i data-lucide="plus" class="w-5 h-5"></i></button>
             </div>
             <div class="flex gap-2">
-                <button onclick="closeInventoryModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
-                <button onclick="saveInventoryStock()" class="flex-1 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow-md transition-colors">Guardar</button>
+                <button onclick="window.closeInventoryModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
+                <button onclick="window.saveInventoryStock()" class="flex-1 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow-md transition-colors">Guardar</button>
             </div>
         </div>
     </div>
@@ -658,23 +658,29 @@
             currentUser: null, currentView: 'mesero', kitchenStation: 'perrero',
             waiterName: '', selectedTables: [], isMultipleTableMode: false,
             activeCategory: MENU_CATEGORIES[0], currentOrderItems: [], generalNote: '',
-            
             domiOrderItems: [], domiCategory: MENU_CATEGORIES[0],
             domiAddress: '', domiPhone: '', domiName: '', domiFee: 0, domiNote: '',
-            
             orderCounter: 1, kitchenTickets: [], cashierOrders: [], historyOrders: [], 
             inventory: {}, finances: { base: 0, expenses: [] },
             lastSubmittedOrder: null, zReportData: null, editingInvId: null, editingOrderId: null,
             isAdminUnlocked: false, pendingView: null, pendingPayOrder: null, 
-            financeType: 'gasto', paymentMethod: 'efectivo',
-            splitSelection: [], pendingSplitOrder: null 
+            financeType: 'gasto', paymentMethod: 'efectivo', splitSelection: [], pendingSplitOrder: null 
         };
 
         let toastTimeout;
 
-        const formatCurrency = (amount) => {
-            return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(amount);
+        // PREVENCIÓN DE NaN A NIVEL GLOBAL
+        window.getSafeNumber = function(val, fallback = 0) {
+            if (val === null || val === undefined || val === '') return fallback;
+            const parsed = Number(val);
+            return isNaN(parsed) ? fallback : parsed;
         };
+
+        const formatCurrency = (amount) => {
+            let val = window.getSafeNumber(amount, 0);
+            return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
+        };
+        window.formatCurrency = formatCurrency;
 
         window.showToast = function(message, type = 'success') {
             const toastEl = document.getElementById('toast');
@@ -748,22 +754,19 @@
             printWindow.document.write(html); printWindow.document.close();
         };
 
+        // --- FUNCIONES GLOBALES (AÑADIDO window. a todas para evitar ReferenceError) ---
         window.openFinanceModal = function(type) {
             window.state.financeType = type;
             const title = type === 'base' ? 'Ajustar Base de Caja' : 'Registrar Gasto Extra';
             const subtitle = type === 'base' ? 'Monto con el que inicia la caja hoy' : 'Ej: Proveedores, insumos, etc.';
-            
             document.getElementById('finance-modal-title').innerText = title;
             document.getElementById('finance-modal-subtitle').innerText = subtitle;
             document.getElementById('finance-amount').value = type === 'base' ? (window.state.finances?.base || '') : '';
-            
             const descContainer = document.getElementById('finance-desc-container');
             if(type === 'gasto') {
-                descContainer.classList.remove('hidden');
-                document.getElementById('finance-desc').value = '';
+                descContainer.classList.remove('hidden'); document.getElementById('finance-desc').value = '';
             } else {
-                descContainer.classList.add('hidden');
-                document.getElementById('finance-desc').value = 'Base inicial';
+                descContainer.classList.add('hidden'); document.getElementById('finance-desc').value = 'Base inicial';
             }
             document.getElementById('finance-modal').classList.remove('hidden');
         };
@@ -774,7 +777,6 @@
             const amt = parseInt(document.getElementById('finance-amount').value) || 0;
             const desc = document.getElementById('finance-desc').value || 'Sin descripción';
             const type = window.state.financeType;
-
             const newFinances = { ...window.state.finances };
             if(!newFinances.expenses) newFinances.expenses = [];
 
@@ -784,14 +786,12 @@
                 if(amt <= 0) { window.showToast("Monto inválido", "error"); return; }
                 newFinances.expenses.push({ amount: amt, desc: desc, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
             }
-
             try {
                 setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'finances'), newFinances);
                 window.closeFinanceModal();
                 window.showToast(type === 'base' ? "Base actualizada" : "Gasto guardado");
             } catch (e) {
-                console.error(e);
-                window.showToast("Error guardando finanzas", "error");
+                console.error(e); window.showToast("Error guardando finanzas", "error");
             }
         };
 
@@ -840,15 +840,10 @@
             document.getElementById('inventory-modal').classList.remove('hidden');
         };
 
-        window.closeInventoryModal = function() {
-            document.getElementById('inventory-modal').classList.add('hidden');
-        };
-
+        window.closeInventoryModal = function() { document.getElementById('inventory-modal').classList.add('hidden'); };
         window.adjInvInput = function(delta) {
             const input = document.getElementById('inv-modal-input');
-            let val = parseInt(input.value) || 0;
-            val += delta;
-            input.value = val;
+            let val = parseInt(input.value) || 0; val += delta; input.value = val;
         };
 
         window.saveInventoryStock = function() {
@@ -861,10 +856,7 @@
                 setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', invId), { name: name, stock: newStock }, { merge: true });
                 window.closeInventoryModal();
                 window.showToast("Stock ajustado");
-            } catch (e) {
-                console.error(e);
-                window.showToast("Error ajustando stock", "error");
-            }
+            } catch (e) { console.error(e); window.showToast("Error ajustando stock", "error"); }
         };
 
         window.updateBadges = function() {
@@ -926,12 +918,8 @@
                             ` : ''}
                         </div>
                         <div class="p-4 pt-0 flex gap-3 mt-auto">
-                            <button onclick="printTicket('cocina', '${ticket.ticketId}')" class="w-1/4 bg-${colorTheme}-200 hover:bg-${colorTheme}-300 text-${colorTheme}-800 font-bold py-4 rounded-xl shadow transition-colors flex items-center justify-center">
-                                <i data-lucide="printer" class="w-8 h-8"></i>
-                            </button>
-                            <button onclick="completeKitchenTicket('${ticket.ticketId}')" class="w-3/4 bg-green-500 hover:bg-green-600 text-white font-black text-xl py-4 rounded-xl shadow transition-colors flex items-center justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-7 h-7"></i> TERMINAR
-                            </button>
+                            <button onclick="window.printTicket('cocina', '${ticket.ticketId}')" class="w-1/4 bg-${colorTheme}-200 hover:bg-${colorTheme}-300 text-${colorTheme}-800 font-bold py-4 rounded-xl shadow transition-colors flex items-center justify-center"><i data-lucide="printer" class="w-8 h-8"></i></button>
+                            <button onclick="window.completeKitchenTicket('${ticket.ticketId}')" class="w-3/4 bg-green-500 hover:bg-green-600 text-white font-black text-xl py-4 rounded-xl shadow transition-colors flex items-center justify-center gap-2"><i data-lucide="check-circle" class="w-7 h-7"></i> TERMINAR</button>
                         </div>
                     </div>`;
                 }).join('');
@@ -947,18 +935,12 @@
                 container.innerHTML = window.state.cashierOrders.map(order => `
                     <div class="bg-white border rounded-xl shadow-md overflow-hidden flex flex-col">
                         <div class="bg-gray-800 p-3 flex justify-between items-center text-white">
-                            <span class="font-bold">${order.table}</span>
-                            <span class="text-sm">Orden #${order.orderId}</span>
+                            <span class="font-bold">${order.table}</span><span class="text-sm">Orden #${order.orderId}</span>
                         </div>
                         <div class="p-4 flex-1">
                             <p class="text-sm text-gray-500 mb-3">Mesero: <span class="font-semibold text-gray-800">${order.waiter}</span></p>
                             <div class="space-y-2 mb-4">
-                                ${order.items.map(item => `
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-700">${item.quantity}x ${item.name}</span>
-                                        <span class="font-medium">${formatCurrency(item.price * item.quantity)}</span>
-                                    </div>
-                                `).join('')}
+                                ${order.items.map(item => `<div class="flex justify-between text-sm"><span class="text-gray-700">${item.quantity}x ${item.name}</span><span class="font-medium">${formatCurrency(item.price * item.quantity)}</span></div>`).join('')}
                             </div>
                             <div class="border-t pt-3 mt-auto flex justify-between items-center">
                                 <span class="text-gray-600 font-bold">Total a pagar:</span>
@@ -966,21 +948,11 @@
                             </div>
                         </div>
                         <div class="p-4 pt-0 grid grid-cols-5 gap-2">
-                            <button onclick="editOrder(${order.orderId})" class="col-span-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Editar orden">
-                                <i data-lucide="edit" class="w-5 h-5"></i>
-                            </button>
-                            <button onclick="openSplitModal(${order.orderId})" class="col-span-1 bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Dividir / Pago Parcial">
-                                <i data-lucide="scissors" class="w-5 h-5"></i>
-                            </button>
-                            <button onclick="printTicket('caja', '${order.orderId}')" class="col-span-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Imprimir Cuenta">
-                                <i data-lucide="printer" class="w-5 h-5"></i>
-                            </button>
-                            <button onclick="cancelOrder(${order.orderId})" class="col-span-1 bg-red-100 hover:bg-red-200 text-red-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Anular orden">
-                                <i data-lucide="x" class="w-5 h-5"></i>
-                            </button>
-                            <button onclick="openPayModal(${order.orderId})" class="col-span-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow transition-colors flex items-center justify-center" title="Pagar Toda la Cuenta">
-                                <i data-lucide="dollar-sign" class="w-5 h-5"></i>
-                            </button>
+                            <button onclick="window.editOrder(${order.orderId})" class="col-span-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Editar orden"><i data-lucide="edit" class="w-5 h-5"></i></button>
+                            <button onclick="window.openSplitModal(${order.orderId})" class="col-span-1 bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Dividir / Pago Parcial"><i data-lucide="scissors" class="w-5 h-5"></i></button>
+                            <button onclick="window.printTicket('caja', '${order.orderId}')" class="col-span-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Imprimir Cuenta"><i data-lucide="printer" class="w-5 h-5"></i></button>
+                            <button onclick="window.cancelOrder(${order.orderId})" class="col-span-1 bg-red-100 hover:bg-red-200 text-red-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Anular orden"><i data-lucide="x" class="w-5 h-5"></i></button>
+                            <button onclick="window.openPayModal(${order.orderId})" class="col-span-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow transition-colors flex items-center justify-center" title="Pagar Toda la Cuenta"><i data-lucide="dollar-sign" class="w-5 h-5"></i></button>
                         </div>
                     </div>
                 `).join('');
@@ -1011,17 +983,10 @@
                     return `
                     <div class="bg-white border rounded-xl shadow-sm overflow-hidden flex flex-col opacity-90 hover:opacity-100 transition-opacity min-h-[200px]">
                         <div class="bg-gray-100 border-b border-gray-200 p-4 flex justify-between items-center">
-                            <div class="flex items-center">
-                                <span class="font-bold text-gray-800 text-lg">Orden #${order.orderId}</span>
-                                ${isSplit}
-                            </div>
+                            <div class="flex items-center"><span class="font-bold text-gray-800 text-lg">Orden #${order.orderId}</span>${isSplit}</div>
                             <div class="flex items-center gap-2">
-                                <button onclick="printTicket('caja', '${order.orderId}')" class="text-gray-500 hover:text-gray-800 p-1" title="Reimprimir copia">
-                                    <i data-lucide="printer" class="w-5 h-5"></i>
-                                </button>
-                                <span class="bg-${statusColor}-100 text-${statusColor}-700 text-xs font-bold px-2 py-1 rounded flex items-center gap-1">
-                                    <i data-lucide="${iconType}" class="w-4 h-4"></i> ${statusText}
-                                </span>
+                                <button onclick="window.printTicket('caja', '${order.orderId}')" class="text-gray-500 hover:text-gray-800 p-1" title="Reimprimir copia"><i data-lucide="printer" class="w-5 h-5"></i></button>
+                                <span class="bg-${statusColor}-100 text-${statusColor}-700 text-xs font-bold px-2 py-1 rounded flex items-center gap-1"><i data-lucide="${iconType}" class="w-4 h-4"></i> ${statusText}</span>
                             </div>
                         </div>
                         <div class="p-4 flex-1 flex flex-col">
@@ -1030,17 +995,10 @@
                                 <span>Hora: <b class="text-gray-700">${order.actionAt || order.timestamp}</b></span>
                             </div>
                             <div class="space-y-1 mb-4 mt-2 max-h-32 overflow-y-auto pr-2 flex-1 border-b border-gray-100 pb-2">
-                                ${order.items.map(item => `
-                                    <div class="flex justify-between text-xs text-gray-500">
-                                        <span>${item.quantity}x ${item.name}</span>
-                                    </div>
-                                `).join('')}
+                                ${order.items.map(item => `<div class="flex justify-between text-xs text-gray-500"><span>${item.quantity}x ${item.name}</span></div>`).join('')}
                             </div>
                             <div class="flex justify-between items-end mt-auto">
-                                <div class="flex flex-col gap-1">
-                                    <span class="text-gray-500 font-semibold text-[10px] uppercase">Cobrado</span>
-                                    ${paymentMethodBadge}
-                                </div>
+                                <div class="flex flex-col gap-1"><span class="text-gray-500 font-semibold text-[10px] uppercase">Cobrado</span>${paymentMethodBadge}</div>
                                 <span class="text-xl font-extrabold text-${statusColor}-600">${formatCurrency(order.total)}</span>
                             </div>
                         </div>
@@ -1060,7 +1018,7 @@
             invList.sort((a,b) => a.name.localeCompare(b.name));
             container.innerHTML = invList.map(item => {
                 const stockColor = item.stock <= 5 ? (item.stock <= 0 ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') : 'bg-purple-100 text-purple-800';
-                return `<div class="bg-white border border-gray-200 rounded-lg p-3 flex justify-between items-center shadow-sm"><div class="flex-1"><h4 class="font-bold text-gray-800 text-sm leading-tight">${item.name}</h4></div><div class="flex items-center gap-3"><div class="${stockColor} font-black px-3 py-1 rounded-lg text-lg min-w-[3rem] text-center">${item.stock}</div><button onclick="openInventoryModal('${item.id}')" class="p-2 bg-gray-100 hover:bg-purple-50 text-gray-600 hover:text-purple-600 rounded-lg transition-colors border border-gray-200"><i data-lucide="edit-3" class="w-4 h-4"></i></button></div></div>`;
+                return `<div class="bg-white border border-gray-200 rounded-lg p-3 flex justify-between items-center shadow-sm"><div class="flex-1"><h4 class="font-bold text-gray-800 text-sm leading-tight">${item.name}</h4></div><div class="flex items-center gap-3"><div class="${stockColor} font-black px-3 py-1 rounded-lg text-lg min-w-[3rem] text-center">${item.stock}</div><button onclick="window.openInventoryModal('${item.id}')" class="p-2 bg-gray-100 hover:bg-purple-50 text-gray-600 hover:text-purple-600 rounded-lg transition-colors border border-gray-200"><i data-lucide="edit-3" class="w-4 h-4"></i></button></div></div>`;
             }).join('');
             lucide.createIcons();
         };
@@ -1068,7 +1026,7 @@
         window.renderFinances = function() {
             const base = window.state.finances?.base || 0;
             const expenses = window.state.finances?.expenses || [];
-            const totalExp = expenses.reduce((a,b) => a+b.amount, 0);
+            const totalExp = expenses.reduce((a,b) => a + window.getSafeNumber(b.amount, 0), 0);
 
             const elBase = document.getElementById('finance-base-display');
             const elExp = document.getElementById('finance-expenses-display');
@@ -1077,7 +1035,7 @@
             if(elExp) elExp.innerText = formatCurrency(totalExp);
         };
 
-        // --- SOLUCIÓN ERROR $ NaN EN REPORTE Z ---
+        // --- SOLUCIÓN PERMANENTE PARA NAN EN EL REPORTE Z ---
         window.generateReporteZ = function() {
             if (window.state.historyOrders.length === 0 && window.state.finances.expenses.length === 0) { 
                 window.showToast("No hay movimientos para generar Reporte Z.", "error"); return; 
@@ -1088,19 +1046,23 @@
 
             window.state.historyOrders.forEach(order => {
                 if (order.status === 'paid') {
-                    let vEfectivo = order.payment?.cashAmount || 0;
-                    let vTransf = order.payment?.transferAmount || 0;
-                    if(!order.payment) vEfectivo = order.total;
+                    
+                    let orderTotal = window.getSafeNumber(order.total, 0);
+                    let vEfectivo = order.payment ? window.getSafeNumber(order.payment.cashAmount, 0) : orderTotal;
+                    let vTransf = order.payment ? window.getSafeNumber(order.payment.transferAmount, 0) : 0;
 
                     if(order.type === 'domicilio') {
-                        const fee = order.domiFee || 0;
+                        const fee = window.getSafeNumber(order.domiFee, 0);
                         totalFletesDomi += fee;
-                        const subtotalProductos = order.subtotal || (order.total - fee);
+                        
+                        let orderSubtotal = window.getSafeNumber(order.subtotal, 0);
+                        const subtotalProductos = orderSubtotal > 0 ? orderSubtotal : Math.max(0, orderTotal - fee);
+                        
                         totalRecaudadoVentas += subtotalProductos;
                         if (vEfectivo >= fee) { vEfectivo -= fee; } 
-                        else { const restante = fee - vEfectivo; vEfectivo = 0; vTransf -= restante; }
+                        else { const restante = fee - vEfectivo; vEfectivo = 0; vTransf = Math.max(0, vTransf - restante); }
                     } else {
-                        totalRecaudadoVentas += order.total;
+                        totalRecaudadoVentas += orderTotal;
                     }
 
                     totalEfectivoVentas += vEfectivo; totalTransfVentas += vTransf;
@@ -1108,30 +1070,39 @@
                     if(order.type !== 'domicilio') {
                         const wName = order.waiter || 'Desconocido';
                         if(!waiterStats[wName]) waiterStats[wName] = { tables: 0, items: 0, total: 0 };
-                        waiterStats[wName].tables += 1; waiterStats[wName].total += order.total;
-                        order.items.forEach(item => { waiterStats[wName].items += Number(item.quantity) || 0; });
+                        waiterStats[wName].tables += 1; waiterStats[wName].total += orderTotal;
+                        if(order.items && Array.isArray(order.items)){
+                            order.items.forEach(item => { waiterStats[wName].items += window.getSafeNumber(item.quantity, 1); });
+                        }
                     }
 
-                    order.items.forEach(item => {
-                        if (!itemsVendidos[item.name]) itemsVendidos[item.name] = { qty: 0, revenue: 0 };
-                        
-                        // PREVENCIÓN DE NaN: Si falla la lectura del precio, lo busca en el menú original
-                        let qty = Number(item.quantity) || 0;
-                        let price = Number(item.price);
+                    if(order.items && Array.isArray(order.items)){
+                        order.items.forEach(item => {
+                            let iName = item.name || 'Desconocido';
+                            if (!itemsVendidos[iName]) itemsVendidos[iName] = { qty: 0, revenue: 0 };
+                            
+                            let qty = window.getSafeNumber(item.quantity, 1);
+                            let price = window.getSafeNumber(item.price, 0);
 
-                        if (isNaN(price) || price === 0) {
-                            const originalMenuRef = FLAT_MENU.find(p => p.id === item.id || p.name === item.name);
-                            price = originalMenuRef ? originalMenuRef.price : 0;
-                        }
+                            // PREVENCIÓN DE NaN: Si no hay precio, búscalo en el menú original
+                            if (price === 0) {
+                                const originalMenuRef = FLAT_MENU.find(p => p.id === item.id || p.name === iName);
+                                if(originalMenuRef) price = window.getSafeNumber(originalMenuRef.price, 0);
+                            }
 
-                        itemsVendidos[item.name].qty += qty; 
-                        itemsVendidos[item.name].revenue += (price * qty);
-                    });
+                            itemsVendidos[iName].qty += qty; 
+                            itemsVendidos[iName].revenue += (price * qty);
+                        });
+                    }
                 }
             });
 
-            const base = window.state.finances.base || 0;
-            const totalGastos = window.state.finances.expenses.reduce((sum, e) => sum + e.amount, 0);
+            const base = window.getSafeNumber(window.state.finances?.base, 0);
+            let totalGastos = 0;
+            if(window.state.finances?.expenses && Array.isArray(window.state.finances.expenses)){
+                 totalGastos = window.state.finances.expenses.reduce((sum, e) => sum + window.getSafeNumber(e.amount, 0), 0);
+            }
+            
             const efectivoNeto = base + totalEfectivoVentas - totalGastos;
 
             const sortedItems = Object.keys(itemsVendidos).map(name => ({ name, qty: itemsVendidos[name].qty, revenue: itemsVendidos[name].revenue })).sort((a, b) => b.qty - a.qty);
@@ -1173,7 +1144,7 @@
             data.waiters.forEach(w => { html += `<div class="summary-row"><span>${w.name} (${w.tables}m):</span><span>${formatCurrency(w.total)}</span></div>`; });
             html += `<div class="divider"></div>`;
             html += `<div style="margin-bottom:5px;font-weight:bold;display:flex;font-size:12px;"><span style="width:30px;">CANT</span><span style="flex:1;">PRODUCTO</span><span>TOTAL</span></div><div class="divider"></div>`;
-            data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.qty}x</span><span class="item-name">${item.name}</span><span class="item-price">${formatCurrency(item.price * item.quantity)}</span></div>`; });
+            data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.qty}x</span><span class="item-name">${item.name}</span><span class="item-price">${formatCurrency(item.revenue)}</span></div>`; });
             html += `<div class="divider"></div><p style="font-size:12px;margin-top:20px;">Fin del Reporte</p><script>window.onload=function(){window.print();setTimeout(function(){window.close();},500);}<\/script></body></html>`;
             printWindow.document.write(html); printWindow.document.close();
         };
@@ -1322,11 +1293,11 @@
 
         window.renderCategories = function() {
             const container = document.getElementById('categories-container');
-            container.innerHTML = MENU_CATEGORIES.map(category => `<button onclick="changeCategory('${category}')" class="px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${window.state.activeCategory === category ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-700 border hover:bg-red-50'}">${category}</button>`).join('');
+            container.innerHTML = MENU_CATEGORIES.map(category => `<button onclick="window.changeCategory('${category}')" class="px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${window.state.activeCategory === category ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-700 border hover:bg-red-50'}">${category}</button>`).join('');
         };
         window.renderProducts = function() {
             const container = document.getElementById('products-container'); const products = MOCK_MENU[window.state.activeCategory] || [];
-            container.innerHTML = products.map(p => `<button onclick="addItemToOrder('${p.id}')" class="bg-white border rounded-lg p-3 text-left shadow-sm hover:shadow-md hover:border-red-500 transition-all flex flex-col justify-between h-24 active:scale-95"><span class="font-bold text-gray-800 text-sm leading-tight line-clamp-2">${p.name}</span><span class="text-red-600 font-semibold text-sm">${formatCurrency(p.price)}</span></button>`).join('');
+            container.innerHTML = products.map(p => `<button onclick="window.addItemToOrder('${p.id}')" class="bg-white border rounded-lg p-3 text-left shadow-sm hover:shadow-md hover:border-red-500 transition-all flex flex-col justify-between h-24 active:scale-95"><span class="font-bold text-gray-800 text-sm leading-tight line-clamp-2">${p.name}</span><span class="text-red-600 font-semibold text-sm">${formatCurrency(p.price)}</span></button>`).join('');
         };
         window.renderCart = function() {
             const container = document.getElementById('cart-items');
@@ -1335,7 +1306,7 @@
                 document.getElementById('btn-clear-order').classList.add('hidden');
             } else {
                 document.getElementById('btn-clear-order').classList.remove('hidden');
-                container.innerHTML = window.state.currentOrderItems.map((item, index) => `<div class="bg-white p-3 rounded-lg shadow-sm border text-sm relative group"><div class="flex justify-between items-start mb-2 pr-6"><span class="font-bold text-gray-800">${item.name}</span><span class="font-semibold text-gray-600 whitespace-nowrap">${formatCurrency(item.price * item.quantity)}</span></div><div class="flex justify-between items-center"><div class="flex items-center space-x-3 bg-gray-100 rounded-lg p-1"><button onclick="updateItemQuantity(${index}, -1)" class="p-1 bg-white rounded shadow-sm text-red-600 hover:bg-red-50"><i data-lucide="minus" class="w-4 h-4"></i></button><span class="font-bold w-4 text-center">${item.quantity}</span><button onclick="updateItemQuantity(${index}, 1)" class="p-1 bg-white rounded shadow-sm text-green-600 hover:bg-green-50"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div><button onclick="removeItem(${index})" class="absolute top-3 right-3 text-gray-300 hover:text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="mt-3 bg-gray-50 p-2 rounded-lg border border-gray-200 flex items-start gap-2 focus-within:border-red-400 focus-within:bg-white transition-all shadow-inner"><i data-lucide="message-square" class="text-gray-400 mt-0.5 flex-shrink-0 w-4 h-4"></i><textarea rows="1" placeholder="Especificaciones..." oninput="updateItemNoteText(${index}, this.value, this)" class="w-full text-sm bg-transparent outline-none resize-none overflow-hidden text-gray-700">${item.note}</textarea></div></div>`).join('');
+                container.innerHTML = window.state.currentOrderItems.map((item, index) => `<div class="bg-white p-3 rounded-lg shadow-sm border text-sm relative group"><div class="flex justify-between items-start mb-2 pr-6"><span class="font-bold text-gray-800">${item.name}</span><span class="font-semibold text-gray-600 whitespace-nowrap">${formatCurrency(item.price * item.quantity)}</span></div><div class="flex justify-between items-center"><div class="flex items-center space-x-3 bg-gray-100 rounded-lg p-1"><button onclick="window.updateItemQuantity(${index}, -1)" class="p-1 bg-white rounded shadow-sm text-red-600 hover:bg-red-50"><i data-lucide="minus" class="w-4 h-4"></i></button><span class="font-bold w-4 text-center">${item.quantity}</span><button onclick="window.updateItemQuantity(${index}, 1)" class="p-1 bg-white rounded shadow-sm text-green-600 hover:bg-green-50"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div><button onclick="window.removeItem(${index})" class="absolute top-3 right-3 text-gray-300 hover:text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="mt-3 bg-gray-50 p-2 rounded-lg border border-gray-200 flex items-start gap-2 focus-within:border-red-400 focus-within:bg-white transition-all shadow-inner"><i data-lucide="message-square" class="text-gray-400 mt-0.5 flex-shrink-0 w-4 h-4"></i><textarea rows="1" placeholder="Especificaciones..." oninput="window.updateItemNoteText(${index}, this.value, this)" class="w-full text-sm bg-transparent outline-none resize-none overflow-hidden text-gray-700">${item.note}</textarea></div></div>`).join('');
             }
             const total = window.state.currentOrderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
             document.getElementById('cart-total').innerText = formatCurrency(total);
@@ -1381,11 +1352,11 @@
 
         window.renderDomiCategories = function() {
             const container = document.getElementById('domi-categories-container'); if(!container) return;
-            container.innerHTML = MENU_CATEGORIES.map(category => `<button onclick="changeDomiCategory('${category}')" class="px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${window.state.domiCategory === category ? 'bg-orange-600 text-white shadow-md' : 'bg-white text-gray-700 border hover:bg-orange-50'}">${category}</button>`).join('');
+            container.innerHTML = MENU_CATEGORIES.map(category => `<button onclick="window.changeDomiCategory('${category}')" class="px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${window.state.domiCategory === category ? 'bg-orange-600 text-white shadow-md' : 'bg-white text-gray-700 border hover:bg-orange-50'}">${category}</button>`).join('');
         };
         window.renderDomiProducts = function() {
             const container = document.getElementById('domi-products-container'); if(!container) return; const products = MOCK_MENU[window.state.domiCategory] || [];
-            container.innerHTML = products.map(p => `<button onclick="addDomiItem('${p.id}')" class="bg-white border border-gray-200 rounded-lg p-3 text-left shadow-sm hover:shadow-md hover:border-orange-500 transition-all flex flex-col justify-between h-24 active:scale-95"><span class="font-bold text-gray-800 text-sm leading-tight line-clamp-2">${p.name}</span><span class="text-orange-600 font-semibold text-sm">${formatCurrency(p.price)}</span></button>`).join('');
+            container.innerHTML = products.map(p => `<button onclick="window.addDomiItem('${p.id}')" class="bg-white border border-gray-200 rounded-lg p-3 text-left shadow-sm hover:shadow-md hover:border-orange-500 transition-all flex flex-col justify-between h-24 active:scale-95"><span class="font-bold text-gray-800 text-sm leading-tight line-clamp-2">${p.name}</span><span class="text-orange-600 font-semibold text-sm">${formatCurrency(p.price)}</span></button>`).join('');
         };
         window.renderDomiCart = function() {
             const container = document.getElementById('domi-cart-items'); if(!container) return;
@@ -1394,7 +1365,7 @@
                 document.getElementById('domi-btn-clear-order').classList.add('hidden');
             } else {
                 document.getElementById('domi-btn-clear-order').classList.remove('hidden');
-                container.innerHTML = window.state.domiOrderItems.map((item, index) => `<div class="bg-white p-3 rounded-lg shadow-sm border text-sm relative group"><div class="flex justify-between items-start mb-2 pr-6"><span class="font-bold text-gray-800">${item.name}</span><span class="font-semibold text-gray-600 whitespace-nowrap">${formatCurrency(item.price * item.quantity)}</span></div><div class="flex justify-between items-center"><div class="flex items-center space-x-3 bg-gray-100 rounded-lg p-1"><button onclick="updateDomiItemQty(${index}, -1)" class="p-1 bg-white rounded shadow-sm text-red-600 hover:bg-red-50"><i data-lucide="minus" class="w-4 h-4"></i></button><span class="font-bold w-4 text-center">${item.quantity}</span><button onclick="updateDomiItemQty(${index}, 1)" class="p-1 bg-white rounded shadow-sm text-green-600 hover:bg-green-50"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div><button onclick="removeDomiItem(${index})" class="absolute top-3 right-3 text-gray-300 hover:text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="mt-3 bg-orange-50/50 p-2 rounded-lg border border-gray-200 flex items-start gap-2 focus-within:border-orange-400 focus-within:bg-white transition-all shadow-inner"><i data-lucide="message-square" class="text-gray-400 mt-0.5 flex-shrink-0 w-4 h-4"></i><textarea rows="1" placeholder="Especificaciones..." oninput="updateDomiItemNote(${index}, this.value, this)" class="w-full text-sm bg-transparent outline-none resize-none overflow-hidden text-gray-700">${item.note}</textarea></div></div>`).join('');
+                container.innerHTML = window.state.domiOrderItems.map((item, index) => `<div class="bg-white p-3 rounded-lg shadow-sm border text-sm relative group"><div class="flex justify-between items-start mb-2 pr-6"><span class="font-bold text-gray-800">${item.name}</span><span class="font-semibold text-gray-600 whitespace-nowrap">${formatCurrency(item.price * item.quantity)}</span></div><div class="flex justify-between items-center"><div class="flex items-center space-x-3 bg-gray-100 rounded-lg p-1"><button onclick="window.updateDomiItemQty(${index}, -1)" class="p-1 bg-white rounded shadow-sm text-red-600 hover:bg-red-50"><i data-lucide="minus" class="w-4 h-4"></i></button><span class="font-bold w-4 text-center">${item.quantity}</span><button onclick="window.updateDomiItemQty(${index}, 1)" class="p-1 bg-white rounded shadow-sm text-green-600 hover:bg-green-50"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div><button onclick="window.removeDomiItem(${index})" class="absolute top-3 right-3 text-gray-300 hover:text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="mt-3 bg-orange-50/50 p-2 rounded-lg border border-gray-200 flex items-start gap-2 focus-within:border-orange-400 focus-within:bg-white transition-all shadow-inner"><i data-lucide="message-square" class="text-gray-400 mt-0.5 flex-shrink-0 w-4 h-4"></i><textarea rows="1" placeholder="Especificaciones..." oninput="window.updateDomiItemNote(${index}, this.value, this)" class="w-full text-sm bg-transparent outline-none resize-none overflow-hidden text-gray-700">${item.note}</textarea></div></div>`).join('');
             }
             const subtotal = window.state.domiOrderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
             const fee = window.state.domiFee || 0;
@@ -1488,7 +1459,7 @@
             }
             container.innerHTML = window.state.cashierOrders.map(order => {
                 const isDomi = order.type === 'domicilio';
-                return `<div class="bg-white border border-gray-200 p-3 rounded-xl mb-3 flex justify-between items-center shadow-sm"><div><span class="font-bold ${isDomi ? 'text-orange-600' : 'text-gray-800'}">${isDomi ? 'DOMI: '+order.address : order.table}</span><p class="text-xs text-gray-500 font-medium">${isDomi ? 'Tel: '+order.phone : 'Mesero: '+order.waiter} | Orden #${order.orderId}</p></div><button onclick="editOrder('${order.orderId}'); closeActiveOrdersModal();" class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-lg font-bold hover:bg-yellow-200 transition-colors text-sm flex items-center gap-1 shadow-sm"><i data-lucide="edit-2" class="w-4 h-4"></i> Abrir</button></div>`;
+                return `<div class="bg-white border border-gray-200 p-3 rounded-xl mb-3 flex justify-between items-center shadow-sm"><div><span class="font-bold ${isDomi ? 'text-orange-600' : 'text-gray-800'}">${isDomi ? 'DOMI: '+order.address : order.table}</span><p class="text-xs text-gray-500 font-medium">${isDomi ? 'Tel: '+order.phone : 'Mesero: '+order.waiter} | Orden #${order.orderId}</p></div><button onclick="window.editOrder('${order.orderId}'); window.closeActiveOrdersModal();" class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-lg font-bold hover:bg-yellow-200 transition-colors text-sm flex items-center gap-1 shadow-sm"><i data-lucide="edit-2" class="w-4 h-4"></i> Abrir</button></div>`;
             }).join('');
             lucide.createIcons();
         };
@@ -1675,7 +1646,7 @@
             const container = document.getElementById('split-items-list'); let splitTotal = 0;
             container.innerHTML = window.state.splitSelection.map((item, index) => {
                 splitTotal += (item.price * item.selectedQty);
-                return `<div class="bg-gray-50 p-3 rounded-lg border border-gray-200 flex justify-between items-center shadow-sm"><div class="flex-1 pr-2"><p class="font-bold text-gray-800 text-sm">${item.name}</p><p class="text-xs text-gray-500 font-medium">Restan: ${item.quantity - item.selectedQty} | ${formatCurrency(item.price)} c/u</p></div><div class="flex items-center space-x-3 bg-white border border-gray-300 rounded-lg p-1"><button onclick="updateSplitQty(${index}, -1)" class="p-1 bg-gray-100 rounded text-orange-600 hover:bg-orange-100 transition-colors"><i data-lucide="minus" class="w-4 h-4"></i></button><span class="font-black w-4 text-center text-lg text-gray-800">${item.selectedQty}</span><button onclick="updateSplitQty(${index}, 1)" class="p-1 bg-gray-100 rounded text-green-600 hover:bg-green-100 transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div>`;
+                return `<div class="bg-gray-50 p-3 rounded-lg border border-gray-200 flex justify-between items-center shadow-sm"><div class="flex-1 pr-2"><p class="font-bold text-gray-800 text-sm">${item.name}</p><p class="text-xs text-gray-500 font-medium">Restan: ${item.quantity - item.selectedQty} | ${formatCurrency(item.price)} c/u</p></div><div class="flex items-center space-x-3 bg-white border border-gray-300 rounded-lg p-1"><button onclick="window.updateSplitQty(${index}, -1)" class="p-1 bg-gray-100 rounded text-orange-600 hover:bg-orange-100 transition-colors"><i data-lucide="minus" class="w-4 h-4"></i></button><span class="font-black w-4 text-center text-lg text-gray-800">${item.selectedQty}</span><button onclick="window.updateSplitQty(${index}, 1)" class="p-1 bg-gray-100 rounded text-green-600 hover:bg-green-100 transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div>`;
             }).join('');
             document.getElementById('split-total-display').innerText = formatCurrency(splitTotal); lucide.createIcons();
         };
