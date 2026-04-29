@@ -748,6 +748,91 @@
             printWindow.document.write(html); printWindow.document.close();
         };
 
+        // --- FUNCIONES DE FINANZAS RESTAURADAS ---
+        window.openFinanceModal = function(type) {
+            window.state.financeType = type;
+            const title = type === 'base' ? 'Ajustar Base de Caja' : 'Registrar Gasto Extra';
+            const subtitle = type === 'base' ? 'Monto con el que inicia la caja hoy' : 'Ej: Proveedores, insumos, etc.';
+            
+            document.getElementById('finance-modal-title').innerText = title;
+            document.getElementById('finance-modal-subtitle').innerText = subtitle;
+            document.getElementById('finance-amount').value = type === 'base' ? (window.state.finances?.base || '') : '';
+            
+            const descContainer = document.getElementById('finance-desc-container');
+            if(type === 'gasto') {
+                descContainer.classList.remove('hidden');
+                document.getElementById('finance-desc').value = '';
+            } else {
+                descContainer.classList.add('hidden');
+                document.getElementById('finance-desc').value = 'Base inicial';
+            }
+            document.getElementById('finance-modal').classList.remove('hidden');
+        };
+
+        window.closeFinanceModal = function() { document.getElementById('finance-modal').classList.add('hidden'); };
+
+        window.saveFinance = function() {
+            const amt = parseInt(document.getElementById('finance-amount').value) || 0;
+            const desc = document.getElementById('finance-desc').value || 'Sin descripción';
+            const type = window.state.financeType;
+
+            const newFinances = { ...window.state.finances };
+            if(!newFinances.expenses) newFinances.expenses = [];
+
+            if (type === 'base') {
+                newFinances.base = amt;
+            } else {
+                if(amt <= 0) { window.showToast("Monto inválido", "error"); return; }
+                newFinances.expenses.push({ amount: amt, desc: desc, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+            }
+
+            try {
+                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'finances'), newFinances);
+                window.closeFinanceModal();
+                window.showToast(type === 'base' ? "Base actualizada" : "Gasto guardado");
+            } catch (e) {
+                console.error(e);
+                window.showToast("Error guardando finanzas", "error");
+            }
+        };
+
+        // --- FUNCIONES DE SEGURIDAD Y LIMPIAR SISTEMA RESTAURADAS ---
+        window.openSecurityModal = function() {
+            document.getElementById('security-pin').value = '';
+            document.getElementById('security-modal').classList.remove('hidden');
+        };
+
+        window.closeSecurityModal = function() { document.getElementById('security-modal').classList.add('hidden'); };
+
+        window.confirmSecurityAndReset = async function() {
+            const pin = document.getElementById('security-pin').value;
+            if (pin !== '1089607033') { window.showToast("Clave incorrecta.", "error"); return; }
+
+            document.getElementById('security-modal').classList.add('hidden');
+            window.showToast("Realizando cierre...", "success");
+
+            try {
+                const kitchenQuery = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets'));
+                kitchenQuery.forEach((d) => { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', d.id)); });
+                const cashierQuery = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'cashierOrders'));
+                cashierQuery.forEach((d) => { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', d.id)); });
+                const histCashierQuery = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders'));
+                histCashierQuery.forEach((d) => { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', d.id)); });
+                const histKitchenQuery = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets'));
+                histKitchenQuery.forEach((d) => { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_kitchenTickets', d.id)); });
+
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), { value: 0 });
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'finances'), { base: 0, expenses: [] });
+                
+                window.state.isAdminUnlocked = false;
+                document.getElementById('admin-unlocked-badge').classList.add('hidden');
+                document.getElementById('admin-unlocked-badge').classList.remove('flex');
+                window.switchView('mesero');
+
+                window.showToast("Cierre exitoso. Inventario intacto.", "success");
+            } catch (error) { console.error("Error:", error); window.showToast("Error al limpiar.", "error"); }
+        };
+
         window.openInventoryModal = function(invId) {
             window.state.editingInvId = invId;
             const name = INVENTORY_DICT[invId] || invId;
@@ -994,6 +1079,7 @@
             if(elExp) elExp.innerText = formatCurrency(totalExp);
         };
 
+        // --- SOLUCIÓN ERROR $ NaN EN REPORTE Z ---
         window.generateReporteZ = function() {
             if (window.state.historyOrders.length === 0 && window.state.finances.expenses.length === 0) { 
                 window.showToast("No hay movimientos para generar Reporte Z.", "error"); return; 
@@ -1025,12 +1111,16 @@
                         const wName = order.waiter || 'Desconocido';
                         if(!waiterStats[wName]) waiterStats[wName] = { tables: 0, items: 0, total: 0 };
                         waiterStats[wName].tables += 1; waiterStats[wName].total += order.total;
-                        order.items.forEach(item => { waiterStats[wName].items += item.quantity; });
+                        order.items.forEach(item => { waiterStats[wName].items += Number(item.quantity) || 0; });
                     }
 
                     order.items.forEach(item => {
                         if (!itemsVendidos[item.name]) itemsVendidos[item.name] = { qty: 0, revenue: 0 };
-                        itemsVendidos[item.name].qty += item.quantity; itemsVendidos[item.name].revenue += (item.price * item.quantity);
+                        // Prevenir NaN asignando valor 0 por defecto si alguna venta antigua no guardó el precio
+                        const qty = Number(item.quantity) || 0;
+                        const price = Number(item.price) || 0;
+                        itemsVendidos[item.name].qty += qty; 
+                        itemsVendidos[item.name].revenue += (price * qty);
                     });
                 }
             });
@@ -1427,9 +1517,6 @@
             window.clearDomiOrder(); window.switchView('domicilios'); lucide.createIcons();
         }
 
-        // ==========================================
-        // ESCRITURA EN LA NUBE (FIREBASE) - OPTIMISTIC UI
-        // ==========================================
         window.submitOrder = function() {
             if (!window.state.currentUser) { window.showToast('Esperando conexión...', 'error'); return; }
             if (!window.state.waiterName.trim()) { window.showToast('Debes seleccionar un mesero.', 'error'); return; }
@@ -1500,7 +1587,6 @@
         };
 
         window.finalizeSubmission = function(currentOrderId, ticketsToSave, cashierOrderToSave, tableStr, isDomi = false) {
-            // 1. RENDER OPTIMISTA INMEDIATO (SIN ESPERAR A INTERNET)
             const wasEditing = window.state.editingOrderId !== null;
             window.state.lastSubmittedOrder = { id: currentOrderId, table: tableStr, cashier: cashierOrderToSave, kitchen: ticketsToSave };
             
@@ -1518,7 +1604,6 @@
                 lucide.createIcons();
             }
 
-            // 2. SINCRONIZACIÓN EN SEGUNDO PLANO
             setTimeout(async () => {
                 try {
                     if (!wasEditing) {
@@ -1540,8 +1625,6 @@
         window.completeKitchenTicket = function(ticketId) {
             if (!window.state.currentUser) return;
             const ticketToArchive = window.state.kitchenTickets.find(t => t.ticketId === ticketId);
-            
-            // Optimistic Update
             window.state.kitchenTickets = window.state.kitchenTickets.filter(t => t.ticketId !== ticketId);
             window.renderKitchen();
 
