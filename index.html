@@ -748,7 +748,42 @@
             printWindow.document.write(html); printWindow.document.close();
         };
 
-        // --- FUNCIONES DE RENDERIZADO VISUAL AÑADIDAS ---
+        window.openInventoryModal = function(invId) {
+            window.state.editingInvId = invId;
+            const name = INVENTORY_DICT[invId] || invId;
+            const currentStock = window.state.inventory[invId]?.stock || 0;
+            document.getElementById('inv-modal-item-name').innerText = name;
+            document.getElementById('inv-modal-input').value = currentStock;
+            document.getElementById('inventory-modal').classList.remove('hidden');
+        };
+
+        window.closeInventoryModal = function() {
+            document.getElementById('inventory-modal').classList.add('hidden');
+        };
+
+        window.adjInvInput = function(delta) {
+            const input = document.getElementById('inv-modal-input');
+            let val = parseInt(input.value) || 0;
+            val += delta;
+            input.value = val;
+        };
+
+        window.saveInventoryStock = function() {
+            const invId = window.state.editingInvId;
+            const input = document.getElementById('inv-modal-input');
+            let newStock = parseInt(input.value);
+            if (isNaN(newStock)) newStock = 0;
+            try {
+                const name = INVENTORY_DICT[invId] || invId;
+                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', invId), { name: name, stock: newStock }, { merge: true });
+                window.closeInventoryModal();
+                window.showToast("Stock ajustado");
+            } catch (e) {
+                console.error(e);
+                window.showToast("Error ajustando stock", "error");
+            }
+        };
+
         window.updateBadges = function() {
             const kb = document.getElementById('badge-cocina'); const cb = document.getElementById('badge-caja');
             const mkb = document.getElementById('menu-badge-cocina'); const mcb = document.getElementById('menu-badge-caja');
