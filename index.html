@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<title>Perros La 30 - Sistema de Órdenes (Cloud)</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#dc2626">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/192/3014/3014493.png">
+    ```
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -1719,6 +1724,15 @@
 
         window.onload = () => { window.renderCategories(); window.renderProducts(); window.renderCart(); lucide.createIcons(); if(window.state.waiterName) { document.getElementById('waiter-name').value = window.state.waiterName; } initAuth(); };
 
+    ```html
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('App lista para instalarse.', reg))
+            .catch(err => console.log('Error en Service Worker', err));
+        });
+      }
     </script>
 </body>
 </html>
