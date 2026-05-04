@@ -3,7 +3,6 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#dc2626">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/192/3014/3014493.png">
-    ```
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -1723,8 +1722,6 @@
         window.actionNewOrderOtherTable = function() { window.state.lastSubmittedOrder = null; window.state.selectedTables = []; document.getElementById('success-modal').classList.add('hidden'); window.renderCart(); window.openMapModal(); };
 
         window.onload = () => { window.renderCategories(); window.renderProducts(); window.renderCart(); lucide.createIcons(); if(window.state.waiterName) { document.getElementById('waiter-name').value = window.state.waiterName; } initAuth(); };
-
-    ```html
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
