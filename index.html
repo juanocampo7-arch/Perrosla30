@@ -1,15 +1,19 @@
 <!DOCTYPE html>
-<title>Perros La 30 - Sistema de Órdenes (Cloud)</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#dc2626">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/192/3014/3014493.png">
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perros La 30 - Sistema de Órdenes (Cloud)</title>
+    
+    <!-- Etiquetas PWA para instalación de App -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#dc2626">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/192/3014/3014493.png">
+    
+    <!-- Tailwind CSS y Lucide Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    
     <style>
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -21,7 +25,7 @@
         .ticket-container { page-break-after: always; padding-bottom: 20px; }
     </style>
 </head>
-<body class="bg-gray-100 flex flex-col font-sans min-h-screen">
+<body class="bg-gray-100 flex flex-col font-sans min-h-screen overflow-x-hidden">
 
     <!-- HEADER PRINCIPAL -->
     <header class="bg-red-600 text-white shadow-md z-50 sticky top-0 shrink-0">
@@ -46,11 +50,11 @@
         </div>
     </header>
 
-    <!-- SIDEBAR MENÚ LATERAL -->
+    <!-- SIDEBAR MENÚ LATERAL (Siempre oculto por defecto, se abre con las 3 rayitas) -->
     <div id="sidebar-overlay" onclick="window.toggleSidebar()" class="fixed inset-0 bg-black/50 z-[110] hidden fade-in"></div>
     <div id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-white shadow-2xl z-[120] transform -translate-x-full transition-transform duration-300 flex flex-col">
         <div class="p-4 bg-red-600 text-white flex justify-between items-center shrink-0">
-            <span class="font-black text-xl tracking-widest">MENÚ</span>
+            <span class="font-black text-xl tracking-widest">MENÚ POS</span>
             <button onclick="window.toggleSidebar()" class="hover:bg-red-700 p-1 rounded transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
         </div>
         <div class="flex flex-col p-4 space-y-2 overflow-y-auto flex-1">
@@ -80,7 +84,7 @@
     </div>
 
     <!-- CONTENEDOR PRINCIPAL -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6">
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 overflow-y-auto">
         
         <!-- VISTA MESERO (MESAS) -->
         <div id="view-mesero" class="flex flex-col lg:flex-row gap-4 fade-in lg:h-[calc(100vh-7rem)]">
@@ -139,7 +143,7 @@
                         <span id="cart-total" class="font-extrabold text-2xl text-red-600">$0</span>
                     </div>
                     <button id="btn-submit-order" onclick="window.submitOrder()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 text-lg">
-                        <i data-lucide="cloud-upload" class="w-6 h-6"></i> Enviar Orden a la Nube
+                        <i data-lucide="cloud-upload" class="w-6 h-6"></i> Enviar a la Nube
                     </button>
                 </div>
             </div>
@@ -527,6 +531,17 @@
         </div>
     </div>
 
+    <!-- SCRIPT PARA INSTALAR LA APP (PWA) -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('PWA Lista'))
+            .catch(err => console.log('Error PWA', err));
+        });
+      }
+    </script>
+
     <!-- LOGICA FIREBASE Y APP -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -662,8 +677,10 @@
             currentUser: null, currentView: 'mesero', kitchenStation: 'perrero',
             waiterName: '', selectedTables: [], isMultipleTableMode: false,
             activeCategory: MENU_CATEGORIES[0], currentOrderItems: [], generalNote: '',
+            
             domiOrderItems: [], domiCategory: MENU_CATEGORIES[0],
             domiAddress: '', domiPhone: '', domiName: '', domiFee: 0, domiNote: '',
+            
             orderCounter: 1, kitchenTickets: [], cashierOrders: [], historyOrders: [], 
             inventory: {}, finances: { base: 0, expenses: [] },
             lastSubmittedOrder: null, zReportData: null, editingInvId: null, editingOrderId: null,
@@ -758,7 +775,6 @@
             printWindow.document.write(html); printWindow.document.close();
         };
 
-        // --- FUNCIONES GLOBALES (AÑADIDO window. a todas para evitar ReferenceError) ---
         window.openFinanceModal = function(type) {
             window.state.financeType = type;
             const title = type === 'base' ? 'Ajustar Base de Caja' : 'Registrar Gasto Extra';
@@ -922,8 +938,12 @@
                             ` : ''}
                         </div>
                         <div class="p-4 pt-0 flex gap-3 mt-auto">
-                            <button onclick="window.printTicket('cocina', '${ticket.ticketId}')" class="w-1/4 bg-${colorTheme}-200 hover:bg-${colorTheme}-300 text-${colorTheme}-800 font-bold py-4 rounded-xl shadow transition-colors flex items-center justify-center"><i data-lucide="printer" class="w-8 h-8"></i></button>
-                            <button onclick="window.completeKitchenTicket('${ticket.ticketId}')" class="w-3/4 bg-green-500 hover:bg-green-600 text-white font-black text-xl py-4 rounded-xl shadow transition-colors flex items-center justify-center gap-2"><i data-lucide="check-circle" class="w-7 h-7"></i> TERMINAR</button>
+                            <button onclick="window.printTicket('cocina', '${ticket.ticketId}')" class="w-1/4 bg-${colorTheme}-200 hover:bg-${colorTheme}-300 text-${colorTheme}-800 font-bold py-4 rounded-xl shadow transition-colors flex items-center justify-center">
+                                <i data-lucide="printer" class="w-8 h-8"></i>
+                            </button>
+                            <button onclick="window.completeKitchenTicket('${ticket.ticketId}')" class="w-3/4 bg-green-500 hover:bg-green-600 text-white font-black text-xl py-4 rounded-xl shadow transition-colors flex items-center justify-center gap-2">
+                                <i data-lucide="check-circle" class="w-7 h-7"></i> TERMINAR
+                            </button>
                         </div>
                     </div>`;
                 }).join('');
@@ -939,12 +959,18 @@
                 container.innerHTML = window.state.cashierOrders.map(order => `
                     <div class="bg-white border rounded-xl shadow-md overflow-hidden flex flex-col">
                         <div class="bg-gray-800 p-3 flex justify-between items-center text-white">
-                            <span class="font-bold">${order.table}</span><span class="text-sm">Orden #${order.orderId}</span>
+                            <span class="font-bold">${order.table}</span>
+                            <span class="text-sm">Orden #${order.orderId}</span>
                         </div>
                         <div class="p-4 flex-1">
                             <p class="text-sm text-gray-500 mb-3">Mesero: <span class="font-semibold text-gray-800">${order.waiter}</span></p>
                             <div class="space-y-2 mb-4">
-                                ${order.items.map(item => `<div class="flex justify-between text-sm"><span class="text-gray-700">${item.quantity}x ${item.name}</span><span class="font-medium">${formatCurrency(item.price * item.quantity)}</span></div>`).join('')}
+                                ${order.items.map(item => `
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-700">${item.quantity}x ${item.name}</span>
+                                        <span class="font-medium">${formatCurrency(item.price * item.quantity)}</span>
+                                    </div>
+                                `).join('')}
                             </div>
                             <div class="border-t pt-3 mt-auto flex justify-between items-center">
                                 <span class="text-gray-600 font-bold">Total a pagar:</span>
@@ -952,11 +978,21 @@
                             </div>
                         </div>
                         <div class="p-4 pt-0 grid grid-cols-5 gap-2">
-                            <button onclick="window.editOrder(${order.orderId})" class="col-span-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Editar orden"><i data-lucide="edit" class="w-5 h-5"></i></button>
-                            <button onclick="window.openSplitModal(${order.orderId})" class="col-span-1 bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Dividir / Pago Parcial"><i data-lucide="scissors" class="w-5 h-5"></i></button>
-                            <button onclick="window.printTicket('caja', '${order.orderId}')" class="col-span-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Imprimir Cuenta"><i data-lucide="printer" class="w-5 h-5"></i></button>
-                            <button onclick="window.cancelOrder(${order.orderId})" class="col-span-1 bg-red-100 hover:bg-red-200 text-red-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Anular orden"><i data-lucide="x" class="w-5 h-5"></i></button>
-                            <button onclick="window.openPayModal(${order.orderId})" class="col-span-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow transition-colors flex items-center justify-center" title="Pagar Toda la Cuenta"><i data-lucide="dollar-sign" class="w-5 h-5"></i></button>
+                            <button onclick="window.editOrder(${order.orderId})" class="col-span-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Editar orden">
+                                <i data-lucide="edit" class="w-5 h-5"></i>
+                            </button>
+                            <button onclick="window.openSplitModal(${order.orderId})" class="col-span-1 bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Dividir / Pago Parcial">
+                                <i data-lucide="scissors" class="w-5 h-5"></i>
+                            </button>
+                            <button onclick="window.printTicket('caja', '${order.orderId}')" class="col-span-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Imprimir Cuenta">
+                                <i data-lucide="printer" class="w-5 h-5"></i>
+                            </button>
+                            <button onclick="window.cancelOrder(${order.orderId})" class="col-span-1 bg-red-100 hover:bg-red-200 text-red-700 font-bold py-3 rounded-lg transition-colors flex items-center justify-center" title="Anular orden">
+                                <i data-lucide="x" class="w-5 h-5"></i>
+                            </button>
+                            <button onclick="window.openPayModal(${order.orderId})" class="col-span-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow transition-colors flex items-center justify-center" title="Pagar Toda la Cuenta">
+                                <i data-lucide="dollar-sign" class="w-5 h-5"></i>
+                            </button>
                         </div>
                     </div>
                 `).join('');
@@ -987,10 +1023,17 @@
                     return `
                     <div class="bg-white border rounded-xl shadow-sm overflow-hidden flex flex-col opacity-90 hover:opacity-100 transition-opacity min-h-[200px]">
                         <div class="bg-gray-100 border-b border-gray-200 p-4 flex justify-between items-center">
-                            <div class="flex items-center"><span class="font-bold text-gray-800 text-lg">Orden #${order.orderId}</span>${isSplit}</div>
+                            <div class="flex items-center">
+                                <span class="font-bold text-gray-800 text-lg">Orden #${order.orderId}</span>
+                                ${isSplit}
+                            </div>
                             <div class="flex items-center gap-2">
-                                <button onclick="window.printTicket('caja', '${order.orderId}')" class="text-gray-500 hover:text-gray-800 p-1" title="Reimprimir copia"><i data-lucide="printer" class="w-5 h-5"></i></button>
-                                <span class="bg-${statusColor}-100 text-${statusColor}-700 text-xs font-bold px-2 py-1 rounded flex items-center gap-1"><i data-lucide="${iconType}" class="w-4 h-4"></i> ${statusText}</span>
+                                <button onclick="window.printTicket('caja', '${order.orderId}')" class="text-gray-500 hover:text-gray-800 p-1" title="Reimprimir copia">
+                                    <i data-lucide="printer" class="w-5 h-5"></i>
+                                </button>
+                                <span class="bg-${statusColor}-100 text-${statusColor}-700 text-xs font-bold px-2 py-1 rounded flex items-center gap-1">
+                                    <i data-lucide="${iconType}" class="w-4 h-4"></i> ${statusText}
+                                </span>
                             </div>
                         </div>
                         <div class="p-4 flex-1 flex flex-col">
@@ -999,10 +1042,17 @@
                                 <span>Hora: <b class="text-gray-700">${order.actionAt || order.timestamp}</b></span>
                             </div>
                             <div class="space-y-1 mb-4 mt-2 max-h-32 overflow-y-auto pr-2 flex-1 border-b border-gray-100 pb-2">
-                                ${order.items.map(item => `<div class="flex justify-between text-xs text-gray-500"><span>${item.quantity}x ${item.name}</span></div>`).join('')}
+                                ${order.items.map(item => `
+                                    <div class="flex justify-between text-xs text-gray-500">
+                                        <span>${item.quantity}x ${item.name}</span>
+                                    </div>
+                                `).join('')}
                             </div>
                             <div class="flex justify-between items-end mt-auto">
-                                <div class="flex flex-col gap-1"><span class="text-gray-500 font-semibold text-[10px] uppercase">Cobrado</span>${paymentMethodBadge}</div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-gray-500 font-semibold text-[10px] uppercase">Cobrado</span>
+                                    ${paymentMethodBadge}
+                                </div>
                                 <span class="text-xl font-extrabold text-${statusColor}-600">${formatCurrency(order.total)}</span>
                             </div>
                         </div>
@@ -1088,7 +1138,6 @@
                             let qty = window.getSafeNumber(item.quantity, 1);
                             let price = window.getSafeNumber(item.price, 0);
 
-                            // PREVENCIÓN DE NaN: Si no hay precio, búscalo en el menú original
                             if (price === 0) {
                                 const originalMenuRef = FLAT_MENU.find(p => p.id === item.id || p.name === iName);
                                 if(originalMenuRef) price = window.getSafeNumber(originalMenuRef.price, 0);
@@ -1148,7 +1197,7 @@
             data.waiters.forEach(w => { html += `<div class="summary-row"><span>${w.name} (${w.tables}m):</span><span>${formatCurrency(w.total)}</span></div>`; });
             html += `<div class="divider"></div>`;
             html += `<div style="margin-bottom:5px;font-weight:bold;display:flex;font-size:12px;"><span style="width:30px;">CANT</span><span style="flex:1;">PRODUCTO</span><span>TOTAL</span></div><div class="divider"></div>`;
-            data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.qty}x</span><span class="item-name">${item.name}</span><span class="item-price">${formatCurrency(item.revenue)}</span></div>`; });
+            data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.qty}x</span><span class="item-name">${item.name}</span><span class="item-price">${formatCurrency(item.price * item.quantity)}</span></div>`; });
             html += `<div class="divider"></div><p style="font-size:12px;margin-top:20px;">Fin del Reporte</p><script>window.onload=function(){window.print();setTimeout(function(){window.close();},500);}<\/script></body></html>`;
             printWindow.document.write(html); printWindow.document.close();
         };
@@ -1722,14 +1771,7 @@
         window.actionNewOrderOtherTable = function() { window.state.lastSubmittedOrder = null; window.state.selectedTables = []; document.getElementById('success-modal').classList.add('hidden'); window.renderCart(); window.openMapModal(); };
 
         window.onload = () => { window.renderCategories(); window.renderProducts(); window.renderCart(); lucide.createIcons(); if(window.state.waiterName) { document.getElementById('waiter-name').value = window.state.waiterName; } initAuth(); };
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('App lista para instalarse.', reg))
-            .catch(err => console.log('Error en Service Worker', err));
-        });
-      }
+
     </script>
 </body>
 </html>
