@@ -2067,6 +2067,93 @@
         window.actionNewOrderSameTable = function() { window.state.lastSubmittedOrder = null; document.getElementById('success-modal').classList.add('hidden'); };
         window.actionNewOrderOtherTable = function() { window.state.lastSubmittedOrder = null; window.state.selectedTables = []; document.getElementById('success-modal').classList.add('hidden'); window.renderCart(); window.openMapModal(); };
 
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Error Auth Firebase:", error);
+                document.getElementById('connection-status').innerText = "Modo Local";
+                document.getElementById('connection-status').className = "ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-inner";
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            window.state.currentUser = user;
+            const statusEl = document.getElementById('connection-status');
+            if (user) {
+                statusEl.innerText = "Nube Conectada";
+                statusEl.className = "ml-2 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-inner";
+                setupFirebaseListeners();
+            } else {
+                statusEl.innerText = "Desconectado";
+                statusEl.className = "ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-inner";
+            }
+        });
+
+        function setupFirebaseListeners() {
+            if (!window.state.currentUser) return;
+            
+            // Cierres
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'history_cierres'), (snapshot) => {
+                window.state.historyCierres = [];
+                snapshot.forEach(doc => window.state.historyCierres.push({id: doc.id, ...doc.data()}));
+                window.state.historyCierres.sort((a,b) => b.id - a.id);
+                if (window.state.currentView === 'historial') window.renderHistory();
+            }, (e) => console.error(e));
+
+            // Ordenes
+            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), (snapshot) => {
+                if (snapshot.exists() && !window.state.editingOrderId) {
+                    window.state.orderCounter = snapshot.data().value + 1;
+                    document.getElementById('order-counter-display').innerText = window.state.orderCounter;
+                    document.getElementById('domi-order-counter-display').innerText = window.state.orderCounter;
+                } else if(!window.state.editingOrderId) {
+                    window.state.orderCounter = 1;
+                    document.getElementById('order-counter-display').innerText = window.state.orderCounter;
+                    document.getElementById('domi-order-counter-display').innerText = window.state.orderCounter;
+                }
+            }, (e) => console.error(e));
+
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets'), (snapshot) => {
+                window.state.kitchenTickets = [];
+                snapshot.forEach(doc => window.state.kitchenTickets.push(doc.data()));
+                window.state.kitchenTickets.sort((a,b) => a.orderId - b.orderId);
+                window.updateBadges(); if (window.state.currentView === 'cocina') window.renderKitchen();
+            }, (e) => console.error(e));
+
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'cashierOrders'), (snapshot) => {
+                window.state.cashierOrders = [];
+                snapshot.forEach(doc => window.state.cashierOrders.push(doc.data()));
+                window.state.cashierOrders.sort((a,b) => a.orderId - b.orderId);
+                window.updateBadges(); if (window.state.currentView === 'caja') window.renderCashier();
+                if(!document.getElementById('active-orders-modal').classList.contains('hidden')) window.renderActiveOrdersModal();
+            }, (e) => console.error(e));
+
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders'), (snapshot) => {
+                window.state.historyOrders = [];
+                snapshot.forEach(doc => window.state.historyOrders.push(doc.data()));
+                window.state.historyOrders.sort((a,b) => b.orderId - a.orderId);
+                if (window.state.currentView === 'historial') window.renderHistory();
+                if (window.state.currentView === 'estadisticas') window.renderEstadisticas();
+            }, (e) => console.error(e));
+
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'inventory'), (snapshot) => {
+                window.state.inventory = {};
+                snapshot.forEach(doc => { window.state.inventory[doc.id] = doc.data(); });
+                if (window.state.currentView === 'inventario') window.renderInventory();
+            }, (e) => console.error(e));
+
+            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'finances'), (snapshot) => {
+                if(snapshot.exists()) { window.state.finances = snapshot.data(); } 
+                else { window.state.finances = { base: 0, expenses: [] }; }
+                if (typeof window.renderFinances === 'function') window.renderFinances();
+            }, (e) => console.error(e));
+        }
+
         const initApp = () => {
             window.renderCategories(); 
             window.renderProducts(); 
