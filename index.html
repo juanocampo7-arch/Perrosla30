@@ -8,11 +8,12 @@
     <!-- Etiquetas PWA para instalación de App -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#dc2626">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/192/3014/3014493.png">
+    <link rel="apple-touch-icon" href="./logo.jpg">
     
-    <!-- Tailwind CSS y Lucide Icons -->
+    <!-- Tailwind CSS, Lucide Icons y Chart.js para Estadísticas -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -35,8 +36,10 @@
                     <button onclick="window.toggleSidebar()" class="p-1 mr-1 text-white hover:bg-red-700 rounded transition-colors">
                         <i data-lucide="menu" class="w-7 h-7"></i>
                     </button>
-                    <span class="font-black text-2xl tracking-tighter">PERROS LA 30</span>
-                    <span class="text-xs font-medium uppercase tracking-widest bg-red-800 px-2 py-0.5 rounded-full hidden sm:block">Los Originales</span>
+                    <!-- LOGO INTEGRADO -->
+                    <img src="./logo.jpg" alt="Logo" class="w-9 h-9 rounded-full object-cover border-2 border-white bg-white hidden sm:block" onerror="this.style.display='none'">
+                    <span class="font-black text-2xl tracking-tighter ml-1">PERROS LA 30</span>
+                    <span class="text-xs font-medium uppercase tracking-widest bg-red-800 px-2 py-0.5 rounded-full hidden md:block">Los Originales</span>
                     <div id="connection-status" class="ml-2 bg-yellow-500 text-yellow-900 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 animate-pulse">
                         Conectando...
                     </div>
@@ -54,7 +57,10 @@
     <div id="sidebar-overlay" onclick="window.toggleSidebar()" class="fixed inset-0 bg-black/50 z-[110] hidden fade-in"></div>
     <div id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-white shadow-2xl z-[120] transform -translate-x-full transition-transform duration-300 flex flex-col">
         <div class="p-4 bg-red-600 text-white flex justify-between items-center shrink-0">
-            <span class="font-black text-xl tracking-widest">MENÚ POS</span>
+            <div class="flex items-center gap-2">
+                <img src="./logo.jpg" alt="Logo" class="w-8 h-8 rounded-full object-cover border-2 border-white bg-white" onerror="this.style.display='none'">
+                <span class="font-black text-xl tracking-widest">MENÚ POS</span>
+            </div>
             <button onclick="window.toggleSidebar()" class="hover:bg-red-700 p-1 rounded transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
         </div>
         <div class="flex flex-col p-4 space-y-2 overflow-y-auto flex-1">
@@ -79,6 +85,10 @@
             </button>
             <button onclick="window.attemptSwitchView('inventario')" id="menu-inventario" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100">
                 <i data-lucide="boxes" class="w-5 h-5"></i> Inventario
+            </button>
+            <!-- BOTÓN DE ESTADÍSTICAS -->
+            <button onclick="window.attemptSwitchView('estadisticas')" id="menu-estadisticas" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100">
+                <i data-lucide="bar-chart-3" class="w-5 h-5"></i> Estadísticas
             </button>
         </div>
     </div>
@@ -292,6 +302,56 @@
                 </div>
             </div>
         </div>
+
+        <!-- VISTA ESTADÍSTICAS -->
+        <div id="view-estadisticas" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
+            <div class="mb-4 shrink-0">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                    <i data-lucide="bar-chart-3" class="text-blue-500 w-8 h-8"></i> Estadísticas en Tiempo Real
+                </h2>
+                <p class="text-gray-500">Resumen del rendimiento del negocio de las ventas procesadas.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 shrink-0">
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+                    <div class="bg-green-100 p-3 rounded-full text-green-600"><i data-lucide="dollar-sign" class="w-8 h-8"></i></div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Ventas Totales Hoy</p>
+                        <h3 id="stats-total-sales" class="text-2xl font-black text-gray-800">$0</h3>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+                    <div class="bg-blue-100 p-3 rounded-full text-blue-600"><i data-lucide="shopping-bag" class="w-8 h-8"></i></div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Órdenes Completadas</p>
+                        <h3 id="stats-total-orders" class="text-2xl font-black text-gray-800">0</h3>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+                    <div class="bg-purple-100 p-3 rounded-full text-purple-600"><i data-lucide="trending-up" class="w-8 h-8"></i></div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Ticket Promedio</p>
+                        <h3 id="stats-avg-ticket" class="text-2xl font-black text-gray-800">$0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[400px]">
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col">
+                    <h3 class="font-bold text-gray-700 mb-4 text-center">Métodos de Pago</h3>
+                    <div class="flex-1 relative w-full flex justify-center items-center h-64 lg:h-auto">
+                        <canvas id="paymentMethodChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col">
+                    <h3 class="font-bold text-gray-700 mb-4 text-center">Top 5 Productos Más Vendidos</h3>
+                    <div class="flex-1 relative w-full h-64 lg:h-auto">
+                        <canvas id="topProductsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <!-- TODOS LOS MODALES DEL SISTEMA -->
@@ -689,8 +749,9 @@
         };
 
         let toastTimeout;
+        window.salesChartInstance = null;
+        window.productsChartInstance = null;
 
-        // PREVENCIÓN DE NaN A NIVEL GLOBAL
         window.getSafeNumber = function(val, fallback = 0) {
             if (val === null || val === undefined || val === '') return fallback;
             const parsed = Number(val);
@@ -715,6 +776,9 @@
             toastTimeout = setTimeout(() => { toastEl.classList.add('translate-y-20', 'opacity-0'); }, 3000);
         }
 
+        // ==========================================
+        // SOLUCIÓN DE IMPRESIÓN MÓVIL (IFRAME OCULTO)
+        // ==========================================
         window.printTicket = function(type, id) {
             let dataList = [];
             if (type === 'caja') {
@@ -734,7 +798,6 @@
 
             if (dataList.length === 0) { window.showToast("No se encontró información para imprimir.", "error"); return; }
 
-            const printWindow = window.open('', '_blank', 'width=400,height=600');
             let html = `<html><head><style>@page{margin:0;size:auto;} body{font-family:'Courier New',Courier,monospace;width:280px;margin:0;padding:10px;font-size:14px;color:#000;} h1,h2,h3,p{margin:0;padding:2px 0;text-align:center;} .divider{border-top:1px dashed #000;margin:8px 0;} .item-row{display:flex;justify-content:space-between;margin-bottom:4px;align-items:flex-start;} .item-qty{font-weight:bold;padding-right:5px;} .item-name{flex:1;text-align:left;} .item-price{padding-left:5px;} .note{font-size:12px;font-style:italic;padding-left:20px;text-align:left;display:block;margin-top:-2px;margin-bottom:4px;} .totals{margin-top:10px;font-weight:bold;font-size:16px;text-align:right;} .header-title{font-size:22px;font-weight:bold;text-align:center;} .station-title{font-size:20px;font-weight:bold;border:2px solid #000;padding:5px;margin-bottom:10px;text-transform:uppercase;text-align:center;} .info-text{text-align:left;font-size:14px;margin-bottom:2px;} .ticket-container{page-break-after:always;padding-bottom:20px;}</style></head><body>`;
 
             dataList.forEach(({format, data}) => {
@@ -771,8 +834,29 @@
                 }
                 html += `</div>`;
             });
-            html += `<script>window.onload = function() { window.print(); setTimeout(function(){ window.close(); }, 500); }<\/script></body></html>`;
-            printWindow.document.write(html); printWindow.document.close();
+            html += `</body></html>`;
+
+            // Lógica optimizada para Android y Chrome Mobile (Iframe oculto en lugar de pop-up)
+            const iframe = document.createElement('iframe');
+            iframe.style.position = 'fixed';
+            iframe.style.right = '0';
+            iframe.style.bottom = '0';
+            iframe.style.width = '0';
+            iframe.style.height = '0';
+            iframe.style.border = '0';
+            document.body.appendChild(iframe);
+            
+            const doc = iframe.contentWindow.document;
+            doc.open();
+            doc.write(html);
+            doc.close();
+            
+            setTimeout(() => {
+                iframe.contentWindow.focus();
+                iframe.contentWindow.print();
+                // Se elimina después de 10 segundos para darle tiempo al spooler de Android de capturar el documento
+                setTimeout(() => { document.body.removeChild(iframe); }, 10000);
+            }, 500);
         };
 
         window.openFinanceModal = function(type) {
@@ -1089,7 +1173,111 @@
             if(elExp) elExp.innerText = formatCurrency(totalExp);
         };
 
-        // --- SOLUCIÓN PERMANENTE PARA NAN EN EL REPORTE Z ---
+        window.renderEstadisticas = function() {
+            let totalVentas = 0, totalOrders = 0, totalEfectivo = 0, totalTransf = 0;
+            const itemsSold = {};
+
+            window.state.historyOrders.forEach(order => {
+                if (order.status === 'paid') {
+                    totalOrders++;
+                    
+                    let orderTotal = window.getSafeNumber(order.total, 0);
+                    let vEfectivo = order.payment ? window.getSafeNumber(order.payment.cashAmount, 0) : orderTotal;
+                    let vTransf = order.payment ? window.getSafeNumber(order.payment.transferAmount, 0) : 0;
+
+                    if(order.type === 'domicilio') {
+                        const fee = window.getSafeNumber(order.domiFee, 0);
+                        let orderSubtotal = window.getSafeNumber(order.subtotal, 0);
+                        const subtotalProductos = orderSubtotal > 0 ? orderSubtotal : Math.max(0, orderTotal - fee);
+                        totalVentas += subtotalProductos;
+                        if (vEfectivo >= fee) vEfectivo -= fee;
+                        else vTransf = Math.max(0, vTransf - (fee - vEfectivo));
+                    } else {
+                        totalVentas += orderTotal;
+                    }
+
+                    totalEfectivo += vEfectivo;
+                    totalTransf += vTransf;
+
+                    if(order.items && Array.isArray(order.items)){
+                        order.items.forEach(item => {
+                            let iName = item.name || 'Desconocido';
+                            let qty = window.getSafeNumber(item.quantity, 1);
+                            if (!itemsSold[iName]) itemsSold[iName] = 0;
+                            itemsSold[iName] += qty;
+                        });
+                    }
+                }
+            });
+
+            document.getElementById('stats-total-sales').innerText = formatCurrency(totalVentas);
+            document.getElementById('stats-total-orders').innerText = totalOrders;
+            document.getElementById('stats-avg-ticket').innerText = formatCurrency(totalOrders > 0 ? (totalVentas / totalOrders) : 0);
+
+            const ctxPayment = document.getElementById('paymentMethodChart');
+            if(window.salesChartInstance) window.salesChartInstance.destroy();
+            window.salesChartInstance = new Chart(ctxPayment, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Efectivo', 'Nequi / Transferencia'],
+                    datasets: [{
+                        data: [totalEfectivo, totalTransf],
+                        backgroundColor: ['#22c55e', '#a855f7'],
+                        hoverOffset: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            const sortedItems = Object.keys(itemsSold).map(name => ({name, qty: itemsSold[name]})).sort((a,b) => b.qty - a.qty).slice(0,5);
+            const ctxProducts = document.getElementById('topProductsChart');
+            if(window.productsChartInstance) window.productsChartInstance.destroy();
+            window.productsChartInstance = new Chart(ctxProducts, {
+                type: 'bar',
+                data: {
+                    labels: sortedItems.map(i => i.name),
+                    datasets: [{
+                        label: 'Unidades Vendidas',
+                        data: sortedItems.map(i => i.qty),
+                        backgroundColor: '#ef4444',
+                        borderRadius: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
+            });
+        };
+
+        // --- SOLUCIÓN DE IMPRESIÓN MÓVIL (IFRAME OCULTO) ---
+        window.printReporteZ = function() {
+            const data = window.state.zReportData; if (!data) return;
+            let html = `<html><head><style>@page{margin:0;size:auto;} body{font-family:'Courier New',Courier,monospace;width:280px;margin:0;padding:10px;font-size:14px;} h1,p{margin:0;padding:2px 0;text-align:center;} .divider{border-top:1px dashed #000;margin:8px 0;} .item-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;} .item-qty{font-weight:bold;width:30px;} .item-name{flex:1;} .item-price{font-weight:bold;text-align:right;} .totals{margin-top:10px;font-weight:bold;font-size:16px;text-align:right;} .header-title{font-size:20px;font-weight:bold;text-align:center;} .summary-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;}</style></head><body><div class="header-title">PERROS LA 30</div><p>REPORTE Z (CIERRE DIARIO)</p><div class="divider"></div><p style="text-align:left;font-size:12px;"><b>Fecha:</b> ${data.date}</p><p style="text-align:left;font-size:12px;"><b>Hora:</b> ${data.time}</p><div class="divider"></div>`;
+            html += `<div class="summary-row"><span>Total Ventas Prod.:</span><b>${formatCurrency(data.totalVentas)}</b></div>`;
+            html += `<div class="summary-row"><span>Ventas Efectivo:</span><span>${formatCurrency(data.efectivo)}</span></div>`;
+            html += `<div class="summary-row"><span>Ventas Transf:</span><span>${formatCurrency(data.transferencia)}</span></div>`;
+            html += `<div class="summary-row" style="margin-top:5px;"><span>Fletes (Mensajero):</span><span>${formatCurrency(data.totalFletes)}</span></div><div class="divider"></div>`;
+            html += `<div class="summary-row"><span>Base Inicial:</span><span>+${formatCurrency(data.base)}</span></div>`;
+            html += `<div class="summary-row"><span>Gastos/Salidas:</span><span>-${formatCurrency(data.gastos)}</span></div>`;
+            html += `<div class="totals">EFECTIVO EN CAJA:<br>${formatCurrency(data.efectivoNeto)}</div><div class="divider"></div>`;
+            html += `<div style="text-align:center; font-weight:bold; margin-bottom:5px;">RENDIMIENTO MESEROS</div>`;
+            if(data.waiters.length === 0) html += `<div style="text-align:center; font-size:12px;">Sin datos</div>`;
+            data.waiters.forEach(w => { html += `<div class="summary-row"><span>${w.name} (${w.tables}m):</span><span>${formatCurrency(w.total)}</span></div>`; });
+            html += `<div class="divider"></div>`;
+            html += `<div style="margin-bottom:5px;font-weight:bold;display:flex;font-size:12px;"><span style="width:30px;">CANT</span><span style="flex:1;">PRODUCTO</span><span>TOTAL</span></div><div class="divider"></div>`;
+            data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.qty}x</span><span class="item-name">${item.name}</span><span class="item-price">${formatCurrency(item.revenue)}</span></div>`; });
+            html += `<div class="divider"></div><p style="font-size:12px;margin-top:20px;">Fin del Reporte</p></body></html>`;
+            
+            const iframe = document.createElement('iframe');
+            iframe.style.position = 'fixed'; iframe.style.right = '0'; iframe.style.bottom = '0'; iframe.style.width = '0'; iframe.style.height = '0'; iframe.style.border = '0';
+            document.body.appendChild(iframe);
+            const doc = iframe.contentWindow.document;
+            doc.open(); doc.write(html); doc.close();
+            setTimeout(() => {
+                iframe.contentWindow.focus();
+                iframe.contentWindow.print();
+                setTimeout(() => { document.body.removeChild(iframe); }, 10000);
+            }, 500);
+        };
+
         window.generateReporteZ = function() {
             if (window.state.historyOrders.length === 0 && window.state.finances.expenses.length === 0) { 
                 window.showToast("No hay movimientos para generar Reporte Z.", "error"); return; 
@@ -1181,27 +1369,6 @@
 
         window.closeReporteZ = function() { document.getElementById('reportez-modal').classList.add('hidden'); };
 
-        window.printReporteZ = function() {
-            const data = window.state.zReportData; if (!data) return;
-            const printWindow = window.open('', '_blank', 'width=400,height=600');
-            let html = `<html><head><style>@page{margin:0;size:auto;} body{font-family:'Courier New',Courier,monospace;width:280px;margin:0;padding:10px;font-size:14px;} h1,p{margin:0;padding:2px 0;text-align:center;} .divider{border-top:1px dashed #000;margin:8px 0;} .item-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;} .item-qty{font-weight:bold;width:30px;} .item-name{flex:1;} .item-price{font-weight:bold;text-align:right;} .totals{margin-top:10px;font-weight:bold;font-size:16px;text-align:right;} .header-title{font-size:20px;font-weight:bold;text-align:center;} .summary-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;}</style></head><body><div class="header-title">PERROS LA 30</div><p>REPORTE Z (CIERRE DIARIO)</p><div class="divider"></div><p style="text-align:left;font-size:12px;"><b>Fecha:</b> ${data.date}</p><p style="text-align:left;font-size:12px;"><b>Hora:</b> ${data.time}</p><div class="divider"></div>`;
-            html += `<div class="summary-row"><span>Total Ventas Prod.:</span><b>${formatCurrency(data.totalVentas)}</b></div>`;
-            html += `<div class="summary-row"><span>Ventas Efectivo:</span><span>${formatCurrency(data.efectivo)}</span></div>`;
-            html += `<div class="summary-row"><span>Ventas Transf:</span><span>${formatCurrency(data.transferencia)}</span></div>`;
-            html += `<div class="summary-row" style="margin-top:5px;"><span>Fletes (Mensajero):</span><span>${formatCurrency(data.totalFletes)}</span></div><div class="divider"></div>`;
-            html += `<div class="summary-row"><span>Base Inicial:</span><span>+${formatCurrency(data.base)}</span></div>`;
-            html += `<div class="summary-row"><span>Gastos/Salidas:</span><span>-${formatCurrency(data.gastos)}</span></div>`;
-            html += `<div class="totals">EFECTIVO EN CAJA:<br>${formatCurrency(data.efectivoNeto)}</div><div class="divider"></div>`;
-            html += `<div style="text-align:center; font-weight:bold; margin-bottom:5px;">RENDIMIENTO MESEROS</div>`;
-            if(data.waiters.length === 0) html += `<div style="text-align:center; font-size:12px;">Sin datos</div>`;
-            data.waiters.forEach(w => { html += `<div class="summary-row"><span>${w.name} (${w.tables}m):</span><span>${formatCurrency(w.total)}</span></div>`; });
-            html += `<div class="divider"></div>`;
-            html += `<div style="margin-bottom:5px;font-weight:bold;display:flex;font-size:12px;"><span style="width:30px;">CANT</span><span style="flex:1;">PRODUCTO</span><span>TOTAL</span></div><div class="divider"></div>`;
-            data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.qty}x</span><span class="item-name">${item.name}</span><span class="item-price">${formatCurrency(item.price * item.quantity)}</span></div>`; });
-            html += `<div class="divider"></div><p style="font-size:12px;margin-top:20px;">Fin del Reporte</p><script>window.onload=function(){window.print();setTimeout(function(){window.close();},500);}<\/script></body></html>`;
-            printWindow.document.write(html); printWindow.document.close();
-        };
-
         const initAuth = async () => {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
@@ -1259,6 +1426,7 @@
                 snapshot.forEach(doc => window.state.historyOrders.push(doc.data()));
                 window.state.historyOrders.sort((a,b) => b.orderId - a.orderId);
                 if (window.state.currentView === 'historial') window.renderHistory();
+                if (window.state.currentView === 'estadisticas') window.renderEstadisticas();
             }, (e) => console.error(e));
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'inventory'), (snapshot) => {
@@ -1275,7 +1443,7 @@
         }
 
         window.attemptSwitchView = function(view) {
-            if (window.state.isAdminUnlocked) { window.switchView(view); } 
+            if (window.state.isAdminUnlocked || view === 'mesero' || view === 'domicilios') { window.switchView(view); } 
             else { window.state.pendingView = view; document.getElementById('tab-security-pin').value = ''; document.getElementById('tab-security-modal').classList.remove('hidden'); }
         };
         window.closeTabSecurityModal = function() { document.getElementById('tab-security-modal').classList.add('hidden'); window.state.pendingView = null; };
@@ -1297,7 +1465,7 @@
 
         window.switchView = function(view) {
             window.state.currentView = view;
-            ['mesero', 'cocina', 'caja', 'historial', 'inventario', 'domicilios'].forEach(v => {
+            ['mesero', 'cocina', 'caja', 'historial', 'inventario', 'domicilios', 'estadisticas'].forEach(v => {
                 const viewEl = document.getElementById(`view-${v}`); if(viewEl) viewEl.classList.add('hidden');
                 const menuBtn = document.getElementById(`menu-${v}`);
                 if(menuBtn) {
@@ -1311,6 +1479,7 @@
             if(view === 'historial') window.renderHistory(); 
             if(view === 'inventario') window.renderInventory(); 
             if(view === 'domicilios') { window.renderDomiCategories(); window.renderDomiProducts(); window.renderDomiCart(); }
+            if(view === 'estadisticas') window.renderEstadisticas();
             const sidebar = document.getElementById('sidebar'); if (!sidebar.classList.contains('-translate-x-full')) window.toggleSidebar();
         };
 
