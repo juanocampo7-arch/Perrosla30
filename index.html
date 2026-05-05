@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perros La 30 - Sistema de Órdenes (Cloud)</title>
+    <title>Perros La 30 - Sistema POS</title>
     
     <!-- Etiquetas PWA para instalación de App -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#dc2626">
-    <link rel="apple-touch-icon" href="./logo.jpg">
+    <link rel="apple-touch-icon" href="./logo.png">
+    <link rel="icon" type="image/png" href="./logo.png">
     
     <!-- Tailwind CSS, Lucide Icons y Chart.js para Estadísticas -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -20,349 +21,426 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .fade-in { animation: fadeIn 0.2s ease-in-out; }
+        .fade-in { animation: fadeIn 0.2s ease-in-out; will-change: opacity, transform; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         #connection-status { transition: all 0.3s; }
         .ticket-container { page-break-after: always; padding-bottom: 20px; }
+        .hw-accelerate { transform: translateZ(0); will-change: transform; }
     </style>
 </head>
 <body class="bg-gray-100 flex flex-col font-sans min-h-screen overflow-x-hidden">
 
-    <!-- HEADER PRINCIPAL -->
-    <header class="bg-red-600 text-white shadow-md z-50 sticky top-0 shrink-0">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center gap-2">
-                    <button onclick="window.toggleSidebar()" class="p-1 mr-1 text-white hover:bg-red-700 rounded transition-colors">
-                        <i data-lucide="menu" class="w-7 h-7"></i>
-                    </button>
-                    <!-- LOGO INTEGRADO -->
-                    <img src="./logo.jpg" alt="Logo" class="w-9 h-9 rounded-full object-cover border-2 border-white bg-white hidden sm:block" onerror="this.style.display='none'">
-                    <span class="font-black text-2xl tracking-tighter ml-1">PERROS LA 30</span>
-                    <span class="text-xs font-medium uppercase tracking-widest bg-red-800 px-2 py-0.5 rounded-full hidden md:block">Los Originales</span>
-                    <div id="connection-status" class="ml-2 bg-yellow-500 text-yellow-900 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 animate-pulse">
-                        Conectando...
-                    </div>
-                </div>
-                <div class="flex items-center gap-4">
-                    <span id="admin-unlocked-badge" class="hidden items-center gap-1 bg-green-500 text-white px-2 py-1 rounded text-xs font-bold shadow-inner">
-                        <i data-lucide="unlock" class="w-3 h-3"></i> <span class="hidden sm:inline">Admin Desbloqueado</span>
-                    </span>
-                </div>
+    <!-- PANTALLA DE INICIO DE SESIÓN -->
+    <div id="login-screen" class="fixed inset-0 bg-red-600 flex items-center justify-center z-[9999] hw-accelerate transition-opacity duration-300">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl text-center w-96 max-w-[90%] fade-in">
+            <img src="./logo.png" alt="Logo" class="w-32 h-32 mx-auto mb-6 rounded-full border-4 border-red-500 object-cover shadow-md" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3014/3014493.png'">
+            <h2 class="text-2xl font-black text-gray-800 mb-6 tracking-tight">INICIAR SESIÓN</h2>
+            <div class="space-y-4">
+                <input type="text" id="login-user" placeholder="Usuario" class="w-full border-2 border-gray-300 rounded-xl p-3 focus:border-red-500 outline-none uppercase font-bold text-center text-gray-700 transition-colors">
+                <input type="password" id="login-pass" placeholder="Contraseña" class="w-full border-2 border-gray-300 rounded-xl p-3 focus:border-red-500 outline-none text-center text-xl tracking-widest text-gray-700 transition-colors">
             </div>
-        </div>
-    </header>
-
-    <!-- SIDEBAR MENÚ LATERAL (Siempre oculto por defecto, se abre con las 3 rayitas) -->
-    <div id="sidebar-overlay" onclick="window.toggleSidebar()" class="fixed inset-0 bg-black/50 z-[110] hidden fade-in"></div>
-    <div id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-white shadow-2xl z-[120] transform -translate-x-full transition-transform duration-300 flex flex-col">
-        <div class="p-4 bg-red-600 text-white flex justify-between items-center shrink-0">
-            <div class="flex items-center gap-2">
-                <img src="./logo.jpg" alt="Logo" class="w-8 h-8 rounded-full object-cover border-2 border-white bg-white" onerror="this.style.display='none'">
-                <span class="font-black text-xl tracking-widest">MENÚ POS</span>
-            </div>
-            <button onclick="window.toggleSidebar()" class="hover:bg-red-700 p-1 rounded transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
-        </div>
-        <div class="flex flex-col p-4 space-y-2 overflow-y-auto flex-1">
-            <button onclick="window.switchView('mesero')" id="menu-mesero" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-colors bg-red-50 text-red-600">
-                <i data-lucide="utensils" class="w-5 h-5"></i> Mesas / Barra
-            </button>
-            <button onclick="window.switchView('domicilios')" id="menu-domicilios" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100">
-                <i data-lucide="bike" class="w-5 h-5"></i> Domicilios
-            </button>
-            <div class="h-px bg-gray-200 my-2"></div>
-            <button onclick="window.switchView('cocina')" id="menu-cocina" class="flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100">
-                <div class="flex items-center gap-3"><i data-lucide="chef-hat" class="w-5 h-5"></i> Cocina</div>
-                <span id="menu-badge-cocina" class="hidden bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
-            </button>
-            <button onclick="window.attemptSwitchView('caja')" id="menu-caja" class="flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100">
-                <div class="flex items-center gap-3"><i data-lucide="receipt" class="w-5 h-5"></i> Caja & Pagos</div>
-                <span id="menu-badge-caja" class="hidden bg-green-400 text-green-900 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
-            </button>
-            <div class="h-px bg-gray-200 my-2"></div>
-            <button onclick="window.attemptSwitchView('historial')" id="menu-historial" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100">
-                <i data-lucide="history" class="w-5 h-5"></i> Historial
-            </button>
-            <button onclick="window.attemptSwitchView('inventario')" id="menu-inventario" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100">
-                <i data-lucide="boxes" class="w-5 h-5"></i> Inventario
-            </button>
-            <!-- BOTÓN DE ESTADÍSTICAS -->
-            <button onclick="window.attemptSwitchView('estadisticas')" id="menu-estadisticas" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100">
-                <i data-lucide="bar-chart-3" class="w-5 h-5"></i> Estadísticas
+            <button onclick="window.attemptLogin()" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-xl shadow-lg mt-8 transition-all active:scale-95 text-lg">
+                INGRESAR AL SISTEMA
             </button>
         </div>
     </div>
 
-    <!-- CONTENEDOR PRINCIPAL -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 overflow-y-auto">
+    <!-- CONTENEDOR DE LA APP (Oculto hasta hacer login) -->
+    <div id="app-wrapper" class="hidden flex-col min-h-screen">
         
-        <!-- VISTA MESERO (MESAS) -->
-        <div id="view-mesero" class="flex flex-col lg:flex-row gap-4 fade-in lg:h-[calc(100vh-7rem)]">
-            <div class="flex-1 flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden h-[60vh] lg:h-full">
-                <div id="categories-container" class="flex overflow-x-auto bg-gray-50 p-2 gap-2 border-b shrink-0"></div>
-                <div class="p-4 overflow-y-auto flex-1 bg-gray-50">
-                    <div id="products-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
-                </div>
-            </div>
-
-            <div class="w-full lg:w-[400px] shrink-0 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col h-[70vh] lg:h-full overflow-hidden">
-                <div class="p-4 bg-gray-900 text-white rounded-t-xl flex justify-between items-center shrink-0">
+        <!-- HEADER PRINCIPAL -->
+        <header class="bg-red-600 text-white shadow-md z-50 sticky top-0 shrink-0 hw-accelerate">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
                     <div class="flex items-center gap-2">
-                        <h2 class="text-xl font-bold">Orden #<span id="order-counter-display">...</span></h2>
-                        <span id="badge-editing" class="hidden bg-yellow-500 text-yellow-900 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider animate-pulse">Editando</span>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <button onclick="window.cancelEditMode()" id="btn-cancel-edit" class="hidden text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-white font-bold transition-colors">Cancelar</button>
-                        <button onclick="window.clearCurrentOrder(true)" id="btn-clear-order" class="hidden text-gray-400 hover:text-red-400 p-1.5 bg-gray-800 rounded-full transition-colors flex items-center justify-center">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        <button onclick="window.toggleSidebar()" class="p-1 mr-1 text-white hover:bg-red-700 rounded transition-colors active:scale-90">
+                            <i data-lucide="menu" class="w-7 h-7"></i>
                         </button>
-                        <span id="header-table-badge" class="hidden bg-red-600 px-3 py-1 rounded-full text-sm font-bold"></span>
+                        <img src="./logo.png" alt="Logo" class="w-9 h-9 rounded-full object-cover border-2 border-white bg-white hidden sm:block shadow-sm" onerror="this.style.display='none'">
+                        <span class="font-black text-2xl tracking-tighter ml-1">PERROS LA 30</span>
+                        <span class="text-xs font-medium uppercase tracking-widest bg-red-800 px-2 py-0.5 rounded-full hidden md:block">Los Originales</span>
+                        <div id="connection-status" class="ml-2 bg-yellow-500 text-yellow-900 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 animate-pulse shadow-inner">
+                            Conectando...
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span id="admin-unlocked-badge" class="hidden items-center gap-1 bg-green-500 text-white px-2 py-1 rounded text-xs font-bold shadow-inner transition-all">
+                            <i data-lucide="unlock" class="w-3 h-3"></i> <span class="hidden sm:inline">Admin</span>
+                        </span>
                     </div>
                 </div>
+            </div>
+        </header>
 
-                <div class="p-4 border-b space-y-3 shrink-0">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Mesero</label>
-                        <select id="waiter-name" onchange="window.state.waiterName = this.value" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-red-500 outline-none bg-white cursor-pointer">
-                            <option value="" disabled selected>Selecciona un mesero...</option>
-                            <option value="Juanjo">Juanjo</option>
-                            <option value="Natalia">Natalia</option>
-                            <option value="Freddy">Freddy</option>
-                            <option value="Sebas">Sebas</option>
-                            <option value="Cualquiera">Cualquiera</option>
-                        </select>
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-0">Mesa / Cliente</label>
-                        <button onclick="window.openMapModal()" id="table-selector-btn" class="w-full border rounded-lg p-2 flex items-center justify-between focus:ring-2 focus:ring-red-500 outline-none transition-colors bg-gray-50 hover:bg-red-50">
-                            <span id="table-selector-text" class="font-bold text-gray-500">Seleccionar Mesa...</span>
-                            <span id="table-selector-icon-container"><i data-lucide="map" class="text-gray-400 w-5 h-5"></i></span>
-                        </button>
-                        <button onclick="window.openActiveOrdersModal()" id="btn-waiter-edit" class="w-full bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-bold py-2 rounded-lg border border-yellow-300 transition-colors flex items-center justify-center gap-2 text-sm mt-1">
-                            <i data-lucide="list-checks" class="w-4 h-4"></i> Editar Orden Activa
-                        </button>
-                    </div>
+        <!-- SIDEBAR MENÚ LATERAL -->
+        <div id="sidebar-overlay" onclick="window.toggleSidebar()" class="fixed inset-0 bg-black/60 z-[110] hidden fade-in backdrop-blur-sm transition-all"></div>
+        <div id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-white shadow-2xl z-[120] transform -translate-x-full transition-transform duration-300 flex flex-col hw-accelerate">
+            <div class="p-4 bg-red-600 text-white flex justify-between items-center shrink-0">
+                <div class="flex items-center gap-3">
+                    <img src="./logo.png" alt="Logo" class="w-10 h-10 rounded-full object-cover border-2 border-white bg-white shadow-md" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3014/3014493.png'">
+                    <span class="font-black text-xl tracking-widest">MENÚ POS</span>
                 </div>
-
-                <div id="cart-items" class="flex-1 overflow-y-auto p-2 space-y-2 bg-gray-50"></div>
-
-                <div class="p-4 border-t bg-white rounded-b-xl shrink-0">
-                    <input type="text" id="general-note" oninput="window.state.generalNote = this.value" placeholder="Observaciones generales..." class="w-full border rounded-lg p-2 mb-4 text-sm focus:ring-2 focus:ring-red-500 outline-none">
-                    <div class="flex justify-between items-center mb-4 text-lg">
-                        <span class="font-bold text-gray-600">Total:</span>
-                        <span id="cart-total" class="font-extrabold text-2xl text-red-600">$0</span>
-                    </div>
-                    <button id="btn-submit-order" onclick="window.submitOrder()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 text-lg">
-                        <i data-lucide="cloud-upload" class="w-6 h-6"></i> Enviar a la Nube
+                <button onclick="window.toggleSidebar()" class="hover:bg-red-700 p-1.5 rounded-lg transition-colors active:scale-90"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="flex flex-col p-4 space-y-2 overflow-y-auto flex-1">
+                <button onclick="window.switchView('mesero')" id="menu-mesero" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all bg-red-50 text-red-600 active:scale-95">
+                    <i data-lucide="utensils" class="w-5 h-5"></i> Mesas / Barra
+                </button>
+                <button onclick="window.switchView('domicilios')" id="menu-domicilios" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
+                    <i data-lucide="bike" class="w-5 h-5"></i> Domicilios
+                </button>
+                <div class="h-px bg-gray-200 my-2"></div>
+                <button onclick="window.switchView('cocina')" id="menu-cocina" class="flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
+                    <div class="flex items-center gap-3"><i data-lucide="chef-hat" class="w-5 h-5"></i> Cocina</div>
+                    <span id="menu-badge-cocina" class="hidden bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-0.5 rounded-full shadow-inner">0</span>
+                </button>
+                <button onclick="window.attemptSwitchView('caja')" id="menu-caja" class="flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
+                    <div class="flex items-center gap-3"><i data-lucide="receipt" class="w-5 h-5"></i> Caja & Pagos</div>
+                    <span id="menu-badge-caja" class="hidden bg-green-400 text-green-900 text-xs font-bold px-2 py-0.5 rounded-full shadow-inner">0</span>
+                </button>
+                <div class="h-px bg-gray-200 my-2"></div>
+                <button onclick="window.attemptSwitchView('nomina')" id="menu-nomina" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
+                    <i data-lucide="users" class="w-5 h-5"></i> Nómina y Empleados
+                </button>
+                <button onclick="window.attemptSwitchView('historial')" id="menu-historial" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
+                    <i data-lucide="history" class="w-5 h-5"></i> Historial y Cierres
+                </button>
+                <button onclick="window.attemptSwitchView('inventario')" id="menu-inventario" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
+                    <i data-lucide="boxes" class="w-5 h-5"></i> Inventario
+                </button>
+                <button onclick="window.attemptSwitchView('estadisticas')" id="menu-estadisticas" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i> Estadísticas
+                </button>
+                
+                <div class="mt-auto pt-4 border-t border-gray-200">
+                    <button onclick="window.installApp()" id="btn-install-app" class="hidden w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold bg-gray-900 text-white hover:bg-black transition-all active:scale-95 shadow-md">
+                        <i data-lucide="download" class="w-5 h-5"></i> Instalar App POS
+                    </button>
+                    <button onclick="window.logout()" class="w-full flex items-center gap-3 px-4 py-3 mt-2 rounded-xl text-left font-bold transition-all text-red-600 hover:bg-red-50 active:scale-95">
+                        <i data-lucide="log-out" class="w-5 h-5"></i> Cerrar Sesión
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- VISTA DOMICILIOS -->
-        <div id="view-domicilios" class="hidden flex flex-col lg:flex-row gap-4 fade-in lg:h-[calc(100vh-7rem)]">
-            <div class="flex-1 flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden h-[60vh] lg:h-full">
-                <div id="domi-categories-container" class="flex overflow-x-auto bg-gray-50 p-2 gap-2 border-b shrink-0"></div>
-                <div class="p-4 overflow-y-auto flex-1 bg-gray-50">
-                    <div id="domi-products-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
-                </div>
-            </div>
-
-            <div class="w-full lg:w-[400px] shrink-0 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col h-[70vh] lg:h-full overflow-hidden">
-                <div class="p-4 bg-orange-600 text-white rounded-t-xl flex justify-between items-center shrink-0">
-                    <div class="flex items-center gap-2">
-                        <i data-lucide="bike" class="w-6 h-6"></i>
-                        <h2 class="text-xl font-bold">Domi #<span id="domi-order-counter-display">...</span></h2>
-                        <span id="domi-badge-editing" class="hidden bg-yellow-400 text-yellow-900 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider animate-pulse">Editando</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="window.cancelDomiEditMode()" id="domi-btn-cancel-edit" class="hidden text-xs bg-orange-800 hover:bg-orange-900 px-2 py-1 rounded text-white font-bold transition-colors">Cancelar</button>
-                        <button onclick="window.clearDomiOrder()" id="domi-btn-clear-order" class="hidden text-white hover:text-orange-200 p-1.5 rounded-full transition-colors flex items-center justify-center">
-                            <i data-lucide="trash-2" class="w-5 h-5"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="p-4 border-b space-y-3 shrink-0 bg-orange-50/50">
-                    <input type="text" id="domi-address" oninput="window.state.domiAddress = this.value" placeholder="Dirección Completa..." class="w-full border-2 border-orange-300 rounded-lg p-3 text-lg font-bold focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-gray-800">
-                    <div class="flex gap-2">
-                        <input type="text" id="domi-phone" oninput="window.state.domiPhone = this.value" placeholder="Teléfono" class="w-1/2 border border-gray-300 rounded-lg p-2 focus:border-orange-500 outline-none font-semibold text-gray-700">
-                        <input type="text" id="domi-name" oninput="window.state.domiName = this.value" placeholder="Nombre (Opcional)" class="w-1/2 border border-gray-300 rounded-lg p-2 focus:border-orange-500 outline-none font-semibold text-gray-700">
-                    </div>
-                    <div class="flex items-center justify-between bg-orange-100 p-3 rounded-lg border border-orange-200 mt-2">
-                        <label class="font-bold text-orange-900 text-sm">Precio Domicilio $</label>
-                        <input type="number" id="domi-fee" value="0" oninput="window.state.domiFee = parseInt(this.value) || 0; window.renderDomiCart();" class="w-24 border border-orange-300 rounded-md p-1.5 text-right font-black text-orange-700 outline-none bg-white">
-                    </div>
-                </div>
-
-                <div id="domi-cart-items" class="flex-1 overflow-y-auto p-2 space-y-2 bg-gray-50"></div>
-
-                <div class="p-4 border-t bg-white rounded-b-xl shrink-0">
-                    <input type="text" id="domi-general-note" oninput="window.state.domiNote = this.value" placeholder="Notas adicionales para el envío..." class="w-full border rounded-lg p-2 mb-3 text-sm focus:border-orange-500 outline-none">
-                    <div class="flex justify-between items-center mb-1 text-sm text-gray-500 font-semibold">
-                        <span>Subtotal (Productos):</span>
-                        <span id="domi-subtotal">$0</span>
-                    </div>
-                    <div class="flex justify-between items-center mb-4 text-lg">
-                        <span class="font-black text-gray-700">Total a Cobrar:</span>
-                        <span id="domi-total" class="font-extrabold text-2xl text-orange-600">$0</span>
-                    </div>
-                    <button id="btn-submit-domi" onclick="window.submitDomiOrder()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 text-lg">
-                        <i data-lucide="bike" class="w-6 h-6"></i> Confirmar Domicilio
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- VISTA COCINA -->
-        <div id="view-cocina" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
-            <div class="mb-4 shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                        <i data-lucide="chef-hat" class="text-orange-500 w-8 h-8"></i> Monitor de Cocina
-                    </h2>
-                    <p class="text-gray-500">Órdenes y domicilios pendientes</p>
-                </div>
-                <div class="flex space-x-1 sm:space-x-2 bg-gray-200 p-1.5 rounded-xl overflow-x-auto">
-                    <button onclick="window.setKitchenStation('perrero')" id="tab-station-perrero" class="px-4 py-2 bg-white font-bold text-red-600 rounded-lg shadow transition-all whitespace-nowrap">Perrero</button>
-                    <button onclick="window.setKitchenStation('hamburguesero')" id="tab-station-hamburguesero" class="px-4 py-2 font-bold text-gray-600 hover:text-gray-800 rounded-lg transition-all whitespace-nowrap">Hamburguesero</button>
-                    <button onclick="window.setKitchenStation('general')" id="tab-station-general" class="px-4 py-2 font-bold text-gray-600 hover:text-gray-800 rounded-lg transition-all whitespace-nowrap">Otras Prep.</button>
-                </div>
-            </div>
-            <div id="kitchen-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start pb-6 content-start"></div>
-        </div>
-
-        <!-- VISTA CAJA -->
-        <div id="view-caja" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
-            <div class="mb-4 shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                        <i data-lucide="receipt" class="text-green-600 w-8 h-8"></i> Caja y Facturación
-                    </h2>
-                    <p class="text-gray-500">Órdenes pendientes de pago y finanzas</p>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="window.generateReporteZ()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 sm:px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-blue-200 text-sm shadow-sm whitespace-nowrap">
-                        <i data-lucide="calculator" class="w-4 h-4"></i> <span class="hidden sm:inline">Reporte Z</span>
-                    </button>
-                    <button onclick="window.openSecurityModal()" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 sm:px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-red-200 text-sm shadow-sm whitespace-nowrap">
-                        <i data-lucide="lock" class="w-4 h-4"></i> <span class="hidden sm:inline">Limpiar Sistema</span>
-                    </button>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 shrink-0">
-                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex justify-between items-center">
-                    <div>
-                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Base de Caja Inicial</p>
-                        <h3 id="finance-base-display" class="text-2xl font-black text-green-600">$0</h3>
-                    </div>
-                    <button onclick="window.openFinanceModal('base')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
-                        <i data-lucide="edit-2" class="w-4 h-4"></i> Ajustar Base
-                    </button>
-                </div>
-                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex justify-between items-center">
-                    <div>
-                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Gastos del Día</p>
-                        <h3 id="finance-expenses-display" class="text-2xl font-black text-red-600">$0</h3>
-                    </div>
-                    <button onclick="window.openFinanceModal('gasto')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
-                        <i data-lucide="plus" class="w-4 h-4"></i> Registrar Gasto
-                    </button>
-                </div>
-            </div>
-            <div id="cashier-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start pb-6 content-start"></div>
-        </div>
-
-        <!-- VISTA HISTORIAL -->
-        <div id="view-historial" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
-            <div class="mb-4 shrink-0">
-                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                    <i data-lucide="history" class="text-blue-600 w-8 h-8"></i> Historial de Órdenes
-                </h2>
-                <p class="text-gray-500">Registro de todas las ventas y órdenes anuladas del día</p>
-            </div>
-            <div id="history-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start pb-6 content-start"></div>
-        </div>
-
-        <!-- VISTA INVENTARIO -->
-        <div id="view-inventario" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
-            <div class="mb-4 shrink-0">
-                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                    <i data-lucide="boxes" class="text-purple-600 w-8 h-8"></i> Control de Inventario
-                </h2>
-                <p class="text-gray-500">Stock de ingredientes y productos terminados.</p>
-            </div>
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex-1 overflow-hidden flex flex-col">
-                <div class="p-4 bg-gray-50 border-b flex justify-between items-center shrink-0">
-                    <h3 class="font-bold text-gray-700">Artículos Registrados</h3>
-                    <span class="text-xs text-gray-500 italic">*Cantidades se actualizan en vivo</span>
-                </div>
-                <div class="flex-1 overflow-y-auto p-4">
-                    <div id="inventory-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- VISTA ESTADÍSTICAS -->
-        <div id="view-estadisticas" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
-            <div class="mb-4 shrink-0">
-                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                    <i data-lucide="bar-chart-3" class="text-blue-500 w-8 h-8"></i> Estadísticas en Tiempo Real
-                </h2>
-                <p class="text-gray-500">Resumen del rendimiento del negocio de las ventas procesadas.</p>
-            </div>
+        <!-- CONTENEDOR DE VISTAS PRINCIPAL -->
+        <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 overflow-y-auto hw-accelerate">
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 shrink-0">
-                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
-                    <div class="bg-green-100 p-3 rounded-full text-green-600"><i data-lucide="dollar-sign" class="w-8 h-8"></i></div>
-                    <div>
-                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Ventas Totales Hoy</p>
-                        <h3 id="stats-total-sales" class="text-2xl font-black text-gray-800">$0</h3>
+            <!-- VISTA MESERO (MESAS) -->
+            <div id="view-mesero" class="flex flex-col lg:flex-row gap-4 fade-in lg:h-[calc(100vh-7rem)]">
+                <div class="flex-1 flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden h-[60vh] lg:h-full">
+                    <div id="categories-container" class="flex overflow-x-auto bg-gray-50 p-2 gap-2 border-b shrink-0 scroll-smooth"></div>
+                    <div class="p-4 overflow-y-auto flex-1 bg-gray-50">
+                        <div id="products-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
                     </div>
                 </div>
-                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
-                    <div class="bg-blue-100 p-3 rounded-full text-blue-600"><i data-lucide="shopping-bag" class="w-8 h-8"></i></div>
-                    <div>
-                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Órdenes Completadas</p>
-                        <h3 id="stats-total-orders" class="text-2xl font-black text-gray-800">0</h3>
+
+                <div class="w-full lg:w-[400px] shrink-0 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col h-[70vh] lg:h-full overflow-hidden">
+                    <div class="p-4 bg-gray-900 text-white rounded-t-xl flex justify-between items-center shrink-0">
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-xl font-bold">Orden #<span id="order-counter-display">...</span></h2>
+                            <span id="badge-editing" class="hidden bg-yellow-500 text-yellow-900 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider animate-pulse">Editando</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="window.cancelEditMode()" id="btn-cancel-edit" class="hidden text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-white font-bold transition-colors">Cancelar</button>
+                            <button onclick="window.clearCurrentOrder(true)" id="btn-clear-order" class="hidden text-gray-400 hover:text-red-400 p-1.5 bg-gray-800 rounded-full transition-colors flex items-center justify-center active:scale-90">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                            <span id="header-table-badge" class="hidden bg-red-600 px-3 py-1 rounded-full text-sm font-bold"></span>
+                        </div>
                     </div>
-                </div>
-                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
-                    <div class="bg-purple-100 p-3 rounded-full text-purple-600"><i data-lucide="trending-up" class="w-8 h-8"></i></div>
-                    <div>
-                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Ticket Promedio</p>
-                        <h3 id="stats-avg-ticket" class="text-2xl font-black text-gray-800">$0</h3>
+
+                    <div class="p-4 border-b space-y-3 shrink-0">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Mesero</label>
+                            <select id="waiter-name" onchange="window.state.waiterName = this.value" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-red-500 outline-none bg-white cursor-pointer transition-shadow">
+                                <option value="" disabled selected>Selecciona un mesero...</option>
+                                <option value="Juanjo">Juanjo</option>
+                                <option value="Natalia">Natalia</option>
+                                <option value="Junior">Junior</option>
+                                <option value="Sebas">Sebas</option>
+                                <option value="Cualquiera">Cualquiera</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-0">Mesa / Cliente</label>
+                            <button onclick="window.openMapModal()" id="table-selector-btn" class="w-full border rounded-lg p-2 flex items-center justify-between focus:ring-2 focus:ring-red-500 outline-none transition-all bg-gray-50 hover:bg-red-50 active:scale-95">
+                                <span id="table-selector-text" class="font-bold text-gray-500">Seleccionar Mesa...</span>
+                                <span id="table-selector-icon-container"><i data-lucide="map" class="text-gray-400 w-5 h-5"></i></span>
+                            </button>
+                            <button onclick="window.openActiveOrdersModal()" id="btn-waiter-edit" class="w-full bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-bold py-2 rounded-lg border border-yellow-300 transition-all flex items-center justify-center gap-2 text-sm mt-1 active:scale-95">
+                                <i data-lucide="list-checks" class="w-4 h-4"></i> Editar Orden Activa
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="cart-items" class="flex-1 overflow-y-auto p-2 space-y-2 bg-gray-50 scroll-smooth"></div>
+
+                    <div class="p-4 border-t bg-white rounded-b-xl shrink-0">
+                        <input type="text" id="general-note" oninput="window.state.generalNote = this.value" placeholder="Observaciones generales..." class="w-full border rounded-lg p-2 mb-4 text-sm focus:ring-2 focus:ring-red-500 outline-none transition-shadow">
+                        <div class="flex justify-between items-center mb-4 text-lg">
+                            <span class="font-bold text-gray-600">Total:</span>
+                            <span id="cart-total" class="font-extrabold text-2xl text-red-600">$0</span>
+                        </div>
+                        <button id="btn-submit-order" onclick="window.submitOrder()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-lg active:scale-95">
+                            <i data-lucide="cloud-upload" class="w-6 h-6"></i> Enviar a la Nube
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <div class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[400px]">
-                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col">
-                    <h3 class="font-bold text-gray-700 mb-4 text-center">Métodos de Pago</h3>
-                    <div class="flex-1 relative w-full flex justify-center items-center h-64 lg:h-auto">
-                        <canvas id="paymentMethodChart"></canvas>
+            <!-- VISTA DOMICILIOS -->
+            <div id="view-domicilios" class="hidden flex flex-col lg:flex-row gap-4 fade-in lg:h-[calc(100vh-7rem)]">
+                <div class="flex-1 flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden h-[60vh] lg:h-full">
+                    <div id="domi-categories-container" class="flex overflow-x-auto bg-gray-50 p-2 gap-2 border-b shrink-0 scroll-smooth"></div>
+                    <div class="p-4 overflow-y-auto flex-1 bg-gray-50">
+                        <div id="domi-products-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
                     </div>
                 </div>
-                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col">
-                    <h3 class="font-bold text-gray-700 mb-4 text-center">Top 5 Productos Más Vendidos</h3>
-                    <div class="flex-1 relative w-full h-64 lg:h-auto">
-                        <canvas id="topProductsChart"></canvas>
+
+                <div class="w-full lg:w-[400px] shrink-0 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col h-[70vh] lg:h-full overflow-hidden">
+                    <div class="p-4 bg-orange-600 text-white rounded-t-xl flex justify-between items-center shrink-0">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="bike" class="w-6 h-6"></i>
+                            <h2 class="text-xl font-bold">Domi #<span id="domi-order-counter-display">...</span></h2>
+                            <span id="domi-badge-editing" class="hidden bg-yellow-400 text-yellow-900 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider animate-pulse">Editando</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="window.cancelDomiEditMode()" id="domi-btn-cancel-edit" class="hidden text-xs bg-orange-800 hover:bg-orange-900 px-2 py-1 rounded text-white font-bold transition-colors">Cancelar</button>
+                            <button onclick="window.clearDomiOrder()" id="domi-btn-clear-order" class="hidden text-white hover:text-orange-200 p-1.5 rounded-full transition-colors flex items-center justify-center active:scale-90">
+                                <i data-lucide="trash-2" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-4 border-b space-y-3 shrink-0 bg-orange-50/50">
+                        <input type="text" id="domi-address" oninput="window.state.domiAddress = this.value" placeholder="Dirección Completa..." class="w-full border-2 border-orange-300 rounded-lg p-3 text-lg font-bold focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-gray-800 transition-shadow">
+                        <div class="flex gap-2">
+                            <input type="text" id="domi-phone" oninput="window.state.domiPhone = this.value" placeholder="Teléfono" class="w-1/2 border border-gray-300 rounded-lg p-2 focus:border-orange-500 outline-none font-semibold text-gray-700 transition-shadow">
+                            <input type="text" id="domi-name" oninput="window.state.domiName = this.value" placeholder="Nombre (Opcional)" class="w-1/2 border border-gray-300 rounded-lg p-2 focus:border-orange-500 outline-none font-semibold text-gray-700 transition-shadow">
+                        </div>
+                        <div class="flex items-center justify-between bg-orange-100 p-3 rounded-lg border border-orange-200 mt-2 shadow-inner">
+                            <label class="font-bold text-orange-900 text-sm">Precio Domicilio $</label>
+                            <input type="number" id="domi-fee" value="0" oninput="window.state.domiFee = parseInt(this.value) || 0; window.renderDomiCart();" class="w-24 border border-orange-300 rounded-md p-1.5 text-right font-black text-orange-700 outline-none bg-white">
+                        </div>
+                    </div>
+
+                    <div id="domi-cart-items" class="flex-1 overflow-y-auto p-2 space-y-2 bg-gray-50 scroll-smooth"></div>
+
+                    <div class="p-4 border-t bg-white rounded-b-xl shrink-0">
+                        <input type="text" id="domi-general-note" oninput="window.state.domiNote = this.value" placeholder="Notas adicionales para el envío..." class="w-full border rounded-lg p-2 mb-3 text-sm focus:border-orange-500 outline-none transition-shadow">
+                        <div class="flex justify-between items-center mb-1 text-sm text-gray-500 font-semibold">
+                            <span>Subtotal (Productos):</span>
+                            <span id="domi-subtotal">$0</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-4 text-lg">
+                            <span class="font-black text-gray-700">Total a Cobrar:</span>
+                            <span id="domi-total" class="font-extrabold text-2xl text-orange-600">$0</span>
+                        </div>
+                        <button id="btn-submit-domi" onclick="window.submitDomiOrder()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-lg active:scale-95">
+                            <i data-lucide="bike" class="w-6 h-6"></i> Confirmar Domicilio
+                        </button>
                     </div>
                 </div>
             </div>
-        </div>
 
-    </main>
+            <!-- VISTA COCINA -->
+            <div id="view-cocina" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
+                <div class="mb-4 shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                            <i data-lucide="chef-hat" class="text-orange-500 w-8 h-8"></i> Monitor de Cocina
+                        </h2>
+                        <p class="text-gray-500">Órdenes y domicilios pendientes</p>
+                    </div>
+                    <div class="flex space-x-1 sm:space-x-2 bg-gray-200 p-1.5 rounded-xl overflow-x-auto">
+                        <button onclick="window.setKitchenStation('perrero')" id="tab-station-perrero" class="px-4 py-2 bg-white font-bold text-red-600 rounded-lg shadow transition-all whitespace-nowrap">Perrero</button>
+                        <button onclick="window.setKitchenStation('hamburguesero')" id="tab-station-hamburguesero" class="px-4 py-2 font-bold text-gray-600 hover:text-gray-800 rounded-lg transition-all whitespace-nowrap">Hamburguesero</button>
+                        <button onclick="window.setKitchenStation('general')" id="tab-station-general" class="px-4 py-2 font-bold text-gray-600 hover:text-gray-800 rounded-lg transition-all whitespace-nowrap">Otras Prep.</button>
+                    </div>
+                </div>
+                <div id="kitchen-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start pb-6 content-start"></div>
+            </div>
 
-    <!-- TODOS LOS MODALES DEL SISTEMA -->
+            <!-- VISTA CAJA -->
+            <div id="view-caja" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
+                <div class="mb-4 shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                            <i data-lucide="receipt" class="text-green-600 w-8 h-8"></i> Caja y Facturación
+                        </h2>
+                        <p class="text-gray-500">Órdenes pendientes de pago y finanzas</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="window.generateReporteZ()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 sm:px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-blue-200 text-sm shadow-sm whitespace-nowrap active:scale-95">
+                            <i data-lucide="calculator" class="w-4 h-4"></i> <span class="hidden sm:inline">Reporte Z</span>
+                        </button>
+                        <button onclick="window.openSecurityModal()" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 sm:px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-red-200 text-sm shadow-sm whitespace-nowrap active:scale-95">
+                            <i data-lucide="lock" class="w-4 h-4"></i> <span class="hidden sm:inline">Limpiar Sistema</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 shrink-0">
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex justify-between items-center">
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Base de Caja Inicial</p>
+                            <h3 id="finance-base-display" class="text-2xl font-black text-green-600">$0</h3>
+                        </div>
+                        <button onclick="window.openFinanceModal('base')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 active:scale-95">
+                            <i data-lucide="edit-2" class="w-4 h-4"></i> Ajustar Base
+                        </button>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex justify-between items-center">
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Gastos del Día</p>
+                            <h3 id="finance-expenses-display" class="text-2xl font-black text-red-600">$0</h3>
+                        </div>
+                        <button onclick="window.openFinanceModal('gasto')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 active:scale-95">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Registrar Gasto
+                        </button>
+                    </div>
+                </div>
+                <div id="cashier-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start pb-6 content-start"></div>
+            </div>
+
+            <!-- VISTA NÓMINA -->
+            <div id="view-nomina" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
+                <div class="mb-6 shrink-0">
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                        <i data-lucide="users" class="text-indigo-600 w-8 h-8"></i> Nómina y Empleados
+                    </h2>
+                    <p class="text-gray-500">Registra el pago de turnos o adelantos. Se descontará automáticamente de la caja.</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 max-w-lg mx-auto w-full">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Registrar Pago</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Seleccionar Empleado / Rol</label>
+                            <select id="nomina-employee" class="w-full border-2 border-gray-300 rounded-xl p-3 focus:border-indigo-500 outline-none text-gray-800 font-semibold bg-gray-50 cursor-pointer">
+                                <option value="" disabled selected>Elige un empleado...</option>
+                                <option value="HAMBURGUESERO">HAMBURGUESERO</option>
+                                <option value="PERRERO">PERRERO</option>
+                                <option value="PANCERO">PANCERO</option>
+                                <option value="COCINA">COCINA</option>
+                                <option value="AYUDANTE COCINA 1">AYUDANTE COCINA 1</option>
+                                <option value="AYUDANTE COCINA 2">AYUDANTE COCINA 2</option>
+                                <option value="ADMINISTRACION">ADMINISTRACION</option>
+                                <option value="RECEPCION">RECEPCION</option>
+                                <option value="DOMICILIARIO">DOMICILIARIO</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Tipo de Pago</label>
+                            <select id="nomina-type" class="w-full border-2 border-gray-300 rounded-xl p-3 focus:border-indigo-500 outline-none text-gray-800 bg-gray-50 cursor-pointer">
+                                <option value="Turno">Pago de Turno (Día)</option>
+                                <option value="Adelanto">Adelanto / Vale</option>
+                                <option value="Liquidación Semanal">Liquidación Semanal</option>
+                                <option value="Liquidación Mensual">Liquidación Mensual</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Monto a Pagar ($)</label>
+                            <input type="number" id="nomina-amount" placeholder="Ej: 50000" class="w-full border-2 border-gray-300 rounded-xl p-3 text-2xl font-black text-indigo-700 focus:border-indigo-500 outline-none text-right transition-colors">
+                        </div>
+                        <button onclick="window.payNomina()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-xl shadow-lg mt-4 transition-all active:scale-95 text-lg flex justify-center items-center gap-2">
+                            <i data-lucide="check-circle" class="w-6 h-6"></i> Confirmar Pago
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA HISTORIAL Y CIERRES -->
+            <div id="view-historial" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
+                <div class="mb-4 shrink-0">
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                        <i data-lucide="history" class="text-blue-600 w-8 h-8"></i> Historial y Cierres
+                    </h2>
+                    <p class="text-gray-500">Registro de todas las ventas del día y cierres de caja anteriores.</p>
+                </div>
+                <div id="history-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start pb-6 content-start scroll-smooth"></div>
+            </div>
+
+            <!-- VISTA INVENTARIO -->
+            <div id="view-inventario" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
+                <div class="mb-4 shrink-0">
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                        <i data-lucide="boxes" class="text-purple-600 w-8 h-8"></i> Control de Inventario
+                    </h2>
+                    <p class="text-gray-500">Stock de ingredientes y productos terminados.</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex-1 overflow-hidden flex flex-col">
+                    <div class="p-4 bg-gray-50 border-b flex justify-between items-center shrink-0">
+                        <h3 class="font-bold text-gray-700">Artículos Registrados</h3>
+                        <span class="text-xs text-gray-500 italic">*Cantidades se actualizan en vivo</span>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-4">
+                        <div id="inventory-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA ESTADÍSTICAS -->
+            <div id="view-estadisticas" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
+                <div class="mb-4 shrink-0">
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                        <i data-lucide="bar-chart-3" class="text-blue-500 w-8 h-8"></i> Estadísticas en Tiempo Real
+                    </h2>
+                    <p class="text-gray-500">Resumen del rendimiento del negocio de las ventas procesadas de hoy.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 shrink-0">
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+                        <div class="bg-green-100 p-3 rounded-full text-green-600"><i data-lucide="dollar-sign" class="w-8 h-8"></i></div>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Ventas Totales Hoy</p>
+                            <h3 id="stats-total-sales" class="text-2xl font-black text-gray-800">$0</h3>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+                        <div class="bg-blue-100 p-3 rounded-full text-blue-600"><i data-lucide="shopping-bag" class="w-8 h-8"></i></div>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Órdenes Completadas</p>
+                            <h3 id="stats-total-orders" class="text-2xl font-black text-gray-800">0</h3>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+                        <div class="bg-purple-100 p-3 rounded-full text-purple-600"><i data-lucide="trending-up" class="w-8 h-8"></i></div>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Ticket Promedio</p>
+                            <h3 id="stats-avg-ticket" class="text-2xl font-black text-gray-800">$0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[400px]">
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col">
+                        <h3 class="font-bold text-gray-700 mb-4 text-center">Métodos de Pago</h3>
+                        <div class="flex-1 relative w-full flex justify-center items-center h-64 lg:h-auto">
+                            <canvas id="paymentMethodChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col">
+                        <h3 class="font-bold text-gray-700 mb-4 text-center">Top 5 Productos Más Vendidos</h3>
+                        <div class="flex-1 relative w-full h-64 lg:h-auto">
+                            <canvas id="topProductsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODALES DEL SISTEMA -->
     <div id="toast" class="fixed bottom-4 right-4 text-white px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-20 opacity-0 z-[100]">
         <div id="toast-icon-container"><i data-lucide="check-circle" class="w-6 h-6"></i></div>
         <span id="toast-message" class="font-medium">Mensaje</span>
     </div>
 
     <!-- 1. MAPA Y MESAS -->
-    <div id="map-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col h-[80vh] sm:h-auto">
+    <div id="map-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in transition-all">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col h-[80vh] sm:h-auto hw-accelerate">
             <div class="bg-gray-900 text-white p-4 flex justify-between items-center shrink-0">
                 <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="map" class="text-red-500"></i> Selecciona Mesa</h3>
                 <div class="flex items-center gap-2 sm:gap-4">
@@ -386,7 +464,7 @@
 
     <!-- 2. NOMBRE PARA LLEVAR -->
     <div id="no-table-modal" class="fixed inset-0 bg-black/60 z-[110] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center hw-accelerate">
             <div class="mx-auto w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-4"><i data-lucide="user" class="w-6 h-6"></i></div>
             <h3 class="text-xl font-bold text-gray-800 mb-1">Pedido Para Llevar</h3>
             <p class="text-sm text-gray-500 mb-4">Ingresa el nombre del cliente para identificar la orden.</p>
@@ -398,9 +476,9 @@
         </div>
     </div>
 
-    <!-- 3. ÓRDENES ACTIVAS (MESEROS) -->
+    <!-- 3. ÓRDENES ACTIVAS -->
     <div id="active-orders-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-[80vh]">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-[80vh] hw-accelerate">
             <div class="bg-yellow-500 text-yellow-900 p-4 flex justify-between items-center shrink-0">
                 <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="list-checks" class="w-6 h-6"></i> Órdenes Activas</h3>
                 <button onclick="window.closeActiveOrdersModal()" class="text-yellow-800 hover:text-yellow-900 transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
@@ -411,25 +489,25 @@
 
     <!-- 4. ORDEN ENVIADA (ÉXITO) -->
     <div id="success-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
-        <div class="bg-white rounded-2xl p-6 md:p-8 max-w-sm w-full text-center shadow-2xl">
+        <div class="bg-white rounded-2xl p-6 md:p-8 max-w-sm w-full text-center shadow-2xl hw-accelerate">
             <i data-lucide="check-circle" class="text-green-500 w-20 h-20 mx-auto mb-4"></i>
             <h3 id="success-title" class="text-2xl font-bold text-gray-800 mb-2">¡Orden Registrada!</h3>
             <p id="success-subtitle" class="text-gray-600 mb-6">¿Qué deseas hacer ahora?</p>
             <div class="space-y-3">
                 <div class="flex gap-2">
-                    <button onclick="window.printTicket('last-cocina')" class="flex-1 bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-2 rounded-xl transition-colors border border-orange-200 flex flex-col items-center justify-center gap-1 text-xs shadow-sm"><i data-lucide="chef-hat" class="w-5 h-5"></i>Imprimir Cocina</button>
-                    <button onclick="window.printTicket('last-caja')" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 rounded-xl transition-colors border border-gray-200 flex flex-col items-center justify-center gap-1 text-xs shadow-sm"><i data-lucide="receipt" class="w-5 h-5"></i>Imprimir Caja</button>
+                    <button onclick="window.printTicket('last-cocina')" class="flex-1 bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-2 rounded-xl transition-colors border border-orange-200 flex flex-col items-center justify-center gap-1 text-xs shadow-sm active:scale-95"><i data-lucide="chef-hat" class="w-5 h-5"></i>Imprimir Cocina</button>
+                    <button onclick="window.printTicket('last-caja')" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 rounded-xl transition-colors border border-gray-200 flex flex-col items-center justify-center gap-1 text-xs shadow-sm active:scale-95"><i data-lucide="receipt" class="w-5 h-5"></i>Imprimir Caja</button>
                 </div>
                 <div class="w-full h-px bg-gray-200 my-3"></div>
-                <button onclick="window.actionNewOrderSameTable()" id="btn-same-table" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors shadow-md">Nueva Orden</button>
-                <button onclick="window.actionNewOrderOtherTable()" class="w-full bg-white border-2 border-gray-200 hover:border-red-500 text-gray-800 hover:text-red-600 font-bold py-3 rounded-xl transition-colors">Atender Otra Mesa</button>
+                <button onclick="window.actionNewOrderSameTable()" id="btn-same-table" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors shadow-md active:scale-95">Nueva Orden</button>
+                <button onclick="window.actionNewOrderOtherTable()" class="w-full bg-white border-2 border-gray-200 hover:border-red-500 text-gray-800 hover:text-red-600 font-bold py-3 rounded-xl transition-colors active:scale-95">Atender Otra Mesa</button>
             </div>
         </div>
     </div>
 
     <!-- 5. REGISTRAR PAGO -->
     <div id="pay-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center hw-accelerate">
             <h3 class="text-xl font-bold text-gray-800 mb-1">Registrar Pago</h3>
             <p class="text-sm text-gray-500 mb-4">Selecciona el método de pago para la orden</p>
             <div class="bg-gray-100 p-4 rounded-xl mb-6">
@@ -460,7 +538,7 @@
 
     <!-- 6. DIVIDIR CUENTA -->
     <div id="split-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-[85vh]">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-[85vh] hw-accelerate">
             <div class="bg-orange-500 text-white p-4 flex justify-between items-center shrink-0">
                 <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="scissors" class="w-6 h-6"></i> Dividir Cuenta</h3>
                 <button onclick="window.closeSplitModal()" class="text-orange-100 hover:text-white transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
@@ -484,7 +562,7 @@
 
     <!-- 7. FINANZAS Y GASTOS -->
     <div id="finance-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center hw-accelerate">
             <h3 id="finance-modal-title" class="text-xl font-bold text-gray-800 mb-1">Registrar</h3>
             <p id="finance-modal-subtitle" class="text-sm text-gray-500 mb-4">Detalles del movimiento de caja</p>
             <div class="mb-4">
@@ -504,7 +582,7 @@
 
     <!-- 8. REPORTE Z -->
     <div id="reportez-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] hw-accelerate">
             <div class="bg-blue-600 text-white p-4 flex justify-between items-center shrink-0">
                 <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="calculator" class="w-6 h-6"></i> Reporte Z (Cierre)</h3>
                 <button onclick="window.closeReporteZ()" class="text-blue-200 hover:text-white transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
@@ -540,17 +618,17 @@
             </div>
             <div class="p-4 bg-white border-t flex gap-2 shrink-0">
                 <button onclick="window.closeReporteZ()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-lg transition-colors">Cerrar</button>
-                <button onclick="window.printReporteZ()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md flex items-center justify-center gap-2 transition-colors"><i data-lucide="printer" class="w-5 h-5"></i> Imprimir Z</button>
+                <button onclick="window.printReporteZ()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md flex items-center justify-center gap-2 transition-colors active:scale-95"><i data-lucide="printer" class="w-5 h-5"></i> Imprimir Z</button>
             </div>
         </div>
     </div>
 
     <!-- 9. SEGURIDAD ADMIN TABS -->
     <div id="tab-security-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center hw-accelerate">
             <div class="mx-auto w-16 h-16 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center mb-4"><i data-lucide="lock" class="w-8 h-8"></i></div>
             <h3 class="text-xl font-bold text-gray-800 mb-2">Acceso Administrativo</h3>
-            <p class="text-sm text-gray-500 mb-6">Ingresa el PIN para desbloquear Caja, Historial e Inventario.</p>
+            <p class="text-sm text-gray-500 mb-6">Ingresa el PIN para desbloquear opciones.</p>
             <input type="password" id="tab-security-pin" placeholder="PIN..." class="w-full border-2 border-gray-300 rounded-xl p-3 text-center text-xl tracking-widest focus:border-red-500 focus:outline-none mb-6">
             <div class="flex gap-2">
                 <button onclick="window.closeTabSecurityModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
@@ -561,21 +639,21 @@
 
     <!-- 10. SEGURIDAD LIMPIAR TODO -->
     <div id="security-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center hw-accelerate">
             <div class="mx-auto w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4"><i data-lucide="alert-triangle" class="w-8 h-8"></i></div>
             <h3 class="text-xl font-bold text-gray-800 mb-2">Cierre de Caja</h3>
-            <p class="text-sm text-gray-500 mb-6">Ingresa la clave para limpiar el sistema (El inventario NO se borrará).</p>
-            <input type="password" id="security-pin" placeholder="Clave..." class="w-full border-2 border-gray-300 rounded-xl p-3 text-center text-xl tracking-widest focus:border-red-500 focus:outline-none mb-6">
+            <p class="text-sm text-gray-500 mb-6">Ingresa la clave maestra para generar el cierre y limpiar todas las mesas del sistema.</p>
+            <input type="password" id="security-pin" placeholder="Clave Maestra..." class="w-full border-2 border-gray-300 rounded-xl p-3 text-center text-xl tracking-widest focus:border-red-500 focus:outline-none mb-6">
             <div class="flex gap-2">
                 <button onclick="window.closeSecurityModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
-                <button onclick="window.confirmSecurityAndReset()" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-md transition-colors">Limpiar Todo</button>
+                <button onclick="window.confirmSecurityAndReset()" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-md transition-colors">Guardar Cierre</button>
             </div>
         </div>
     </div>
 
     <!-- 11. INVENTARIO EDITAR -->
     <div id="inventory-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center hw-accelerate">
             <div class="mx-auto w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mb-4"><i data-lucide="package-plus" class="w-6 h-6"></i></div>
             <h3 class="text-xl font-bold text-gray-800 mb-1">Ajustar Stock</h3>
             <p id="inv-modal-item-name" class="text-sm text-gray-500 mb-6 font-semibold">Cargando...</p>
@@ -593,7 +671,26 @@
 
     <!-- SCRIPT PARA INSTALAR LA APP (PWA) -->
     <script>
-      if ('serviceWorker' in navigator) {
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault();
+          deferredPrompt = e;
+          const btn = document.getElementById('btn-install-app');
+          if(btn) btn.classList.remove('hidden');
+      });
+
+      window.installApp = async () => {
+          if (deferredPrompt) {
+              deferredPrompt.prompt();
+              const { outcome } = await deferredPrompt.userChoice;
+              if (outcome === 'accepted') {
+                  document.getElementById('btn-install-app').classList.add('hidden');
+              }
+              deferredPrompt = null;
+          }
+      };
+
+      if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('sw.js')
             .then(reg => console.log('PWA Lista'))
@@ -734,14 +831,13 @@
         };
 
         window.state = {
+            isAuthenticated: sessionStorage.getItem('pos_auth') === 'true',
             currentUser: null, currentView: 'mesero', kitchenStation: 'perrero',
             waiterName: '', selectedTables: [], isMultipleTableMode: false,
             activeCategory: MENU_CATEGORIES[0], currentOrderItems: [], generalNote: '',
-            
             domiOrderItems: [], domiCategory: MENU_CATEGORIES[0],
             domiAddress: '', domiPhone: '', domiName: '', domiFee: 0, domiNote: '',
-            
-            orderCounter: 1, kitchenTickets: [], cashierOrders: [], historyOrders: [], 
+            orderCounter: 1, kitchenTickets: [], cashierOrders: [], historyOrders: [], historyCierres: [],
             inventory: {}, finances: { base: 0, expenses: [] },
             lastSubmittedOrder: null, zReportData: null, editingInvId: null, editingOrderId: null,
             isAdminUnlocked: false, pendingView: null, pendingPayOrder: null, 
@@ -752,17 +848,48 @@
         window.salesChartInstance = null;
         window.productsChartInstance = null;
 
+        // --- SISTEMA DE LOGIN DE SEGURIDAD ---
+        window.attemptLogin = function() {
+            const u = document.getElementById('login-user').value.toUpperCase().trim();
+            const p = document.getElementById('login-pass').value.trim();
+            
+            if ((u === 'PERROS LA 30' || u === 'PERROSLA30') && p === '1234') {
+                window.state.isAuthenticated = true;
+                sessionStorage.setItem('pos_auth', 'true');
+                document.getElementById('login-screen').classList.add('opacity-0');
+                setTimeout(() => {
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('app-wrapper').classList.remove('hidden');
+                    document.getElementById('app-wrapper').classList.add('flex');
+                }, 300);
+                window.showToast('Bienvenido a Perros La 30');
+            } else {
+                window.showToast('Usuario o contraseña incorrectos', 'error');
+            }
+        };
+
+        window.logout = function() {
+            window.state.isAuthenticated = false;
+            sessionStorage.removeItem('pos_auth');
+            document.getElementById('login-user').value = '';
+            document.getElementById('login-pass').value = '';
+            document.getElementById('app-wrapper').classList.add('hidden');
+            document.getElementById('app-wrapper').classList.remove('flex');
+            document.getElementById('login-screen').classList.remove('hidden', 'opacity-0');
+            window.toggleSidebar();
+        };
+
+        // PREVENCIÓN DE NaN A NIVEL GLOBAL
         window.getSafeNumber = function(val, fallback = 0) {
             if (val === null || val === undefined || val === '') return fallback;
             const parsed = Number(val);
             return isNaN(parsed) ? fallback : parsed;
         };
 
-        const formatCurrency = (amount) => {
+        window.formatCurrency = function(amount) {
             let val = window.getSafeNumber(amount, 0);
             return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
         };
-        window.formatCurrency = formatCurrency;
 
         window.showToast = function(message, type = 'success') {
             const toastEl = document.getElementById('toast');
@@ -777,8 +904,37 @@
         }
 
         // ==========================================
-        // SOLUCIÓN DE IMPRESIÓN MÓVIL (IFRAME OCULTO)
+        // SOLUCIÓN DE IMPRESIÓN MÓVIL: SISTEMA DE COLA Y CORTE (SEPARATE JOBS)
         // ==========================================
+        window.printQueue = [];
+        window.isPrinting = false;
+
+        window.processPrintQueue = function() {
+            if (window.printQueue.length === 0) {
+                window.isPrinting = false;
+                return;
+            }
+            window.isPrinting = true;
+            
+            const html = window.printQueue.shift();
+            
+            const iframe = document.createElement('iframe');
+            iframe.style.position = 'fixed'; iframe.style.right = '0'; iframe.style.bottom = '0'; iframe.style.width = '0'; iframe.style.height = '0'; iframe.style.border = '0';
+            document.body.appendChild(iframe);
+            
+            const doc = iframe.contentWindow.document;
+            doc.open(); doc.write(html); doc.close();
+            
+            setTimeout(() => {
+                iframe.contentWindow.focus();
+                iframe.contentWindow.print();
+                setTimeout(() => { 
+                    document.body.removeChild(iframe); 
+                    window.processPrintQueue(); 
+                }, 2500); 
+            }, 500);
+        };
+
         window.printTicket = function(type, id) {
             let dataList = [];
             if (type === 'caja') {
@@ -798,10 +954,10 @@
 
             if (dataList.length === 0) { window.showToast("No se encontró información para imprimir.", "error"); return; }
 
-            let html = `<html><head><style>@page{margin:0;size:auto;} body{font-family:'Courier New',Courier,monospace;width:280px;margin:0;padding:10px;font-size:14px;color:#000;} h1,h2,h3,p{margin:0;padding:2px 0;text-align:center;} .divider{border-top:1px dashed #000;margin:8px 0;} .item-row{display:flex;justify-content:space-between;margin-bottom:4px;align-items:flex-start;} .item-qty{font-weight:bold;padding-right:5px;} .item-name{flex:1;text-align:left;} .item-price{padding-left:5px;} .note{font-size:12px;font-style:italic;padding-left:20px;text-align:left;display:block;margin-top:-2px;margin-bottom:4px;} .totals{margin-top:10px;font-weight:bold;font-size:16px;text-align:right;} .header-title{font-size:22px;font-weight:bold;text-align:center;} .station-title{font-size:20px;font-weight:bold;border:2px solid #000;padding:5px;margin-bottom:10px;text-transform:uppercase;text-align:center;} .info-text{text-align:left;font-size:14px;margin-bottom:2px;} .ticket-container{page-break-after:always;padding-bottom:20px;}</style></head><body>`;
-
             dataList.forEach(({format, data}) => {
+                let html = `<html><head><style>@page{margin:0;size:auto;} body{font-family:'Courier New',Courier,monospace;width:280px;margin:0;padding:10px;font-size:14px;color:#000;} h1,h2,h3,p{margin:0;padding:2px 0;text-align:center;} .divider{border-top:1px dashed #000;margin:8px 0;} .item-row{display:flex;justify-content:space-between;margin-bottom:4px;align-items:flex-start;} .item-qty{font-weight:bold;padding-right:5px;} .item-name{flex:1;text-align:left;} .item-price{padding-left:5px;} .note{font-size:12px;font-style:italic;padding-left:20px;text-align:left;display:block;margin-top:-2px;margin-bottom:4px;} .totals{margin-top:10px;font-weight:bold;font-size:16px;text-align:right;} .header-title{font-size:22px;font-weight:bold;text-align:center;} .station-title{font-size:20px;font-weight:bold;border:2px solid #000;padding:5px;margin-bottom:10px;text-transform:uppercase;text-align:center;} .info-text{text-align:left;font-size:14px;margin-bottom:2px;} .ticket-container{padding-bottom:10px;}</style></head><body>`;
                 html += `<div class="ticket-container">`;
+                
                 if (format === 'caja') {
                     html += `<div class="header-title">PERROS LA 30</div><p>Los Originales</p><p style="font-size:12px;margin-bottom:10px;">Ticket de Venta</p><div class="info-text"><b>Orden #:</b> ${data.orderId}</div>`;
                     if(data.type === 'domicilio') {
@@ -813,12 +969,12 @@
                         html += `<div class="info-text"><b>Mesa:</b> ${data.table}</div><div class="info-text"><b>Mesero:</b> ${data.waiter}</div>`;
                     }
                     html += `<div class="info-text"><b>Fecha:</b> ${data.timestamp}</div><div class="divider"></div>`;
-                    data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.quantity}</span><span class="item-name">${item.name}</span><span class="item-price">${formatCurrency(item.price * item.quantity)}</span></div>`; });
+                    data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.quantity}</span><span class="item-name">${item.name}</span><span class="item-price">${window.formatCurrency(item.price * item.quantity)}</span></div>`; });
                     if(data.type === 'domicilio' && data.domiFee > 0) {
-                        html += `<div class="divider"></div><div class="item-row"><span class="item-qty"></span><span class="item-name" style="font-weight:bold;">Costo de Envío</span><span class="item-price">${formatCurrency(data.domiFee)}</span></div>`;
+                        html += `<div class="divider"></div><div class="item-row"><span class="item-qty"></span><span class="item-name" style="font-weight:bold;">Costo de Envío</span><span class="item-price">${window.formatCurrency(data.domiFee)}</span></div>`;
                     }
-                    html += `<div class="divider"></div><div class="totals">TOTAL: ${formatCurrency(data.total)}</div><div class="divider"></div>`;
-                    if(data.payment) { html += `<p style="text-align:right;font-size:12px;">Efectivo: ${formatCurrency(data.payment.cashAmount)}<br>Nequi/Transf: ${formatCurrency(data.payment.transferAmount)}</p>`; }
+                    html += `<div class="divider"></div><div class="totals">TOTAL: ${window.formatCurrency(data.total)}</div><div class="divider"></div>`;
+                    if(data.payment) { html += `<p style="text-align:right;font-size:12px;">Efectivo: ${window.formatCurrency(data.payment.cashAmount)}<br>Nequi/Transf: ${window.formatCurrency(data.payment.transferAmount)}</p>`; }
                     html += `<p style="margin-top:15px;font-size:12px;">¡Gracias por su compra!</p>`;
                 } else if (format === 'cocina') {
                     html += `<div class="station-title">${data.station}</div>`;
@@ -832,31 +988,41 @@
                     if (data.generalNote) html += `<div style="margin-top:10px;border:1px solid #000;padding:5px;"><b>NOTA GENERAL:</b><br>${data.generalNote}</div>`;
                     html += `<p style="margin-top:20px;">--- Fin Comanda ---</p>`;
                 }
-                html += `</div>`;
+                
+                html += `</div></body></html>`;
+                window.printQueue.push(html);
             });
-            html += `</body></html>`;
 
-            // Lógica optimizada para Android y Chrome Mobile (Iframe oculto en lugar de pop-up)
-            const iframe = document.createElement('iframe');
-            iframe.style.position = 'fixed';
-            iframe.style.right = '0';
-            iframe.style.bottom = '0';
-            iframe.style.width = '0';
-            iframe.style.height = '0';
-            iframe.style.border = '0';
-            document.body.appendChild(iframe);
+            if (!window.isPrinting) window.processPrintQueue();
+        };
+
+        // --- SISTEMA DE NÓMINA (PAYROLL) ---
+        window.payNomina = function() {
+            const employee = document.getElementById('nomina-employee').value;
+            const type = document.getElementById('nomina-type').value;
+            const amount = parseInt(document.getElementById('nomina-amount').value) || 0;
+
+            if (!employee) { window.showToast('Selecciona un empleado', 'error'); return; }
+            if (amount <= 0) { window.showToast('Ingresa un monto válido', 'error'); return; }
+
+            const newFinances = { ...window.state.finances };
+            if(!newFinances.expenses) newFinances.expenses = [];
             
-            const doc = iframe.contentWindow.document;
-            doc.open();
-            doc.write(html);
-            doc.close();
-            
-            setTimeout(() => {
-                iframe.contentWindow.focus();
-                iframe.contentWindow.print();
-                // Se elimina después de 10 segundos para darle tiempo al spooler de Android de capturar el documento
-                setTimeout(() => { document.body.removeChild(iframe); }, 10000);
-            }, 500);
+            const description = `NÓMINA: ${type} - ${employee}`;
+            newFinances.expenses.push({ 
+                amount: amount, 
+                desc: description, 
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+            });
+
+            try {
+                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'finances'), newFinances);
+                document.getElementById('nomina-amount').value = '';
+                document.getElementById('nomina-employee').value = '';
+                window.showToast("Pago de Nómina Registrado Exitosamente");
+            } catch (e) {
+                console.error(e); window.showToast("Error registrando nómina", "error");
+            }
         };
 
         window.openFinanceModal = function(type) {
@@ -914,6 +1080,12 @@
             window.showToast("Realizando cierre...", "success");
 
             try {
+                window.generateReporteZ(true);
+                if (window.state.zReportData) {
+                    const cierreID = Date.now().toString();
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cierres', cierreID), window.state.zReportData);
+                }
+
                 const kitchenQuery = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets'));
                 kitchenQuery.forEach((d) => { deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', d.id)); });
                 const cashierQuery = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'cashierOrders'));
@@ -931,7 +1103,7 @@
                 document.getElementById('admin-unlocked-badge').classList.remove('flex');
                 window.switchView('mesero');
 
-                window.showToast("Cierre exitoso. Inventario intacto.", "success");
+                window.showToast("Cierre guardado y Sistema limpiado", "success");
             } catch (error) { console.error("Error:", error); window.showToast("Error al limpiar.", "error"); }
         };
 
@@ -945,6 +1117,7 @@
         };
 
         window.closeInventoryModal = function() { document.getElementById('inventory-modal').classList.add('hidden'); };
+        
         window.adjInvInput = function(delta) {
             const input = document.getElementById('inv-modal-input');
             let val = parseInt(input.value) || 0; val += delta; input.value = val;
@@ -1052,13 +1225,13 @@
                                 ${order.items.map(item => `
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-700">${item.quantity}x ${item.name}</span>
-                                        <span class="font-medium">${formatCurrency(item.price * item.quantity)}</span>
+                                        <span class="font-medium">${window.formatCurrency(item.price * item.quantity)}</span>
                                     </div>
                                 `).join('')}
                             </div>
                             <div class="border-t pt-3 mt-auto flex justify-between items-center">
                                 <span class="text-gray-600 font-bold">Total a pagar:</span>
-                                <span class="text-xl font-extrabold text-green-600">${formatCurrency(order.total)}</span>
+                                <span class="text-xl font-extrabold text-green-600">${window.formatCurrency(order.total)}</span>
                             </div>
                         </div>
                         <div class="p-4 pt-0 grid grid-cols-5 gap-2">
@@ -1086,10 +1259,37 @@
 
         window.renderHistory = function() {
             const container = document.getElementById('history-container');
+            let html = '';
+
+            // SECCIÓN CIERRES DE CAJA PASADOS
+            if (window.state.historyCierres && window.state.historyCierres.length > 0) {
+                html += `<div class="col-span-full mb-2 mt-2"><h3 class="font-bold text-xl text-gray-800 border-b pb-2">Registros de Cierres de Caja</h3></div>`;
+                html += window.state.historyCierres.map(cierre => `
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 shadow-sm flex flex-col justify-between">
+                        <div class="flex justify-between items-center mb-2 border-b border-blue-200 pb-2">
+                            <span class="font-black text-blue-900"><i data-lucide="calendar" class="w-4 h-4 inline mb-1"></i> ${cierre.date} ${cierre.time}</span>
+                            <span class="bg-blue-200 text-blue-800 text-xs font-bold px-2 py-1 rounded">Neto: ${window.formatCurrency(cierre.efectivoNeto)}</span>
+                        </div>
+                        <div class="text-sm text-gray-700 space-y-1">
+                            <div class="flex justify-between"><span>Ventas Totales:</span> <b>${window.formatCurrency(cierre.totalVentas)}</b></div>
+                            <div class="flex justify-between"><span>Gastos y Nómina:</span> <b class="text-red-600">-${window.formatCurrency(cierre.gastos)}</b></div>
+                            <div class="flex justify-between"><span>Efectivo (Caja):</span> <b class="text-green-600">${window.formatCurrency(cierre.efectivo)}</b></div>
+                            <div class="flex justify-between"><span>Transferencias:</span> <b>${window.formatCurrency(cierre.transferencia)}</b></div>
+                        </div>
+                    </div>
+                `).join('');
+                html += `<div class="col-span-full mb-2 mt-8"><h3 class="font-bold text-xl text-gray-800 border-b pb-2">Órdenes del Día Actual</h3></div>`;
+            }
+
+            // SECCIÓN HISTORIAL DE ÓRDENES HOY
             if (window.state.historyOrders.length === 0) {
-                container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center text-gray-400 mt-20"><i data-lucide="history" class="w-16 h-16 mb-4 text-blue-200"></i><p class="text-xl">Aún no hay ventas registradas.</p></div>`;
+                if(!window.state.historyCierres || window.state.historyCierres.length === 0) {
+                    html = `<div class="col-span-full flex flex-col items-center justify-center text-gray-400 mt-20"><i data-lucide="history" class="w-16 h-16 mb-4 text-blue-200"></i><p class="text-xl">Aún no hay ventas registradas hoy.</p></div>`;
+                } else {
+                    html += `<div class="col-span-full text-center text-gray-400 mt-6"><p>No hay ventas nuevas después del último cierre.</p></div>`;
+                }
             } else {
-                container.innerHTML = window.state.historyOrders.map(order => {
+                html += window.state.historyOrders.map(order => {
                     const isPaid = order.status === 'paid';
                     const statusColor = isPaid ? 'green' : 'red';
                     const statusText = isPaid ? 'PAGADO' : 'ANULADO';
@@ -1137,12 +1337,13 @@
                                     <span class="text-gray-500 font-semibold text-[10px] uppercase">Cobrado</span>
                                     ${paymentMethodBadge}
                                 </div>
-                                <span class="text-xl font-extrabold text-${statusColor}-600">${formatCurrency(order.total)}</span>
+                                <span class="text-xl font-extrabold text-${statusColor}-600">${window.formatCurrency(order.total)}</span>
                             </div>
                         </div>
                     </div>
                 `}).join('');
             }
+            container.innerHTML = html;
             lucide.createIcons();
         };
 
@@ -1169,8 +1370,8 @@
             const elBase = document.getElementById('finance-base-display');
             const elExp = document.getElementById('finance-expenses-display');
             
-            if(elBase) elBase.innerText = formatCurrency(base);
-            if(elExp) elExp.innerText = formatCurrency(totalExp);
+            if(elBase) elBase.innerText = window.formatCurrency(base);
+            if(elExp) elExp.innerText = window.formatCurrency(totalExp);
         };
 
         window.renderEstadisticas = function() {
@@ -1210,9 +1411,9 @@
                 }
             });
 
-            document.getElementById('stats-total-sales').innerText = formatCurrency(totalVentas);
+            document.getElementById('stats-total-sales').innerText = window.formatCurrency(totalVentas);
             document.getElementById('stats-total-orders').innerText = totalOrders;
-            document.getElementById('stats-avg-ticket').innerText = formatCurrency(totalOrders > 0 ? (totalVentas / totalOrders) : 0);
+            document.getElementById('stats-avg-ticket').innerText = window.formatCurrency(totalOrders > 0 ? (totalVentas / totalOrders) : 0);
 
             const ctxPayment = document.getElementById('paymentMethodChart');
             if(window.salesChartInstance) window.salesChartInstance.destroy();
@@ -1247,40 +1448,11 @@
             });
         };
 
-        // --- SOLUCIÓN DE IMPRESIÓN MÓVIL (IFRAME OCULTO) ---
-        window.printReporteZ = function() {
-            const data = window.state.zReportData; if (!data) return;
-            let html = `<html><head><style>@page{margin:0;size:auto;} body{font-family:'Courier New',Courier,monospace;width:280px;margin:0;padding:10px;font-size:14px;} h1,p{margin:0;padding:2px 0;text-align:center;} .divider{border-top:1px dashed #000;margin:8px 0;} .item-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;} .item-qty{font-weight:bold;width:30px;} .item-name{flex:1;} .item-price{font-weight:bold;text-align:right;} .totals{margin-top:10px;font-weight:bold;font-size:16px;text-align:right;} .header-title{font-size:20px;font-weight:bold;text-align:center;} .summary-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;}</style></head><body><div class="header-title">PERROS LA 30</div><p>REPORTE Z (CIERRE DIARIO)</p><div class="divider"></div><p style="text-align:left;font-size:12px;"><b>Fecha:</b> ${data.date}</p><p style="text-align:left;font-size:12px;"><b>Hora:</b> ${data.time}</p><div class="divider"></div>`;
-            html += `<div class="summary-row"><span>Total Ventas Prod.:</span><b>${formatCurrency(data.totalVentas)}</b></div>`;
-            html += `<div class="summary-row"><span>Ventas Efectivo:</span><span>${formatCurrency(data.efectivo)}</span></div>`;
-            html += `<div class="summary-row"><span>Ventas Transf:</span><span>${formatCurrency(data.transferencia)}</span></div>`;
-            html += `<div class="summary-row" style="margin-top:5px;"><span>Fletes (Mensajero):</span><span>${formatCurrency(data.totalFletes)}</span></div><div class="divider"></div>`;
-            html += `<div class="summary-row"><span>Base Inicial:</span><span>+${formatCurrency(data.base)}</span></div>`;
-            html += `<div class="summary-row"><span>Gastos/Salidas:</span><span>-${formatCurrency(data.gastos)}</span></div>`;
-            html += `<div class="totals">EFECTIVO EN CAJA:<br>${formatCurrency(data.efectivoNeto)}</div><div class="divider"></div>`;
-            html += `<div style="text-align:center; font-weight:bold; margin-bottom:5px;">RENDIMIENTO MESEROS</div>`;
-            if(data.waiters.length === 0) html += `<div style="text-align:center; font-size:12px;">Sin datos</div>`;
-            data.waiters.forEach(w => { html += `<div class="summary-row"><span>${w.name} (${w.tables}m):</span><span>${formatCurrency(w.total)}</span></div>`; });
-            html += `<div class="divider"></div>`;
-            html += `<div style="margin-bottom:5px;font-weight:bold;display:flex;font-size:12px;"><span style="width:30px;">CANT</span><span style="flex:1;">PRODUCTO</span><span>TOTAL</span></div><div class="divider"></div>`;
-            data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.qty}x</span><span class="item-name">${item.name}</span><span class="item-price">${formatCurrency(item.revenue)}</span></div>`; });
-            html += `<div class="divider"></div><p style="font-size:12px;margin-top:20px;">Fin del Reporte</p></body></html>`;
-            
-            const iframe = document.createElement('iframe');
-            iframe.style.position = 'fixed'; iframe.style.right = '0'; iframe.style.bottom = '0'; iframe.style.width = '0'; iframe.style.height = '0'; iframe.style.border = '0';
-            document.body.appendChild(iframe);
-            const doc = iframe.contentWindow.document;
-            doc.open(); doc.write(html); doc.close();
-            setTimeout(() => {
-                iframe.contentWindow.focus();
-                iframe.contentWindow.print();
-                setTimeout(() => { document.body.removeChild(iframe); }, 10000);
-            }, 500);
-        };
-
-        window.generateReporteZ = function() {
+        window.generateReporteZ = function(silent = false) {
             if (window.state.historyOrders.length === 0 && window.state.finances.expenses.length === 0) { 
-                window.showToast("No hay movimientos para generar Reporte Z.", "error"); return; 
+                if(!silent) window.showToast("No hay movimientos para generar Reporte Z.", "error"); 
+                window.state.zReportData = null;
+                return; 
             }
             
             let totalRecaudadoVentas = 0, totalEfectivoVentas = 0, totalTransfVentas = 0, totalFletesDomi = 0;
@@ -1355,98 +1527,29 @@
                 base: base, gastos: totalGastos, efectivoNeto: efectivoNeto, items: sortedItems, waiters: sortedWaiters 
             };
             
-            document.getElementById('z-ventas-efectivo').innerText = formatCurrency(totalEfectivoVentas);
-            document.getElementById('z-ventas-transf').innerText = formatCurrency(totalTransfVentas);
-            document.getElementById('z-fletes').innerText = formatCurrency(totalFletesDomi);
-            document.getElementById('z-base').innerText = "+" + formatCurrency(base);
-            document.getElementById('z-gastos').innerText = "-" + formatCurrency(totalGastos);
-            document.getElementById('z-efectivo-neto').innerText = formatCurrency(efectivoNeto);
-            
-            document.getElementById('reportez-waiters').innerHTML = sortedWaiters.map(w => `<div class="flex justify-between items-center bg-gray-100 p-2 rounded border border-gray-200 text-sm"><span class="font-bold text-gray-800">${w.name}</span><div class="text-right"><span class="block font-black text-green-700">${formatCurrency(w.total)}</span><span class="text-xs text-gray-500 font-semibold">${w.tables} mesas | ${w.items} items</span></div></div>`).join('');
-            document.getElementById('reportez-items').innerHTML = sortedItems.map(i => `<div class="flex justify-between items-center bg-white p-2 rounded border text-sm"><span class="font-semibold flex-1 text-gray-700">${i.name}</span><div class="flex gap-4 items-center"><span class="text-gray-500 font-medium">${formatCurrency(i.revenue)}</span><span class="bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-md min-w-[2rem] text-center">${i.qty}</span></div></div>`).join('');
-            document.getElementById('reportez-modal').classList.remove('hidden');
+            if(!silent) {
+                document.getElementById('z-ventas-efectivo').innerText = window.formatCurrency(totalEfectivoVentas);
+                document.getElementById('z-ventas-transf').innerText = window.formatCurrency(totalTransfVentas);
+                document.getElementById('z-fletes').innerText = window.formatCurrency(totalFletesDomi);
+                document.getElementById('z-base').innerText = "+" + window.formatCurrency(base);
+                document.getElementById('z-gastos').innerText = "-" + window.formatCurrency(totalGastos);
+                document.getElementById('z-efectivo-neto').innerText = window.formatCurrency(efectivoNeto);
+                
+                document.getElementById('reportez-waiters').innerHTML = sortedWaiters.map(w => `<div class="flex justify-between items-center bg-gray-100 p-2 rounded border border-gray-200 text-sm"><span class="font-bold text-gray-800">${w.name}</span><div class="text-right"><span class="block font-black text-green-700">${window.formatCurrency(w.total)}</span><span class="text-xs text-gray-500 font-semibold">${w.tables} mesas | ${w.items} items</span></div></div>`).join('');
+                document.getElementById('reportez-items').innerHTML = sortedItems.map(i => `<div class="flex justify-between items-center bg-white p-2 rounded border text-sm"><span class="font-semibold flex-1 text-gray-700">${i.name}</span><div class="flex gap-4 items-center"><span class="text-gray-500 font-medium">${window.formatCurrency(i.revenue)}</span><span class="bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-md min-w-[2rem] text-center">${i.qty}</span></div></div>`).join('');
+                document.getElementById('reportez-modal').classList.remove('hidden');
+            }
         };
 
         window.closeReporteZ = function() { document.getElementById('reportez-modal').classList.add('hidden'); };
-
-        const initAuth = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
-                else await signInAnonymously(auth);
-            } catch (error) {
-                document.getElementById('connection-status').innerText = "Modo Local";
-                document.getElementById('connection-status').className = "ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1";
-            }
-        };
-
-        onAuthStateChanged(auth, (user) => {
-            window.state.currentUser = user;
-            const statusEl = document.getElementById('connection-status');
-            if (user) {
-                statusEl.innerText = "Nube Conectada";
-                statusEl.className = "ml-2 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1";
-                setupFirebaseListeners();
-            } else {
-                statusEl.innerText = "Desconectado";
-                statusEl.className = "ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1";
-            }
-        });
-
-        function setupFirebaseListeners() {
-            if (!window.state.currentUser) return;
-            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), (snapshot) => {
-                if (snapshot.exists() && !window.state.editingOrderId) {
-                    window.state.orderCounter = snapshot.data().value + 1;
-                    document.getElementById('order-counter-display').innerText = window.state.orderCounter;
-                    document.getElementById('domi-order-counter-display').innerText = window.state.orderCounter;
-                } else if(!window.state.editingOrderId) {
-                    window.state.orderCounter = 1;
-                    document.getElementById('order-counter-display').innerText = window.state.orderCounter;
-                    document.getElementById('domi-order-counter-display').innerText = window.state.orderCounter;
-                }
-            }, (e) => console.error(e));
-
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets'), (snapshot) => {
-                window.state.kitchenTickets = [];
-                snapshot.forEach(doc => window.state.kitchenTickets.push(doc.data()));
-                window.state.kitchenTickets.sort((a,b) => a.orderId - b.orderId);
-                window.updateBadges(); if (window.state.currentView === 'cocina') window.renderKitchen();
-            }, (e) => console.error(e));
-
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'cashierOrders'), (snapshot) => {
-                window.state.cashierOrders = [];
-                snapshot.forEach(doc => window.state.cashierOrders.push(doc.data()));
-                window.state.cashierOrders.sort((a,b) => a.orderId - b.orderId);
-                window.updateBadges(); if (window.state.currentView === 'caja') window.renderCashier();
-                if(!document.getElementById('active-orders-modal').classList.contains('hidden')) window.renderActiveOrdersModal();
-            }, (e) => console.error(e));
-
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders'), (snapshot) => {
-                window.state.historyOrders = [];
-                snapshot.forEach(doc => window.state.historyOrders.push(doc.data()));
-                window.state.historyOrders.sort((a,b) => b.orderId - a.orderId);
-                if (window.state.currentView === 'historial') window.renderHistory();
-                if (window.state.currentView === 'estadisticas') window.renderEstadisticas();
-            }, (e) => console.error(e));
-
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'inventory'), (snapshot) => {
-                window.state.inventory = {};
-                snapshot.forEach(doc => { window.state.inventory[doc.id] = doc.data(); });
-                if (window.state.currentView === 'inventario') window.renderInventory();
-            }, (e) => console.error(e));
-
-            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'finances'), (snapshot) => {
-                if(snapshot.exists()) { window.state.finances = snapshot.data(); } 
-                else { window.state.finances = { base: 0, expenses: [] }; }
-                if (typeof window.renderFinances === 'function') window.renderFinances();
-            }, (e) => console.error(e));
-        }
 
         window.attemptSwitchView = function(view) {
             if (window.state.isAdminUnlocked || view === 'mesero' || view === 'domicilios') { window.switchView(view); } 
             else { window.state.pendingView = view; document.getElementById('tab-security-pin').value = ''; document.getElementById('tab-security-modal').classList.remove('hidden'); }
         };
+
         window.closeTabSecurityModal = function() { document.getElementById('tab-security-modal').classList.add('hidden'); window.state.pendingView = null; };
+        
         window.confirmTabSecurity = function() {
             const pin = document.getElementById('tab-security-pin').value;
             if (pin === '1089607033') {
@@ -1465,12 +1568,12 @@
 
         window.switchView = function(view) {
             window.state.currentView = view;
-            ['mesero', 'cocina', 'caja', 'historial', 'inventario', 'domicilios', 'estadisticas'].forEach(v => {
+            ['mesero', 'cocina', 'caja', 'historial', 'inventario', 'domicilios', 'estadisticas', 'nomina'].forEach(v => {
                 const viewEl = document.getElementById(`view-${v}`); if(viewEl) viewEl.classList.add('hidden');
                 const menuBtn = document.getElementById(`menu-${v}`);
                 if(menuBtn) {
-                    if (v === view) menuBtn.className = "flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-colors bg-red-50 text-red-600";
-                    else menuBtn.className = "flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-colors text-gray-600 hover:bg-gray-100";
+                    if (v === view) menuBtn.className = "flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-all bg-red-50 text-red-600 active:scale-95";
+                    else menuBtn.className = "flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95";
                 }
             });
             const activeView = document.getElementById(`view-${view}`); if(activeView) activeView.classList.remove('hidden');
@@ -1494,6 +1597,7 @@
         };
 
         window.changeCategory = function(category) { window.state.activeCategory = category; window.renderCategories(); window.renderProducts(); };
+        
         window.addItemToOrder = function(productId) {
             const product = FLAT_MENU.find(p => p.id === productId); if (!product) return;
             const existingIndex = window.state.currentOrderItems.findIndex(item => item.id === productId && item.note === '');
@@ -1501,13 +1605,17 @@
             else window.state.currentOrderItems.push({ ...product, quantity: 1, note: '' });
             window.renderCart();
         };
+
         window.updateItemQuantity = function(index, delta) {
             const newQty = window.state.currentOrderItems[index].quantity + delta;
             if (newQty > 0) window.state.currentOrderItems[index].quantity = newQty; else window.state.currentOrderItems.splice(index, 1);
             window.renderCart();
         };
+
         window.updateItemNoteText = function(index, value, element) { window.state.currentOrderItems[index].note = value; element.style.height = 'auto'; element.style.height = element.scrollHeight + 'px'; };
+        
         window.removeItem = function(index) { window.state.currentOrderItems.splice(index, 1); window.renderCart(); };
+        
         window.clearCurrentOrder = function(showToast = true) {
             window.state.currentOrderItems = []; window.state.generalNote = ''; document.getElementById('general-note').value = '';
             window.renderCart(); if(!window.state.editingOrderId && showToast === true) window.showToast('Orden vaciada.', 'error');
@@ -1515,23 +1623,29 @@
 
         window.renderCategories = function() {
             const container = document.getElementById('categories-container');
+            if(!container) return;
             container.innerHTML = MENU_CATEGORIES.map(category => `<button onclick="window.changeCategory('${category}')" class="px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${window.state.activeCategory === category ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-700 border hover:bg-red-50'}">${category}</button>`).join('');
         };
+
         window.renderProducts = function() {
-            const container = document.getElementById('products-container'); const products = MOCK_MENU[window.state.activeCategory] || [];
-            container.innerHTML = products.map(p => `<button onclick="window.addItemToOrder('${p.id}')" class="bg-white border rounded-lg p-3 text-left shadow-sm hover:shadow-md hover:border-red-500 transition-all flex flex-col justify-between h-24 active:scale-95"><span class="font-bold text-gray-800 text-sm leading-tight line-clamp-2">${p.name}</span><span class="text-red-600 font-semibold text-sm">${formatCurrency(p.price)}</span></button>`).join('');
+            const container = document.getElementById('products-container'); 
+            if(!container) return;
+            const products = MOCK_MENU[window.state.activeCategory] || [];
+            container.innerHTML = products.map(p => `<button onclick="window.addItemToOrder('${p.id}')" class="bg-white border rounded-lg p-3 text-left shadow-sm hover:shadow-md hover:border-red-500 transition-all flex flex-col justify-between h-24 active:scale-95"><span class="font-bold text-gray-800 text-sm leading-tight line-clamp-2">${p.name}</span><span class="text-red-600 font-semibold text-sm">${window.formatCurrency(p.price)}</span></button>`).join('');
         };
+
         window.renderCart = function() {
             const container = document.getElementById('cart-items');
+            if(!container) return;
             if (window.state.currentOrderItems.length === 0) {
                 container.innerHTML = `<div class="text-center text-gray-400 mt-10"><i data-lucide="utensils" class="mx-auto w-12 h-12 mb-2 opacity-50"></i><p>La orden está vacía</p></div>`;
                 document.getElementById('btn-clear-order').classList.add('hidden');
             } else {
                 document.getElementById('btn-clear-order').classList.remove('hidden');
-                container.innerHTML = window.state.currentOrderItems.map((item, index) => `<div class="bg-white p-3 rounded-lg shadow-sm border text-sm relative group"><div class="flex justify-between items-start mb-2 pr-6"><span class="font-bold text-gray-800">${item.name}</span><span class="font-semibold text-gray-600 whitespace-nowrap">${formatCurrency(item.price * item.quantity)}</span></div><div class="flex justify-between items-center"><div class="flex items-center space-x-3 bg-gray-100 rounded-lg p-1"><button onclick="window.updateItemQuantity(${index}, -1)" class="p-1 bg-white rounded shadow-sm text-red-600 hover:bg-red-50"><i data-lucide="minus" class="w-4 h-4"></i></button><span class="font-bold w-4 text-center">${item.quantity}</span><button onclick="window.updateItemQuantity(${index}, 1)" class="p-1 bg-white rounded shadow-sm text-green-600 hover:bg-green-50"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div><button onclick="window.removeItem(${index})" class="absolute top-3 right-3 text-gray-300 hover:text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="mt-3 bg-gray-50 p-2 rounded-lg border border-gray-200 flex items-start gap-2 focus-within:border-red-400 focus-within:bg-white transition-all shadow-inner"><i data-lucide="message-square" class="text-gray-400 mt-0.5 flex-shrink-0 w-4 h-4"></i><textarea rows="1" placeholder="Especificaciones..." oninput="window.updateItemNoteText(${index}, this.value, this)" class="w-full text-sm bg-transparent outline-none resize-none overflow-hidden text-gray-700">${item.note}</textarea></div></div>`).join('');
+                container.innerHTML = window.state.currentOrderItems.map((item, index) => `<div class="bg-white p-3 rounded-lg shadow-sm border text-sm relative group"><div class="flex justify-between items-start mb-2 pr-6"><span class="font-bold text-gray-800">${item.name}</span><span class="font-semibold text-gray-600 whitespace-nowrap">${window.formatCurrency(item.price * item.quantity)}</span></div><div class="flex justify-between items-center"><div class="flex items-center space-x-3 bg-gray-100 rounded-lg p-1"><button onclick="window.updateItemQuantity(${index}, -1)" class="p-1 bg-white rounded shadow-sm text-red-600 hover:bg-red-50"><i data-lucide="minus" class="w-4 h-4"></i></button><span class="font-bold w-4 text-center">${item.quantity}</span><button onclick="window.updateItemQuantity(${index}, 1)" class="p-1 bg-white rounded shadow-sm text-green-600 hover:bg-green-50"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div><button onclick="window.removeItem(${index})" class="absolute top-3 right-3 text-gray-300 hover:text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="mt-3 bg-gray-50 p-2 rounded-lg border border-gray-200 flex items-start gap-2 focus-within:border-red-400 focus-within:bg-white transition-all shadow-inner"><i data-lucide="message-square" class="text-gray-400 mt-0.5 flex-shrink-0 w-4 h-4"></i><textarea rows="1" placeholder="Especificaciones..." oninput="window.updateItemNoteText(${index}, this.value, this)" class="w-full text-sm bg-transparent outline-none resize-none overflow-hidden text-gray-700">${item.note}</textarea></div></div>`).join('');
             }
             const total = window.state.currentOrderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-            document.getElementById('cart-total').innerText = formatCurrency(total);
+            document.getElementById('cart-total').innerText = window.formatCurrency(total);
             const headerBadge = document.getElementById('header-table-badge');
             const tableStr = window.state.selectedTables.join(', ');
             const labelStr = window.state.selectedTables.length > 1 ? 'Mesas ' : (tableStr.includes('Llevar:') ? '' : 'Mesa ');
@@ -1552,19 +1666,24 @@
         };
 
         window.changeDomiCategory = function(category) { window.state.domiCategory = category; window.renderDomiCategories(); window.renderDomiProducts(); };
+        
         window.addDomiItem = function(productId) {
             const product = FLAT_MENU.find(p => p.id === productId); if (!product) return;
             const existingIndex = window.state.domiOrderItems.findIndex(item => item.id === productId && item.note === '');
             if (existingIndex >= 0) window.state.domiOrderItems[existingIndex].quantity += 1; else window.state.domiOrderItems.push({ ...product, quantity: 1, note: '' });
             window.renderDomiCart();
         };
+
         window.updateDomiItemQty = function(index, delta) {
             const newQty = window.state.domiOrderItems[index].quantity + delta;
             if (newQty > 0) window.state.domiOrderItems[index].quantity = newQty; else window.state.domiOrderItems.splice(index, 1);
             window.renderDomiCart();
         };
+
         window.updateDomiItemNote = function(index, value, element) { window.state.domiOrderItems[index].note = value; element.style.height = 'auto'; element.style.height = element.scrollHeight + 'px'; };
+        
         window.removeDomiItem = function(index) { window.state.domiOrderItems.splice(index, 1); window.renderDomiCart(); };
+        
         window.clearDomiOrder = function() {
             window.state.domiOrderItems = []; window.state.domiAddress = ''; window.state.domiPhone = ''; window.state.domiName = ''; window.state.domiFee = 0; window.state.domiNote = '';
             document.getElementById('domi-address').value = ''; document.getElementById('domi-phone').value = ''; document.getElementById('domi-name').value = '';
@@ -1576,10 +1695,12 @@
             const container = document.getElementById('domi-categories-container'); if(!container) return;
             container.innerHTML = MENU_CATEGORIES.map(category => `<button onclick="window.changeDomiCategory('${category}')" class="px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${window.state.domiCategory === category ? 'bg-orange-600 text-white shadow-md' : 'bg-white text-gray-700 border hover:bg-orange-50'}">${category}</button>`).join('');
         };
+
         window.renderDomiProducts = function() {
             const container = document.getElementById('domi-products-container'); if(!container) return; const products = MOCK_MENU[window.state.domiCategory] || [];
-            container.innerHTML = products.map(p => `<button onclick="window.addDomiItem('${p.id}')" class="bg-white border border-gray-200 rounded-lg p-3 text-left shadow-sm hover:shadow-md hover:border-orange-500 transition-all flex flex-col justify-between h-24 active:scale-95"><span class="font-bold text-gray-800 text-sm leading-tight line-clamp-2">${p.name}</span><span class="text-orange-600 font-semibold text-sm">${formatCurrency(p.price)}</span></button>`).join('');
+            container.innerHTML = products.map(p => `<button onclick="window.addDomiItem('${p.id}')" class="bg-white border border-gray-200 rounded-lg p-3 text-left shadow-sm hover:shadow-md hover:border-orange-500 transition-all flex flex-col justify-between h-24 active:scale-95"><span class="font-bold text-gray-800 text-sm leading-tight line-clamp-2">${p.name}</span><span class="text-orange-600 font-semibold text-sm">${window.formatCurrency(p.price)}</span></button>`).join('');
         };
+
         window.renderDomiCart = function() {
             const container = document.getElementById('domi-cart-items'); if(!container) return;
             if (window.state.domiOrderItems.length === 0) {
@@ -1587,12 +1708,12 @@
                 document.getElementById('domi-btn-clear-order').classList.add('hidden');
             } else {
                 document.getElementById('domi-btn-clear-order').classList.remove('hidden');
-                container.innerHTML = window.state.domiOrderItems.map((item, index) => `<div class="bg-white p-3 rounded-lg shadow-sm border text-sm relative group"><div class="flex justify-between items-start mb-2 pr-6"><span class="font-bold text-gray-800">${item.name}</span><span class="font-semibold text-gray-600 whitespace-nowrap">${formatCurrency(item.price * item.quantity)}</span></div><div class="flex justify-between items-center"><div class="flex items-center space-x-3 bg-gray-100 rounded-lg p-1"><button onclick="window.updateDomiItemQty(${index}, -1)" class="p-1 bg-white rounded shadow-sm text-red-600 hover:bg-red-50"><i data-lucide="minus" class="w-4 h-4"></i></button><span class="font-bold w-4 text-center">${item.quantity}</span><button onclick="window.updateDomiItemQty(${index}, 1)" class="p-1 bg-white rounded shadow-sm text-green-600 hover:bg-green-50"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div><button onclick="window.removeDomiItem(${index})" class="absolute top-3 right-3 text-gray-300 hover:text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="mt-3 bg-orange-50/50 p-2 rounded-lg border border-gray-200 flex items-start gap-2 focus-within:border-orange-400 focus-within:bg-white transition-all shadow-inner"><i data-lucide="message-square" class="text-gray-400 mt-0.5 flex-shrink-0 w-4 h-4"></i><textarea rows="1" placeholder="Especificaciones..." oninput="window.updateDomiItemNote(${index}, this.value, this)" class="w-full text-sm bg-transparent outline-none resize-none overflow-hidden text-gray-700">${item.note}</textarea></div></div>`).join('');
+                container.innerHTML = window.state.domiOrderItems.map((item, index) => `<div class="bg-white p-3 rounded-lg shadow-sm border text-sm relative group"><div class="flex justify-between items-start mb-2 pr-6"><span class="font-bold text-gray-800">${item.name}</span><span class="font-semibold text-gray-600 whitespace-nowrap">${window.formatCurrency(item.price * item.quantity)}</span></div><div class="flex justify-between items-center"><div class="flex items-center space-x-3 bg-gray-100 rounded-lg p-1"><button onclick="window.updateDomiItemQty(${index}, -1)" class="p-1 bg-white rounded shadow-sm text-red-600 hover:bg-red-50"><i data-lucide="minus" class="w-4 h-4"></i></button><span class="font-bold w-4 text-center">${item.quantity}</span><button onclick="window.updateDomiItemQty(${index}, 1)" class="p-1 bg-white rounded shadow-sm text-green-600 hover:bg-green-50"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div><button onclick="window.removeDomiItem(${index})" class="absolute top-3 right-3 text-gray-300 hover:text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="mt-3 bg-orange-50/50 p-2 rounded-lg border border-gray-200 flex items-start gap-2 focus-within:border-orange-400 focus-within:bg-white transition-all shadow-inner"><i data-lucide="message-square" class="text-gray-400 mt-0.5 flex-shrink-0 w-4 h-4"></i><textarea rows="1" placeholder="Especificaciones..." oninput="window.updateDomiItemNote(${index}, this.value, this)" class="w-full text-sm bg-transparent outline-none resize-none overflow-hidden text-gray-700">${item.note}</textarea></div></div>`).join('');
             }
             const subtotal = window.state.domiOrderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
             const fee = window.state.domiFee || 0;
-            document.getElementById('domi-subtotal').innerText = formatCurrency(subtotal);
-            document.getElementById('domi-total').innerText = formatCurrency(subtotal + fee);
+            document.getElementById('domi-subtotal').innerText = window.formatCurrency(subtotal);
+            document.getElementById('domi-total').innerText = window.formatCurrency(subtotal + fee);
             lucide.createIcons();
         };
 
@@ -1706,7 +1827,7 @@
         };
 
         window.cancelEditMode = function() {
-            window.state.editingOrderId = null; document.getElementById('badge-editing').classList.add('hidden'); document.getElementById('btn-cancel-edit').classList.add('hidden'); document.getElementById('btn-submit-order').innerHTML = `<i data-lucide="cloud-upload" class="w-6 h-6"></i> Enviar Orden a la Nube`; document.getElementById('order-counter-display').innerText = window.state.orderCounter;
+            window.state.editingOrderId = null; document.getElementById('badge-editing').classList.add('hidden'); document.getElementById('btn-cancel-edit').classList.add('hidden'); document.getElementById('btn-submit-order').innerHTML = `<i data-lucide="cloud-upload" class="w-6 h-6"></i> Enviar a la Nube`; document.getElementById('order-counter-display').innerText = window.state.orderCounter;
             window.clearCurrentOrder(); window.switchView('mesero'); lucide.createIcons();
         };
 
@@ -1837,21 +1958,24 @@
 
         window.openPayModal = function(orderId) {
             const order = window.state.cashierOrders.find(o => o.orderId == orderId); if (!order) return;
-            window.state.pendingPayOrder = { ...order, isPartial: false }; document.getElementById('pay-modal-total').innerText = formatCurrency(order.total); window.setPaymentMethod('efectivo'); document.getElementById('pay-modal').classList.remove('hidden');
+            window.state.pendingPayOrder = { ...order, isPartial: false }; document.getElementById('pay-modal-total').innerText = window.formatCurrency(order.total); window.setPaymentMethod('efectivo'); document.getElementById('pay-modal').classList.remove('hidden');
         };
+        
         window.closePayModal = function() { window.state.pendingPayOrder = null; document.getElementById('pay-modal').classList.add('hidden'); };
+        
         window.setPaymentMethod = function(method) {
             window.state.paymentMethod = method;
             const btnEfectivo = document.getElementById('btn-pay-efectivo'); const btnTransf = document.getElementById('btn-pay-transferencia'); const btnMixto = document.getElementById('btn-pay-dividido'); const mixedSection = document.getElementById('pay-mixed-section');
             btnEfectivo.className = "border-2 border-gray-200 hover:border-green-500 hover:bg-green-50 text-gray-600 font-bold py-2 rounded-xl transition-colors"; btnTransf.className = "border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-gray-600 font-bold py-2 rounded-xl transition-colors"; btnMixto.className = "w-full border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 text-gray-600 font-bold py-2 rounded-xl transition-colors mb-4"; mixedSection.classList.add('hidden');
             if (method === 'efectivo') { btnEfectivo.className = "border-2 border-green-500 bg-green-50 text-green-700 font-bold py-2 rounded-xl transition-colors"; } 
             else if (method === 'transferencia') { btnTransf.className = "border-2 border-purple-500 bg-purple-50 text-purple-700 font-bold py-2 rounded-xl transition-colors"; } 
-            else if (method === 'dividido') { btnMixto.className = "w-full border-2 border-blue-500 bg-blue-50 text-blue-700 font-bold py-2 rounded-xl transition-colors mb-4"; mixedSection.classList.remove('hidden'); document.getElementById('mixed-cash-input').value = ''; document.getElementById('mixed-transfer-display').innerText = formatCurrency(window.state.pendingPayOrder.total); }
+            else if (method === 'dividido') { btnMixto.className = "w-full border-2 border-blue-500 bg-blue-50 text-blue-700 font-bold py-2 rounded-xl transition-colors mb-4"; mixedSection.classList.remove('hidden'); document.getElementById('mixed-cash-input').value = ''; document.getElementById('mixed-transfer-display').innerText = window.formatCurrency(window.state.pendingPayOrder.total); }
         };
+        
         window.updateMixedTransfer = function() {
             if (!window.state.pendingPayOrder) return;
             const total = window.state.pendingPayOrder.total; const cash = parseInt(document.getElementById('mixed-cash-input').value) || 0; const transfer = total - cash;
-            document.getElementById('mixed-transfer-display').innerText = formatCurrency(transfer > 0 ? transfer : 0);
+            document.getElementById('mixed-transfer-display').innerText = window.formatCurrency(transfer > 0 ? transfer : 0);
         };
         
         window.openSplitModal = function(orderId) {
@@ -1859,25 +1983,29 @@
             window.state.pendingSplitOrder = JSON.parse(JSON.stringify(order)); window.state.splitSelection = order.items.map(item => ({ ...item, selectedQty: 0 }));
             window.renderSplitModal(); document.getElementById('split-modal').classList.remove('hidden');
         };
+        
         window.closeSplitModal = function() { window.state.pendingSplitOrder = null; document.getElementById('split-modal').classList.add('hidden'); };
+        
         window.updateSplitQty = function(index, delta) {
             const item = window.state.splitSelection[index]; let newQty = item.selectedQty + delta;
             if(newQty >= 0 && newQty <= item.quantity) { window.state.splitSelection[index].selectedQty = newQty; window.renderSplitModal(); }
         };
+        
         window.renderSplitModal = function() {
             const container = document.getElementById('split-items-list'); let splitTotal = 0;
             container.innerHTML = window.state.splitSelection.map((item, index) => {
                 splitTotal += (item.price * item.selectedQty);
-                return `<div class="bg-gray-50 p-3 rounded-lg border border-gray-200 flex justify-between items-center shadow-sm"><div class="flex-1 pr-2"><p class="font-bold text-gray-800 text-sm">${item.name}</p><p class="text-xs text-gray-500 font-medium">Restan: ${item.quantity - item.selectedQty} | ${formatCurrency(item.price)} c/u</p></div><div class="flex items-center space-x-3 bg-white border border-gray-300 rounded-lg p-1"><button onclick="window.updateSplitQty(${index}, -1)" class="p-1 bg-gray-100 rounded text-orange-600 hover:bg-orange-100 transition-colors"><i data-lucide="minus" class="w-4 h-4"></i></button><span class="font-black w-4 text-center text-lg text-gray-800">${item.selectedQty}</span><button onclick="window.updateSplitQty(${index}, 1)" class="p-1 bg-gray-100 rounded text-green-600 hover:bg-green-100 transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div>`;
+                return `<div class="bg-gray-50 p-3 rounded-lg border border-gray-200 flex justify-between items-center shadow-sm"><div class="flex-1 pr-2"><p class="font-bold text-gray-800 text-sm">${item.name}</p><p class="text-xs text-gray-500 font-medium">Restan: ${item.quantity - item.selectedQty} | ${window.formatCurrency(item.price)} c/u</p></div><div class="flex items-center space-x-3 bg-white border border-gray-300 rounded-lg p-1"><button onclick="window.updateSplitQty(${index}, -1)" class="p-1 bg-gray-100 rounded text-orange-600 hover:bg-orange-100 transition-colors"><i data-lucide="minus" class="w-4 h-4"></i></button><span class="font-black w-4 text-center text-lg text-gray-800">${item.selectedQty}</span><button onclick="window.updateSplitQty(${index}, 1)" class="p-1 bg-gray-100 rounded text-green-600 hover:bg-green-100 transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div>`;
             }).join('');
-            document.getElementById('split-total-display').innerText = formatCurrency(splitTotal); lucide.createIcons();
+            document.getElementById('split-total-display').innerText = window.formatCurrency(splitTotal); lucide.createIcons();
         };
+        
         window.proceedSplitPayment = function() {
             const selectedItems = window.state.splitSelection.filter(i => i.selectedQty > 0).map(i => ({...i, quantity: i.selectedQty}));
             if(selectedItems.length === 0) { window.showToast("Añade al menos un producto para pagar", "error"); return; }
             const splitTotal = selectedItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
             window.state.pendingPayOrder = { ...window.state.pendingSplitOrder, items: selectedItems, total: splitTotal, isPartial: true, originalOrder: window.state.pendingSplitOrder };
-            window.closeSplitModal(); document.getElementById('pay-modal-total').innerText = formatCurrency(splitTotal); window.setPaymentMethod('efectivo'); document.getElementById('pay-modal').classList.remove('hidden');
+            window.closeSplitModal(); document.getElementById('pay-modal-total').innerText = window.formatCurrency(splitTotal); window.setPaymentMethod('efectivo'); document.getElementById('pay-modal').classList.remove('hidden');
         };
 
         window.confirmPayment = function() {
@@ -1939,7 +2067,27 @@
         window.actionNewOrderSameTable = function() { window.state.lastSubmittedOrder = null; document.getElementById('success-modal').classList.add('hidden'); };
         window.actionNewOrderOtherTable = function() { window.state.lastSubmittedOrder = null; window.state.selectedTables = []; document.getElementById('success-modal').classList.add('hidden'); window.renderCart(); window.openMapModal(); };
 
-        window.onload = () => { window.renderCategories(); window.renderProducts(); window.renderCart(); lucide.createIcons(); if(window.state.waiterName) { document.getElementById('waiter-name').value = window.state.waiterName; } initAuth(); };
+        const initApp = () => {
+            window.renderCategories(); 
+            window.renderProducts(); 
+            window.renderCart(); 
+            lucide.createIcons(); 
+            if(window.state.waiterName) { document.getElementById('waiter-name').value = window.state.waiterName; } 
+            
+            if (window.state.isAuthenticated) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app-wrapper').classList.remove('hidden');
+                document.getElementById('app-wrapper').classList.add('flex');
+            }
+            
+            initAuth(); 
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
 
     </script>
 </body>
