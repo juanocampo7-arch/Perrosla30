@@ -8,8 +8,8 @@
     <!-- Etiquetas PWA para instalación de App -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#dc2626">
-    <link rel="apple-touch-icon" href="./logo.png">
-    <link rel="icon" type="image/png" href="./logo.png">
+    <link rel="apple-touch-icon" href="./image_d9025a.png">
+    <link rel="icon" type="image/png" href="./image_d9025a.png">
     
     <!-- Tailwind CSS, Lucide Icons y Chart.js para Estadísticas -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -33,7 +33,7 @@
     <!-- PANTALLA DE INICIO DE SESIÓN -->
     <div id="login-screen" class="fixed inset-0 bg-red-600 flex items-center justify-center z-[9999] hw-accelerate transition-opacity duration-300">
         <div class="bg-white p-8 rounded-2xl shadow-2xl text-center w-96 max-w-[90%] fade-in">
-            <img src="./logo.png" alt="Logo" class="w-32 h-32 mx-auto mb-6 rounded-full border-4 border-red-500 object-cover shadow-md" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3014/3014493.png'">
+            <img src="./image_d9025a.png" alt="Logo La 30" class="w-32 h-32 mx-auto mb-6 rounded-full border-4 border-red-500 object-cover shadow-md bg-white" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3014/3014493.png'">
             <h2 class="text-2xl font-black text-gray-800 mb-6 tracking-tight">INICIAR SESIÓN</h2>
             <div class="space-y-4">
                 <input type="text" id="login-user" placeholder="Usuario" class="w-full border-2 border-gray-300 rounded-xl p-3 focus:border-red-500 outline-none uppercase font-bold text-center text-gray-700 transition-colors">
@@ -45,7 +45,7 @@
         </div>
     </div>
 
-    <!-- CONTENEDOR DE LA APP (Oculto hasta hacer login) -->
+    <!-- CONTENEDOR DE LA APP -->
     <div id="app-wrapper" class="hidden flex-col min-h-screen">
         
         <!-- HEADER PRINCIPAL -->
@@ -56,7 +56,7 @@
                         <button onclick="window.toggleSidebar()" class="p-1 mr-1 text-white hover:bg-red-700 rounded transition-colors active:scale-90">
                             <i data-lucide="menu" class="w-7 h-7"></i>
                         </button>
-                        <img src="./logo.png" alt="Logo" class="w-9 h-9 rounded-full object-cover border-2 border-white bg-white hidden sm:block shadow-sm" onerror="this.style.display='none'">
+                        <img src="./image_d9025a.png" alt="Logo" class="w-9 h-9 rounded-full object-cover border-2 border-white bg-white hidden sm:block shadow-sm" onerror="this.style.display='none'">
                         <span class="font-black text-2xl tracking-tighter ml-1">PERROS LA 30</span>
                         <span class="text-xs font-medium uppercase tracking-widest bg-red-800 px-2 py-0.5 rounded-full hidden md:block">Los Originales</span>
                         <div id="connection-status" class="ml-2 bg-yellow-500 text-yellow-900 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 animate-pulse shadow-inner">
@@ -77,7 +77,7 @@
         <div id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-white shadow-2xl z-[120] transform -translate-x-full transition-transform duration-300 flex flex-col hw-accelerate">
             <div class="p-4 bg-red-600 text-white flex justify-between items-center shrink-0">
                 <div class="flex items-center gap-3">
-                    <img src="./logo.png" alt="Logo" class="w-10 h-10 rounded-full object-cover border-2 border-white bg-white shadow-md" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3014/3014493.png'">
+                    <img src="./image_d9025a.png" alt="Logo" class="w-10 h-10 rounded-full object-cover border-2 border-white bg-white shadow-md" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3014/3014493.png'">
                     <span class="font-black text-xl tracking-widest">MENÚ POS</span>
                 </div>
                 <button onclick="window.toggleSidebar()" class="hover:bg-red-700 p-1.5 rounded-lg transition-colors active:scale-90"><i data-lucide="x" class="w-6 h-6"></i></button>
@@ -99,8 +99,13 @@
                     <span id="menu-badge-caja" class="hidden bg-green-400 text-green-900 text-xs font-bold px-2 py-0.5 rounded-full shadow-inner">0</span>
                 </button>
                 <div class="h-px bg-gray-200 my-2"></div>
+                
+                <button onclick="window.attemptSwitchView('editar-menu')" id="menu-editar-menu" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
+                    <i data-lucide="edit" class="w-5 h-5"></i> Editor de Menú
+                </button>
+                
                 <button onclick="window.attemptSwitchView('nomina')" id="menu-nomina" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
-                    <i data-lucide="users" class="w-5 h-5"></i> Nómina y Empleados
+                    <i data-lucide="users" class="w-5 h-5"></i> Nómina y Gastos
                 </button>
                 <button onclick="window.attemptSwitchView('historial')" id="menu-historial" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
                     <i data-lucide="history" class="w-5 h-5"></i> Historial y Cierres
@@ -112,8 +117,9 @@
                     <i data-lucide="bar-chart-3" class="w-5 h-5"></i> Estadísticas
                 </button>
                 
+                <!-- BOTÓN INSTALAR PWA (SIEMPRE VISIBLE) -->
                 <div class="mt-auto pt-4 border-t border-gray-200">
-                    <button onclick="window.installApp()" id="btn-install-app" class="hidden w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold bg-gray-900 text-white hover:bg-black transition-all active:scale-95 shadow-md">
+                    <button onclick="window.installApp()" id="btn-install-app" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold bg-indigo-600 text-white hover:bg-indigo-700 transition-all active:scale-95 shadow-md">
                         <i data-lucide="download" class="w-5 h-5"></i> Instalar App POS
                     </button>
                     <button onclick="window.logout()" class="w-full flex items-center gap-3 px-4 py-3 mt-2 rounded-xl text-left font-bold transition-all text-red-600 hover:bg-red-50 active:scale-95">
@@ -182,8 +188,9 @@
                             <span class="font-bold text-gray-600">Total:</span>
                             <span id="cart-total" class="font-extrabold text-2xl text-red-600">$0</span>
                         </div>
+                        <!-- BOTÓN ENVIAR ORDEN AHORA IMPRIME AUTOMÁTICO -->
                         <button id="btn-submit-order" onclick="window.submitOrder()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-lg active:scale-95">
-                            <i data-lucide="cloud-upload" class="w-6 h-6"></i> Enviar a la Nube
+                            <i data-lucide="cloud-upload" class="w-6 h-6"></i> Enviar a la Nube (Imprime Auto)
                         </button>
                     </div>
                 </div>
@@ -238,7 +245,7 @@
                             <span id="domi-total" class="font-extrabold text-2xl text-orange-600">$0</span>
                         </div>
                         <button id="btn-submit-domi" onclick="window.submitDomiOrder()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-lg active:scale-95">
-                            <i data-lucide="bike" class="w-6 h-6"></i> Confirmar Domicilio
+                            <i data-lucide="bike" class="w-6 h-6"></i> Confirmar (Imprime Auto)
                         </button>
                     </div>
                 </div>
@@ -292,7 +299,7 @@
                     </div>
                     <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex justify-between items-center">
                         <div>
-                            <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Gastos del Día</p>
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Gastos y Compras</p>
                             <h3 id="finance-expenses-display" class="text-2xl font-black text-red-600">$0</h3>
                         </div>
                         <button onclick="window.openFinanceModal('gasto')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 active:scale-95">
@@ -302,18 +309,49 @@
                 </div>
                 <div id="cashier-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start pb-6 content-start"></div>
             </div>
+            
+            <!-- NUEVA VISTA: EDITAR MENÚ (PANEL DE CONTROL) -->
+            <div id="view-editar-menu" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
+                <div class="mb-4 shrink-0 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                            <i data-lucide="edit" class="text-indigo-600 w-8 h-8"></i> Editor de Menú
+                        </h2>
+                        <p class="text-gray-500">Añade productos, cambia precios o elimina. Todo se sincroniza en vivo.</p>
+                    </div>
+                    <button onclick="window.saveMenuToFirebase()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-xl shadow-md transition-colors flex items-center gap-2 active:scale-95">
+                        <i data-lucide="save" class="w-5 h-5"></i> Guardar Menú
+                    </button>
+                </div>
+                <div class="flex-1 flex gap-4 overflow-hidden flex-col md:flex-row">
+                    <div class="w-full md:w-64 bg-white border border-gray-200 rounded-xl flex flex-col shadow-sm">
+                         <div class="p-3 bg-gray-50 border-b flex justify-between items-center rounded-t-xl">
+                             <h3 class="font-bold text-gray-700">Categorías</h3>
+                             <button onclick="window.addEditCategory()" class="text-indigo-600 hover:bg-indigo-50 p-1 rounded" title="Añadir Categoría"><i data-lucide="plus" class="w-5 h-5"></i></button>
+                         </div>
+                         <div id="edit-menu-categories" class="flex-1 overflow-y-auto p-2 space-y-1"></div>
+                    </div>
+                    <div class="flex-1 bg-white border border-gray-200 rounded-xl flex flex-col shadow-sm overflow-hidden">
+                         <div class="p-3 bg-gray-50 border-b flex justify-between items-center">
+                             <h3 id="edit-menu-active-cat-title" class="font-bold text-gray-700">Productos</h3>
+                             <button onclick="window.addEditItem()" class="text-sm font-bold bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg hover:bg-indigo-100 flex items-center gap-1 transition-colors"><i data-lucide="plus" class="w-4 h-4"></i> Añadir Producto</button>
+                         </div>
+                         <div id="edit-menu-items" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50"></div>
+                    </div>
+                </div>
+            </div>
 
-            <!-- VISTA NÓMINA -->
+            <!-- NUEVA VISTA: NÓMINA Y GASTOS -->
             <div id="view-nomina" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
                 <div class="mb-6 shrink-0">
                     <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
                         <i data-lucide="users" class="text-indigo-600 w-8 h-8"></i> Nómina y Empleados
                     </h2>
-                    <p class="text-gray-500">Registra el pago de turnos o adelantos. Se descontará automáticamente de la caja.</p>
+                    <p class="text-gray-500">Registra el pago de turnos o adelantos. Se descontará automáticamente del efectivo de la caja.</p>
                 </div>
                 
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 max-w-lg mx-auto w-full">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Registrar Pago</h3>
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Registrar Pago de Nómina</h3>
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-1">Seleccionar Empleado / Rol</label>
@@ -497,15 +535,10 @@
         <div class="bg-white rounded-2xl p-6 md:p-8 max-w-sm w-full text-center shadow-2xl hw-accelerate">
             <i data-lucide="check-circle" class="text-green-500 w-20 h-20 mx-auto mb-4"></i>
             <h3 id="success-title" class="text-2xl font-bold text-gray-800 mb-2">¡Orden Registrada!</h3>
-            <p id="success-subtitle" class="text-gray-600 mb-6">¿Qué deseas hacer ahora?</p>
+            <p id="success-subtitle" class="text-gray-600 mb-6 font-bold text-blue-600 animate-pulse">Imprimiendo tickets automáticamente...</p>
             <div class="space-y-3">
-                <div class="flex gap-2">
-                    <button onclick="window.printTicket('last-cocina')" class="flex-1 bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-2 rounded-xl transition-colors border border-orange-200 flex flex-col items-center justify-center gap-1 text-xs shadow-sm active:scale-95"><i data-lucide="chef-hat" class="w-5 h-5"></i>Imprimir Cocina</button>
-                    <button onclick="window.printTicket('last-caja')" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 rounded-xl transition-colors border border-gray-200 flex flex-col items-center justify-center gap-1 text-xs shadow-sm active:scale-95"><i data-lucide="receipt" class="w-5 h-5"></i>Imprimir Caja</button>
-                </div>
-                <div class="w-full h-px bg-gray-200 my-3"></div>
-                <button onclick="window.actionNewOrderSameTable()" id="btn-same-table" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors shadow-md active:scale-95">Nueva Orden</button>
-                <button onclick="window.actionNewOrderOtherTable()" class="w-full bg-white border-2 border-gray-200 hover:border-red-500 text-gray-800 hover:text-red-600 font-bold py-3 rounded-xl transition-colors active:scale-95">Atender Otra Mesa</button>
+                <button onclick="window.actionNewOrderSameTable()" id="btn-same-table" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl transition-colors shadow-md active:scale-95 text-lg">Nueva Orden</button>
+                <button onclick="window.actionNewOrderOtherTable()" class="w-full bg-white border-2 border-gray-200 hover:border-red-500 text-gray-800 hover:text-red-600 font-bold py-4 rounded-xl transition-colors active:scale-95">Atender Otra Mesa</button>
             </div>
         </div>
     </div>
@@ -575,17 +608,17 @@
                 <input type="number" id="finance-amount" placeholder="Ej: 15000" class="w-full border-2 border-gray-300 rounded-xl p-3 text-lg font-bold focus:border-blue-500 outline-none">
             </div>
             <div id="finance-desc-container" class="mb-6">
-                <label class="block text-left text-sm font-bold text-gray-700 mb-1">Motivo / Descripción</label>
-                <input type="text" id="finance-desc" placeholder="Ej: Compra de hielo..." class="w-full border-2 border-gray-300 rounded-xl p-3 text-sm focus:border-blue-500 outline-none">
+                <label class="block text-left text-sm font-bold text-gray-700 mb-1">Nombre del Gasto / Insumo</label>
+                <input type="text" id="finance-desc" placeholder="Ej: Pago Queso, Vasos, etc." class="w-full border-2 border-gray-300 rounded-xl p-3 text-sm focus:border-blue-500 outline-none font-bold uppercase text-gray-700">
             </div>
             <div class="flex gap-2">
                 <button onclick="window.closeFinanceModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
-                <button onclick="window.saveFinance()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-colors">Guardar</button>
+                <button onclick="window.saveFinance()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-colors">Guardar Gasto</button>
             </div>
         </div>
     </div>
 
-    <!-- 8. REPORTE Z -->
+    <!-- 8. REPORTE Z CON DETALLE DE GASTOS AGRUPADO -->
     <div id="reportez-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] hw-accelerate">
             <div class="bg-blue-600 text-white p-4 flex justify-between items-center shrink-0">
@@ -596,15 +629,22 @@
                 <div class="bg-white border border-gray-200 rounded-xl p-4 mb-5 shadow-sm">
                     <h4 class="font-bold text-gray-500 text-xs uppercase tracking-wider mb-3 border-b pb-2">Cuadre de Caja</h4>
                     <div class="space-y-2 text-sm">
-                        <div class="flex justify-between text-gray-600"><span>Ventas Productos (Efectivo):</span> <span id="z-ventas-efectivo" class="font-semibold text-gray-900">$0</span></div>
-                        <div class="flex justify-between text-gray-600"><span>Ventas Productos (Nequi/Trans):</span> <span id="z-ventas-transf" class="font-semibold text-gray-900">$0</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Ventas Prod. (Efectivo):</span> <span id="z-ventas-efectivo" class="font-semibold text-gray-900">$0</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Ventas Prod. (Nequi/Trans):</span> <span id="z-ventas-transf" class="font-semibold text-gray-900">$0</span></div>
                         <div class="flex justify-between text-orange-600 bg-orange-50 p-1.5 rounded font-semibold border border-orange-100">
                             <span>Fletes Domicilios (Recaudo):</span> <span id="z-fletes">$0</span>
                         </div>
                         <div class="flex justify-between text-gray-600 pt-1 border-t border-gray-100"><span>Base Inicial:</span> <span id="z-base" class="font-semibold text-green-600">+$0</span></div>
-                        <div class="flex justify-between text-gray-600"><span>Salidas/Gastos:</span> <span id="z-gastos" class="font-semibold text-red-600">-$0</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Gastos y Nómina (Total):</span> <span id="z-gastos" class="font-semibold text-red-600">-$0</span></div>
+                    </div>
+                    
+                    <!-- DETALLE DE GASTOS AGRUPADOS -->
+                    <div class="mt-4 pt-3 border-t border-gray-200">
+                        <h4 class="font-bold text-gray-500 text-[10px] uppercase tracking-wider mb-2">Desglose de Gastos del Día</h4>
+                        <div id="z-expenses-list" class="space-y-1 text-xs text-gray-600"></div>
                     </div>
                 </div>
+
                 <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex justify-between items-center mb-5">
                     <div>
                         <span class="block font-bold text-blue-900 leading-tight">Efectivo Físico Esperado:</span>
@@ -680,8 +720,6 @@
       window.addEventListener('beforeinstallprompt', (e) => {
           e.preventDefault();
           deferredPrompt = e;
-          const btn = document.getElementById('btn-install-app');
-          if(btn) btn.classList.remove('hidden');
       });
 
       window.installApp = async () => {
@@ -689,9 +727,10 @@
               deferredPrompt.prompt();
               const { outcome } = await deferredPrompt.userChoice;
               if (outcome === 'accepted') {
-                  document.getElementById('btn-install-app').classList.add('hidden');
+                  deferredPrompt = null;
               }
-              deferredPrompt = null;
+          } else {
+              window.showToast("Para instalar: Ve al menú del navegador (3 puntos o botón Compartir) y elige 'Agregar a inicio' o 'Instalar aplicación'.", "success");
           }
       };
 
@@ -733,9 +772,8 @@
         const db = getFirestore(app);
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'perros-la-30-prod';
         
-        const MENU_CATEGORIES = ['Perros', 'Hamburguesas', 'Arepas', 'Asados', 'Salchipapas', 'Desgranados', 'Bebidas', 'Adicionales'];
-
-        const MOCK_MENU = {
+        // --- MENÚ DINÁMICO ---
+        window.defaultMenu = {
             'Perros': [
                 { id: 'p1', name: 'Perro Sencillo', price: 18000 }, { id: 'p2', name: 'Perro Doble', price: 21000 },
                 { id: 'p3', name: 'Perro Triple', price: 24000 }, { id: 'p4', name: 'Choriperro', price: 21000 },
@@ -788,11 +826,6 @@
             ]
         };
 
-        const FLAT_MENU = [];
-        for (const category in MOCK_MENU) {
-            MOCK_MENU[category].forEach(item => { FLAT_MENU.push({ ...item, category: category }); });
-        }
-
         const TABLE_POSITIONS = [
             { id: 1, left: '8%', top: '55%' }, { id: 2, left: '18%', top: '55%' }, { id: 3, left: '6%', top: '85%' }, { id: 4, left: '13%', top: '85%' },
             { id: 5, left: '20%', top: '85%' }, { id: 6, left: '32%', top: '55%' }, { id: 7, left: '32%', top: '85%' }, { id: 8, left: '40%', top: '85%' },
@@ -839,19 +872,29 @@
             isAuthenticated: sessionStorage.getItem('pos_auth') === 'true',
             currentUser: null, currentView: 'mesero', kitchenStation: 'perrero',
             waiterName: '', selectedTables: [], isMultipleTableMode: false,
-            activeCategory: MENU_CATEGORIES[0], currentOrderItems: [], generalNote: '',
-            domiOrderItems: [], domiCategory: MENU_CATEGORIES[0],
-            domiAddress: '', domiPhone: '', domiName: '', domiFee: 0, domiNote: '',
+            currentOrderItems: [], generalNote: '',
+            domiOrderItems: [], domiAddress: '', domiPhone: '', domiName: '', domiFee: 0, domiNote: '',
             orderCounter: 1, kitchenTickets: [], cashierOrders: [], historyOrders: [], historyCierres: [],
             inventory: {}, finances: { base: 0, expenses: [] },
             lastSubmittedOrder: null, zReportData: null, editingInvId: null, editingOrderId: null,
             isAdminUnlocked: false, pendingView: null, pendingPayOrder: null, 
-            financeType: 'gasto', paymentMethod: 'efectivo', splitSelection: [], pendingSplitOrder: null 
+            financeType: 'gasto', paymentMethod: 'efectivo', splitSelection: [], pendingSplitOrder: null,
+            menu: null, editingMenu: null, editMenuCategory: null, activeCategory: null, domiCategory: null
         };
 
         let toastTimeout;
         window.salesChartInstance = null;
         window.productsChartInstance = null;
+
+        window.getFlatMenu = function() {
+            const flat = [];
+            if(window.state.menu) {
+                for (const category in window.state.menu) {
+                    window.state.menu[category].forEach(item => { flat.push({ ...item, category: category }); });
+                }
+            }
+            return flat;
+        };
 
         // --- SISTEMA DE LOGIN DE SEGURIDAD ---
         window.attemptLogin = function() {
@@ -884,7 +927,6 @@
             window.toggleSidebar();
         };
 
-        // PREVENCIÓN DE NaN A NIVEL GLOBAL
         window.getSafeNumber = function(val, fallback = 0) {
             if (val === null || val === undefined || val === '') return fallback;
             const parsed = Number(val);
@@ -909,38 +951,66 @@
         }
 
         // ==========================================
-        // SOLUCIÓN DE IMPRESIÓN MÓVIL: SISTEMA DE COLA Y CORTE (SEPARATE JOBS)
+        // COMUNICACIÓN DE IMPRESIÓN (LAN / NAVEGADOR)
         // ==========================================
         window.printQueue = [];
         window.isPrinting = false;
 
-        window.processPrintQueue = function() {
+        // Función para enviar orden al Servidor Local (PC de Administración)
+        window.sendToLocalPrinterServer = async function(htmlContent, rawData, type) {
+            try {
+                // IMPORTANTE: CAMBIAR ESTA IP POR LA IP FIJA DEL PC DE ADMINISTRACIÓN.
+                const adminPC_IP = '192.168.1.100'; 
+                const response = await fetch(`http://${adminPC_IP}:3000/print`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ html: htmlContent, data: rawData, type: type })
+                });
+                return response.ok;
+            } catch (error) {
+                // Si el PC está apagado o no se encuentra, retornamos falso para usar el plan de respaldo.
+                console.warn("Servidor LAN no disponible. Usando impresión nativa del navegador.");
+                return false;
+            }
+        };
+
+        window.processPrintQueue = async function() {
             if (window.printQueue.length === 0) {
                 window.isPrinting = false;
                 return;
             }
             window.isPrinting = true;
             
-            const html = window.printQueue.shift();
+            const job = window.printQueue.shift();
             
-            const iframe = document.createElement('iframe');
-            iframe.style.position = 'fixed'; iframe.style.right = '0'; iframe.style.bottom = '0'; iframe.style.width = '0'; iframe.style.height = '0'; iframe.style.border = '0';
-            document.body.appendChild(iframe);
-            
-            const doc = iframe.contentWindow.document;
-            doc.open(); doc.write(html); doc.close();
-            
-            setTimeout(() => {
-                iframe.contentWindow.focus();
-                iframe.contentWindow.print();
-                setTimeout(() => { 
-                    document.body.removeChild(iframe); 
-                    window.processPrintQueue(); 
-                }, 2500); 
-            }, 500);
+            // INTENTO 1: Imprimir directo a la LAN vía PC Administración
+            const printedToLAN = await window.sendToLocalPrinterServer(job.html, job.data, job.type);
+
+            if (printedToLAN) {
+                // Si funcionó, procesa el siguiente inmediatamente
+                window.processPrintQueue();
+            } else {
+                // INTENTO 2: Plan de Respaldo (Imprimir a través del navegador actual)
+                const iframe = document.createElement('iframe');
+                iframe.style.position = 'fixed'; iframe.style.right = '0'; iframe.style.bottom = '0'; iframe.style.width = '0'; iframe.style.height = '0'; iframe.style.border = '0';
+                document.body.appendChild(iframe);
+                
+                const doc = iframe.contentWindow.document;
+                doc.open(); doc.write(job.html); doc.close();
+                
+                setTimeout(() => {
+                    iframe.contentWindow.focus();
+                    iframe.contentWindow.print();
+                    
+                    setTimeout(() => { 
+                        document.body.removeChild(iframe); 
+                        window.processPrintQueue(); 
+                    }, 2500); 
+                }, 500);
+            }
         };
 
-        window.printTicket = function(type, id) {
+        window.printTicket = function(type, id = null) {
             let dataList = [];
             if (type === 'caja') {
                 const d = window.state.cashierOrders.find(o => o.orderId.toString() === id.toString()) || window.state.historyOrders.find(o => o.orderId.toString() === id.toString());
@@ -995,7 +1065,7 @@
                 }
                 
                 html += `</div></body></html>`;
-                window.printQueue.push(html);
+                window.printQueue.push({ html: html, data: data, type: format });
             });
 
             if (!window.isPrinting) window.processPrintQueue();
@@ -1139,6 +1209,86 @@
                 window.closeInventoryModal();
                 window.showToast("Stock ajustado");
             } catch (e) { console.error(e); window.showToast("Error ajustando stock", "error"); }
+        };
+
+        // ==========================================
+        // LÓGICA DEL EDITOR DE MENÚ (PANEL DE CONTROL)
+        // ==========================================
+        window.renderEditMenu = function() {
+            const catsContainer = document.getElementById('edit-menu-categories');
+            const itemsContainer = document.getElementById('edit-menu-items');
+            if(!catsContainer || !itemsContainer) return;
+
+            const categories = Object.keys(window.state.editingMenu);
+            
+            catsContainer.innerHTML = categories.map(cat => `
+                <button onclick="window.state.editMenuCategory = '${cat}'; window.renderEditMenu();" 
+                        class="w-full text-left px-3 py-2 rounded-lg font-bold text-sm transition-colors ${window.state.editMenuCategory === cat ? 'bg-indigo-100 text-indigo-800' : 'text-gray-600 hover:bg-gray-100'}">
+                    ${cat}
+                </button>
+            `).join('');
+
+            const activeCat = window.state.editMenuCategory;
+            document.getElementById('edit-menu-active-cat-title').innerText = `Productos en "${activeCat}"`;
+            
+            const products = window.state.editingMenu[activeCat] || [];
+            if (products.length === 0) {
+                itemsContainer.innerHTML = `<p class="text-center text-gray-400 my-4 text-sm">No hay productos en esta categoría.</p>`;
+            } else {
+                itemsContainer.innerHTML = products.map((p, index) => `
+                    <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm flex items-center gap-3">
+                        <div class="flex-1">
+                            <label class="text-[10px] uppercase font-bold text-gray-400">Nombre del Producto</label>
+                            <input type="text" value="${p.name}" onchange="window.updateEditItemName('${activeCat}', ${index}, this.value)" class="w-full border-b border-gray-300 py-1 text-sm font-bold text-gray-800 focus:border-indigo-500 outline-none">
+                        </div>
+                        <div class="w-24">
+                            <label class="text-[10px] uppercase font-bold text-gray-400">Precio ($)</label>
+                            <input type="number" value="${p.price}" onchange="window.updateEditItemPrice('${activeCat}', ${index}, this.value)" class="w-full border-b border-gray-300 py-1 text-sm font-bold text-gray-800 focus:border-indigo-500 outline-none text-right">
+                        </div>
+                        <button onclick="window.deleteEditItem('${activeCat}', ${index})" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors mt-4" title="Eliminar">
+                            <i data-lucide="trash-2" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+            lucide.createIcons();
+        };
+
+        window.updateEditItemName = function(cat, index, val) { window.state.editingMenu[cat][index].name = val; };
+        window.updateEditItemPrice = function(cat, index, val) { window.state.editingMenu[cat][index].price = parseInt(val) || 0; };
+        window.deleteEditItem = function(cat, index) { 
+            if(confirm('¿Seguro que deseas eliminar este producto?')) { 
+                window.state.editingMenu[cat].splice(index, 1); 
+                window.renderEditMenu(); 
+            } 
+        };
+        window.addEditItem = function() {
+            const cat = window.state.editMenuCategory;
+            if(!cat) return;
+            window.state.editingMenu[cat].push({ id: 'item-'+Date.now(), name: 'Nuevo Producto', price: 0 });
+            window.renderEditMenu();
+        };
+        window.addEditCategory = function() {
+            const catName = prompt("Nombre de la nueva categoría (Ej. Postres):");
+            if(catName && catName.trim() !== '') {
+                const name = catName.trim();
+                if(!window.state.editingMenu[name]) {
+                    window.state.editingMenu[name] = [];
+                    window.state.editMenuCategory = name;
+                    window.renderEditMenu();
+                } else {
+                    window.showToast("La categoría ya existe", "error");
+                }
+            }
+        };
+        window.saveMenuToFirebase = async function() {
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'menu'), { menuData: window.state.editingMenu });
+                window.showToast("Menú guardado y actualizado para todos", "success");
+            } catch(e) {
+                console.error(e);
+                window.showToast("Error guardando menú", "error");
+            }
         };
 
         window.updateBadges = function() {
@@ -1516,11 +1666,21 @@
             });
 
             const base = window.getSafeNumber(window.state.finances?.base, 0);
-            let totalGastos = 0;
-            if(window.state.finances?.expenses && Array.isArray(window.state.finances.expenses)){
-                 totalGastos = window.state.finances.expenses.reduce((sum, e) => sum + window.getSafeNumber(e.amount, 0), 0);
-            }
+            const listaGastos = window.state.finances?.expenses || [];
             
+            // AGRUPAR GASTOS POR NOMBRE PARA EL REPORTE
+            let totalGastos = 0;
+            const groupedExpenses = {};
+            if(listaGastos.length > 0){
+                 listaGastos.forEach(e => {
+                     totalGastos += window.getSafeNumber(e.amount, 0);
+                     const desc = e.desc.toUpperCase();
+                     if(!groupedExpenses[desc]) groupedExpenses[desc] = 0;
+                     groupedExpenses[desc] += window.getSafeNumber(e.amount, 0);
+                 });
+            }
+            const groupedExpensesArray = Object.keys(groupedExpenses).map(desc => ({ desc, amount: groupedExpenses[desc] }));
+
             const efectivoNeto = base + totalEfectivoVentas - totalGastos;
 
             const sortedItems = Object.keys(itemsVendidos).map(name => ({ name, qty: itemsVendidos[name].qty, revenue: itemsVendidos[name].revenue })).sort((a, b) => b.qty - a.qty);
@@ -1529,7 +1689,7 @@
             window.state.zReportData = { 
                 date: new Date().toLocaleDateString('es-CO'), time: new Date().toLocaleTimeString('es-CO'), 
                 totalVentas: totalRecaudadoVentas, efectivo: totalEfectivoVentas, transferencia: totalTransfVentas, totalFletes: totalFletesDomi,
-                base: base, gastos: totalGastos, efectivoNeto: efectivoNeto, items: sortedItems, waiters: sortedWaiters 
+                base: base, gastos: totalGastos, efectivoNeto: efectivoNeto, items: sortedItems, waiters: sortedWaiters, expenses: groupedExpensesArray 
             };
             
             if(!silent) {
@@ -1540,6 +1700,13 @@
                 document.getElementById('z-gastos').innerText = "-" + window.formatCurrency(totalGastos);
                 document.getElementById('z-efectivo-neto').innerText = window.formatCurrency(efectivoNeto);
                 
+                const expensesContainer = document.getElementById('z-expenses-list');
+                if (groupedExpensesArray.length === 0) {
+                    expensesContainer.innerHTML = '<p class="text-gray-400 italic">No se registraron gastos.</p>';
+                } else {
+                    expensesContainer.innerHTML = groupedExpensesArray.map(e => `<div class="flex justify-between"><span class="truncate pr-2 font-bold">${e.desc}</span><span class="font-semibold text-red-600">-${window.formatCurrency(e.amount)}</span></div>`).join('');
+                }
+
                 document.getElementById('reportez-waiters').innerHTML = sortedWaiters.map(w => `<div class="flex justify-between items-center bg-gray-100 p-2 rounded border border-gray-200 text-sm"><span class="font-bold text-gray-800">${w.name}</span><div class="text-right"><span class="block font-black text-green-700">${window.formatCurrency(w.total)}</span><span class="text-xs text-gray-500 font-semibold">${w.tables} mesas | ${w.items} items</span></div></div>`).join('');
                 document.getElementById('reportez-items').innerHTML = sortedItems.map(i => `<div class="flex justify-between items-center bg-white p-2 rounded border text-sm"><span class="font-semibold flex-1 text-gray-700">${i.name}</span><div class="flex gap-4 items-center"><span class="text-gray-500 font-medium">${window.formatCurrency(i.revenue)}</span><span class="bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-md min-w-[2rem] text-center">${i.qty}</span></div></div>`).join('');
                 document.getElementById('reportez-modal').classList.remove('hidden');
@@ -1547,6 +1714,36 @@
         };
 
         window.closeReporteZ = function() { document.getElementById('reportez-modal').classList.add('hidden'); };
+
+        window.printReporteZ = function() {
+            const data = window.state.zReportData; if (!data) return;
+            let html = `<html><head><style>@page{margin:0;size:auto;} body{font-family:'Courier New',Courier,monospace;width:280px;margin:0;padding:10px;font-size:14px;} h1,p{margin:0;padding:2px 0;text-align:center;} .divider{border-top:1px dashed #000;margin:8px 0;} .item-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;} .item-qty{font-weight:bold;width:30px;} .item-name{flex:1;} .item-price{font-weight:bold;text-align:right;} .totals{margin-top:10px;font-weight:bold;font-size:16px;text-align:right;} .header-title{font-size:20px;font-weight:bold;text-align:center;} .summary-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;}</style></head><body><div class="header-title">PERROS LA 30</div><p>REPORTE Z (CIERRE DIARIO)</p><div class="divider"></div><p style="text-align:left;font-size:12px;"><b>Fecha:</b> ${data.date}</p><p style="text-align:left;font-size:12px;"><b>Hora:</b> ${data.time}</p><div class="divider"></div>`;
+            html += `<div class="summary-row"><span>Total Ventas Prod.:</span><b>${window.formatCurrency(data.totalVentas)}</b></div>`;
+            html += `<div class="summary-row"><span>Ventas Efectivo:</span><span>${window.formatCurrency(data.efectivo)}</span></div>`;
+            html += `<div class="summary-row"><span>Ventas Transf:</span><span>${window.formatCurrency(data.transferencia)}</span></div>`;
+            html += `<div class="summary-row" style="margin-top:5px;"><span>Fletes (Mensajero):</span><span>${window.formatCurrency(data.totalFletes)}</span></div><div class="divider"></div>`;
+            html += `<div class="summary-row"><span>Base Inicial:</span><span>+${window.formatCurrency(data.base)}</span></div>`;
+            html += `<div class="summary-row"><span>Gastos/Salidas:</span><span>-${window.formatCurrency(data.gastos)}</span></div>`;
+            
+            if(data.expenses && data.expenses.length > 0) {
+                html += `<div class="divider"></div><div style="font-weight:bold; text-align:center; font-size:12px; margin-bottom:4px;">DETALLE DE GASTOS</div>`;
+                data.expenses.forEach(e => {
+                    html += `<div class="item-row"><span class="item-name" style="font-size:11px;">${e.desc}</span><span class="item-price" style="font-size:11px;">-${window.formatCurrency(e.amount)}</span></div>`;
+                });
+            }
+
+            html += `<div class="totals">EFECTIVO EN CAJA:<br>${window.formatCurrency(data.efectivoNeto)}</div><div class="divider"></div>`;
+            html += `<div style="text-align:center; font-weight:bold; margin-bottom:5px;">RENDIMIENTO MESEROS</div>`;
+            if(data.waiters.length === 0) html += `<div style="text-align:center; font-size:12px;">Sin datos</div>`;
+            data.waiters.forEach(w => { html += `<div class="summary-row"><span>${w.name} (${w.tables}m):</span><span>${window.formatCurrency(w.total)}</span></div>`; });
+            html += `<div class="divider"></div>`;
+            html += `<div style="margin-bottom:5px;font-weight:bold;display:flex;font-size:12px;"><span style="width:30px;">CANT</span><span style="flex:1;">PRODUCTO</span><span>TOTAL</span></div><div class="divider"></div>`;
+            data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.qty}x</span><span class="item-name">${item.name}</span><span class="item-price">${window.formatCurrency(item.revenue)}</span></div>`; });
+            html += `<div class="divider"></div><p style="font-size:12px;margin-top:20px;">Fin del Reporte</p></body></html>`;
+            
+            window.printQueue.push({ html: html, data: data, type: 'caja' });
+            if (!window.isPrinting) window.processPrintQueue();
+        };
 
         window.attemptSwitchView = function(view) {
             if (window.state.isAdminUnlocked || view === 'mesero' || view === 'domicilios') { window.switchView(view); } 
@@ -1573,7 +1770,7 @@
 
         window.switchView = function(view) {
             window.state.currentView = view;
-            ['mesero', 'cocina', 'caja', 'historial', 'inventario', 'domicilios', 'estadisticas', 'nomina'].forEach(v => {
+            ['mesero', 'cocina', 'caja', 'historial', 'inventario', 'domicilios', 'estadisticas', 'nomina', 'editar-menu'].forEach(v => {
                 const viewEl = document.getElementById(`view-${v}`); if(viewEl) viewEl.classList.add('hidden');
                 const menuBtn = document.getElementById(`menu-${v}`);
                 if(menuBtn) {
@@ -1588,6 +1785,7 @@
             if(view === 'inventario') window.renderInventory(); 
             if(view === 'domicilios') { window.renderDomiCategories(); window.renderDomiProducts(); window.renderDomiCart(); }
             if(view === 'estadisticas') window.renderEstadisticas();
+            if(view === 'editar-menu') window.renderEditMenu();
             const sidebar = document.getElementById('sidebar'); if (!sidebar.classList.contains('-translate-x-full')) window.toggleSidebar();
         };
 
@@ -1604,7 +1802,7 @@
         window.changeCategory = function(category) { window.state.activeCategory = category; window.renderCategories(); window.renderProducts(); };
         
         window.addItemToOrder = function(productId) {
-            const product = FLAT_MENU.find(p => p.id === productId); if (!product) return;
+            const product = window.getFlatMenu().find(p => p.id === productId); if (!product) return;
             const existingIndex = window.state.currentOrderItems.findIndex(item => item.id === productId && item.note === '');
             if (existingIndex >= 0) window.state.currentOrderItems[existingIndex].quantity += 1;
             else window.state.currentOrderItems.push({ ...product, quantity: 1, note: '' });
@@ -1628,14 +1826,15 @@
 
         window.renderCategories = function() {
             const container = document.getElementById('categories-container');
-            if(!container) return;
-            container.innerHTML = MENU_CATEGORIES.map(category => `<button onclick="window.changeCategory('${category}')" class="px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${window.state.activeCategory === category ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-700 border hover:bg-red-50'}">${category}</button>`).join('');
+            if(!container || !window.state.menu) return;
+            const categories = Object.keys(window.state.menu);
+            container.innerHTML = categories.map(category => `<button onclick="window.changeCategory('${category}')" class="px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${window.state.activeCategory === category ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-700 border hover:bg-red-50'}">${category}</button>`).join('');
         };
 
         window.renderProducts = function() {
             const container = document.getElementById('products-container'); 
-            if(!container) return;
-            const products = MOCK_MENU[window.state.activeCategory] || [];
+            if(!container || !window.state.menu) return;
+            const products = window.state.menu[window.state.activeCategory] || [];
             container.innerHTML = products.map(p => `<button onclick="window.addItemToOrder('${p.id}')" class="bg-white border rounded-lg p-3 text-left shadow-sm hover:shadow-md hover:border-red-500 transition-all flex flex-col justify-between h-24 active:scale-95"><span class="font-bold text-gray-800 text-sm leading-tight line-clamp-2">${p.name}</span><span class="text-red-600 font-semibold text-sm">${window.formatCurrency(p.price)}</span></button>`).join('');
         };
 
@@ -1673,7 +1872,7 @@
         window.changeDomiCategory = function(category) { window.state.domiCategory = category; window.renderDomiCategories(); window.renderDomiProducts(); };
         
         window.addDomiItem = function(productId) {
-            const product = FLAT_MENU.find(p => p.id === productId); if (!product) return;
+            const product = window.getFlatMenu().find(p => p.id === productId); if (!product) return;
             const existingIndex = window.state.domiOrderItems.findIndex(item => item.id === productId && item.note === '');
             if (existingIndex >= 0) window.state.domiOrderItems[existingIndex].quantity += 1; else window.state.domiOrderItems.push({ ...product, quantity: 1, note: '' });
             window.renderDomiCart();
@@ -1697,12 +1896,14 @@
         };
 
         window.renderDomiCategories = function() {
-            const container = document.getElementById('domi-categories-container'); if(!container) return;
-            container.innerHTML = MENU_CATEGORIES.map(category => `<button onclick="window.changeDomiCategory('${category}')" class="px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${window.state.domiCategory === category ? 'bg-orange-600 text-white shadow-md' : 'bg-white text-gray-700 border hover:bg-orange-50'}">${category}</button>`).join('');
+            const container = document.getElementById('domi-categories-container'); if(!container || !window.state.menu) return;
+            const categories = Object.keys(window.state.menu);
+            container.innerHTML = categories.map(category => `<button onclick="window.changeDomiCategory('${category}')" class="px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${window.state.domiCategory === category ? 'bg-orange-600 text-white shadow-md' : 'bg-white text-gray-700 border hover:bg-orange-50'}">${category}</button>`).join('');
         };
 
         window.renderDomiProducts = function() {
-            const container = document.getElementById('domi-products-container'); if(!container) return; const products = MOCK_MENU[window.state.domiCategory] || [];
+            const container = document.getElementById('domi-products-container'); if(!container || !window.state.menu) return; 
+            const products = window.state.menu[window.state.domiCategory] || [];
             container.innerHTML = products.map(p => `<button onclick="window.addDomiItem('${p.id}')" class="bg-white border border-gray-200 rounded-lg p-3 text-left shadow-sm hover:shadow-md hover:border-orange-500 transition-all flex flex-col justify-between h-24 active:scale-95"><span class="font-bold text-gray-800 text-sm leading-tight line-clamp-2">${p.name}</span><span class="text-orange-600 font-semibold text-sm">${window.formatCurrency(p.price)}</span></button>`).join('');
         };
 
@@ -1832,12 +2033,12 @@
         };
 
         window.cancelEditMode = function() {
-            window.state.editingOrderId = null; document.getElementById('badge-editing').classList.add('hidden'); document.getElementById('btn-cancel-edit').classList.add('hidden'); document.getElementById('btn-submit-order').innerHTML = `<i data-lucide="cloud-upload" class="w-6 h-6"></i> Enviar a la Nube`; document.getElementById('order-counter-display').innerText = window.state.orderCounter;
+            window.state.editingOrderId = null; document.getElementById('badge-editing').classList.add('hidden'); document.getElementById('btn-cancel-edit').classList.add('hidden'); document.getElementById('btn-submit-order').innerHTML = `<i data-lucide="cloud-upload" class="w-6 h-6"></i> Enviar a la Nube (Imprime Auto)`; document.getElementById('order-counter-display').innerText = window.state.orderCounter;
             window.clearCurrentOrder(); window.switchView('mesero'); lucide.createIcons();
         };
 
         window.cancelDomiEditMode = function() {
-            window.state.editingOrderId = null; document.getElementById('domi-badge-editing').classList.add('hidden'); document.getElementById('domi-btn-cancel-edit').classList.add('hidden'); document.getElementById('btn-submit-domi').innerHTML = `<i data-lucide="bike" class="w-6 h-6"></i> Confirmar Domicilio`; document.getElementById('domi-order-counter-display').innerText = window.state.orderCounter;
+            window.state.editingOrderId = null; document.getElementById('domi-badge-editing').classList.add('hidden'); document.getElementById('domi-btn-cancel-edit').classList.add('hidden'); document.getElementById('btn-submit-domi').innerHTML = `<i data-lucide="bike" class="w-6 h-6"></i> Confirmar (Imprime Auto)`; document.getElementById('domi-order-counter-display').innerText = window.state.orderCounter;
             window.clearDomiOrder(); window.switchView('domicilios'); lucide.createIcons();
         }
 
@@ -1922,10 +2123,12 @@
                 else { window.clearCurrentOrder(false); window.renderCart(); }
                 
                 document.getElementById('success-title').innerText = `¡Orden #${window.state.lastSubmittedOrder.id} Registrada!`;
-                document.getElementById('success-subtitle').innerText = `¿Qué deseas hacer ahora?`;
-                document.getElementById('btn-same-table').innerText = `Nueva Orden (Misma Mesa)`;
                 document.getElementById('success-modal').classList.remove('hidden');
                 lucide.createIcons();
+
+                // DISPARAR IMPRESIÓN AUTOMÁTICA
+                window.printTicket('last-cocina');
+                window.printTicket('last-caja');
             }
 
             setTimeout(async () => {
@@ -2066,100 +2269,138 @@
                     deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', t.ticketId));
                 }
                 window.showToast(`Orden #${id} anulada.`, 'error');
-            } catch (error) { console.error("Error anulando:", error); }
-        };
+        } catch (error) { console.error("Error anulando:", error); }
+    };
 
-        window.actionNewOrderSameTable = function() { window.state.lastSubmittedOrder = null; document.getElementById('success-modal').classList.add('hidden'); };
-        window.actionNewOrderOtherTable = function() { window.state.lastSubmittedOrder = null; window.state.selectedTables = []; document.getElementById('success-modal').classList.add('hidden'); window.renderCart(); window.openMapModal(); };
+    window.actionNewOrderSameTable = function() { window.state.lastSubmittedOrder = null; document.getElementById('success-modal').classList.add('hidden'); };
+    window.actionNewOrderOtherTable = function() { window.state.lastSubmittedOrder = null; window.state.selectedTables = []; document.getElementById('success-modal').classList.add('hidden'); window.renderCart(); window.openMapModal(); };
 
-        const initAuth = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Error Auth Firebase:", error);
-                document.getElementById('connection-status').innerText = "Modo Local";
-                document.getElementById('connection-status').className = "ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-inner";
-            }
-        };
-
-        onAuthStateChanged(auth, (user) => {
-            window.state.currentUser = user;
-            const statusEl = document.getElementById('connection-status');
-            if (user) {
-                statusEl.innerText = "Nube Conectada";
-                statusEl.className = "ml-2 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-inner";
-                setupFirebaseListeners();
+    window.initAuth = async () => {
+        try {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
             } else {
-                statusEl.innerText = "Desconectado";
-                statusEl.className = "ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-inner";
+                await signInAnonymously(auth);
             }
-        });
-
-        function setupFirebaseListeners() {
-            if (!window.state.currentUser) return;
-            
-            // Cierres
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'history_cierres'), (snapshot) => {
-                window.state.historyCierres = [];
-                snapshot.forEach(doc => window.state.historyCierres.push({id: doc.id, ...doc.data()}));
-                window.state.historyCierres.sort((a,b) => b.id - a.id);
-                if (window.state.currentView === 'historial') window.renderHistory();
-            }, (e) => console.error(e));
-
-            // Ordenes
-            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), (snapshot) => {
-                if (snapshot.exists() && !window.state.editingOrderId) {
-                    window.state.orderCounter = snapshot.data().value + 1;
-                    document.getElementById('order-counter-display').innerText = window.state.orderCounter;
-                    document.getElementById('domi-order-counter-display').innerText = window.state.orderCounter;
-                } else if(!window.state.editingOrderId) {
-                    window.state.orderCounter = 1;
-                    document.getElementById('order-counter-display').innerText = window.state.orderCounter;
-                    document.getElementById('domi-order-counter-display').innerText = window.state.orderCounter;
-                }
-            }, (e) => console.error(e));
-
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets'), (snapshot) => {
-                window.state.kitchenTickets = [];
-                snapshot.forEach(doc => window.state.kitchenTickets.push(doc.data()));
-                window.state.kitchenTickets.sort((a,b) => a.orderId - b.orderId);
-                window.updateBadges(); if (window.state.currentView === 'cocina') window.renderKitchen();
-            }, (e) => console.error(e));
-
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'cashierOrders'), (snapshot) => {
-                window.state.cashierOrders = [];
-                snapshot.forEach(doc => window.state.cashierOrders.push(doc.data()));
-                window.state.cashierOrders.sort((a,b) => a.orderId - b.orderId);
-                window.updateBadges(); if (window.state.currentView === 'caja') window.renderCashier();
-                if(!document.getElementById('active-orders-modal').classList.contains('hidden')) window.renderActiveOrdersModal();
-            }, (e) => console.error(e));
-
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders'), (snapshot) => {
-                window.state.historyOrders = [];
-                snapshot.forEach(doc => window.state.historyOrders.push(doc.data()));
-                window.state.historyOrders.sort((a,b) => b.orderId - a.orderId);
-                if (window.state.currentView === 'historial') window.renderHistory();
-                if (window.state.currentView === 'estadisticas') window.renderEstadisticas();
-            }, (e) => console.error(e));
-
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'inventory'), (snapshot) => {
-                window.state.inventory = {};
-                snapshot.forEach(doc => { window.state.inventory[doc.id] = doc.data(); });
-                if (window.state.currentView === 'inventario') window.renderInventory();
-            }, (e) => console.error(e));
-
-            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'finances'), (snapshot) => {
-                if(snapshot.exists()) { window.state.finances = snapshot.data(); } 
-                else { window.state.finances = { base: 0, expenses: [] }; }
-                if (typeof window.renderFinances === 'function') window.renderFinances();
-            }, (e) => console.error(e));
+        } catch (error) {
+            console.error("Error Auth Firebase:", error);
+            document.getElementById('connection-status').innerText = "Modo Local";
+            document.getElementById('connection-status').className = "ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-inner";
         }
+    };
 
-        const initApp = () => {
+    onAuthStateChanged(auth, (user) => {
+        window.state.currentUser = user;
+        const statusEl = document.getElementById('connection-status');
+        if (user) {
+            statusEl.innerText = "Nube Conectada";
+            statusEl.className = "ml-2 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-inner";
+            setupFirebaseListeners();
+        } else {
+            statusEl.innerText = "Desconectado";
+            statusEl.className = "ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-inner";
+        }
+    });
+
+    function setupFirebaseListeners() {
+        if (!window.state.currentUser) return;
+        
+        // MENU DINAMICO
+        onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'menu'), (snapshot) => {
+            if(snapshot.exists()) {
+                window.state.menu = snapshot.data().menuData;
+                window.state.editingMenu = JSON.parse(JSON.stringify(window.state.menu));
+            } else {
+                window.state.menu = window.defaultMenu;
+                window.state.editingMenu = JSON.parse(JSON.stringify(window.defaultMenu));
+                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'menu'), { menuData: window.defaultMenu });
+            }
+            
+            // Asegurar categorías activas válidas
+            if (!window.state.activeCategory || !window.state.menu[window.state.activeCategory]) {
+                window.state.activeCategory = Object.keys(window.state.menu)[0];
+            }
+            if (!window.state.domiCategory || !window.state.menu[window.state.domiCategory]) {
+                window.state.domiCategory = Object.keys(window.state.menu)[0];
+            }
+            if (!window.state.editMenuCategory || !window.state.menu[window.state.editMenuCategory]) {
+                window.state.editMenuCategory = Object.keys(window.state.menu)[0];
+            }
+
+            // Refrescar vistas que dependen del menú
+            if(window.state.currentView === 'mesero') { window.renderCategories(); window.renderProducts(); }
+            if(window.state.currentView === 'domicilios') { window.renderDomiCategories(); window.renderDomiProducts(); }
+            if(window.state.currentView === 'editar-menu') { window.renderEditMenu(); }
+        }, (e) => console.error(e));
+
+        // CIERRES Z
+        onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'history_cierres'), (snapshot) => {
+            window.state.historyCierres = [];
+            snapshot.forEach(doc => window.state.historyCierres.push({id: doc.id, ...doc.data()}));
+            window.state.historyCierres.sort((a,b) => b.id - a.id);
+            if (window.state.currentView === 'historial') window.renderHistory();
+        }, (e) => console.error(e));
+
+        // ORDENES
+        onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), (snapshot) => {
+            if (snapshot.exists() && !window.state.editingOrderId) {
+                window.state.orderCounter = snapshot.data().value + 1;
+                document.getElementById('order-counter-display').innerText = window.state.orderCounter;
+                document.getElementById('domi-order-counter-display').innerText = window.state.orderCounter;
+            } else if(!window.state.editingOrderId) {
+                window.state.orderCounter = 1;
+                document.getElementById('order-counter-display').innerText = window.state.orderCounter;
+                document.getElementById('domi-order-counter-display').innerText = window.state.orderCounter;
+            }
+        }, (e) => console.error(e));
+
+        onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets'), (snapshot) => {
+            window.state.kitchenTickets = [];
+            snapshot.forEach(doc => window.state.kitchenTickets.push(doc.data()));
+            window.state.kitchenTickets.sort((a,b) => a.orderId - b.orderId);
+            window.updateBadges(); if (window.state.currentView === 'cocina') window.renderKitchen();
+        }, (e) => console.error(e));
+
+        onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'cashierOrders'), (snapshot) => {
+            window.state.cashierOrders = [];
+            snapshot.forEach(doc => window.state.cashierOrders.push(doc.data()));
+            window.state.cashierOrders.sort((a,b) => a.orderId - b.orderId);
+            window.updateBadges(); if (window.state.currentView === 'caja') window.renderCashier();
+            if(!document.getElementById('active-orders-modal').classList.contains('hidden')) window.renderActiveOrdersModal();
+        }, (e) => console.error(e));
+
+        onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders'), (snapshot) => {
+            window.state.historyOrders = [];
+            snapshot.forEach(doc => window.state.historyOrders.push(doc.data()));
+            window.state.historyOrders.sort((a,b) => b.orderId - a.orderId);
+            if (window.state.currentView === 'historial') window.renderHistory();
+            if (window.state.currentView === 'estadisticas') window.renderEstadisticas();
+        }, (e) => console.error(e));
+
+        onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'inventory'), (snapshot) => {
+            window.state.inventory = {};
+            snapshot.forEach(doc => { window.state.inventory[doc.id] = doc.data(); });
+            if (window.state.currentView === 'inventario') window.renderInventory();
+        }, (e) => console.error(e));
+
+        onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'finances'), (snapshot) => {
+            if(snapshot.exists()) { window.state.finances = snapshot.data(); } 
+            else { window.state.finances = { base: 0, expenses: [] }; }
+            if (typeof window.renderFinances === 'function') window.renderFinances();
+        }, (e) => console.error(e));
+    }
+
+    const initApp = () => {
+        window.state.activeCategory = window.state.activeCategory || Object.keys(window.defaultMenu)[0];
+            window.state.domiCategory = window.state.domiCategory || Object.keys(window.defaultMenu)[0];
+            window.state.editMenuCategory = window.state.editMenuCategory || Object.keys(window.defaultMenu)[0];
+            
+            // Inicializar renderizados base con el defaultMenu por si tarda la conexión
+            if (!window.state.menu) {
+                window.state.menu = window.defaultMenu;
+                window.state.editingMenu = JSON.parse(JSON.stringify(window.defaultMenu));
+            }
+
             window.renderCategories(); 
             window.renderProducts(); 
             window.renderCart(); 
