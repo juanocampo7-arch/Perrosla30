@@ -310,14 +310,14 @@
                 <div id="cashier-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start pb-6 content-start"></div>
             </div>
             
-            <!-- NUEVA VISTA: EDITAR MENÚ (PANEL DE CONTROL) -->
+            <!-- VISTA EDITAR MENÚ -->
             <div id="view-editar-menu" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
                 <div class="mb-4 shrink-0 flex justify-between items-center">
                     <div>
                         <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
                             <i data-lucide="edit" class="text-indigo-600 w-8 h-8"></i> Editor de Menú
                         </h2>
-                        <p class="text-gray-500">Añade productos, cambia precios o elimina. Todo se sincroniza en vivo.</p>
+                        <p class="text-gray-500">Añade productos o cambia precios. Todo se sincroniza en vivo.</p>
                     </div>
                     <button onclick="window.saveMenuToFirebase()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-xl shadow-md transition-colors flex items-center gap-2 active:scale-95">
                         <i data-lucide="save" class="w-5 h-5"></i> Guardar Menú
@@ -341,7 +341,7 @@
                 </div>
             </div>
 
-            <!-- NUEVA VISTA: NÓMINA Y GASTOS -->
+            <!-- VISTA NÓMINA -->
             <div id="view-nomina" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
                 <div class="mb-6 shrink-0">
                     <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
@@ -393,7 +393,7 @@
                 </div>
             </div>
 
-            <!-- VISTA HISTORIAL Y CIERRES -->
+            <!-- VISTA HISTORIAL Y CIERRES (AHORA CON BUSCADOR) -->
             <div id="view-historial" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
                 <div class="mb-4 shrink-0">
                     <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
@@ -401,16 +401,35 @@
                     </h2>
                     <p class="text-gray-500">Registro de todas las ventas del día y cierres de caja anteriores.</p>
                 </div>
+                
+                <!-- Buscador de historial -->
+                <div class="mb-4 relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-lucide="search" class="text-gray-400 w-5 h-5"></i>
+                    </div>
+                    <input type="text" id="history-search" oninput="window.handleHistorySearch(this.value)" placeholder="Buscar producto vendido hoy (Ej: Choriperro)..." class="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 outline-none font-semibold text-gray-700 transition-colors shadow-sm">
+                </div>
+                <!-- Banner de resultados de búsqueda -->
+                <div id="history-search-summary" class="hidden mb-4 bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl shadow-sm">
+                    <div class="flex items-center gap-2 font-bold text-lg mb-1"><i data-lucide="check-circle" class="w-5 h-5"></i> Resultados del día para: <span id="h-search-term" class="text-green-600"></span></div>
+                    <div class="text-sm">Se han vendido <b id="h-search-qty" class="text-lg">0</b> unidades, sumando un total de <b id="h-search-total" class="text-lg text-green-700">$0</b>.</div>
+                </div>
+
                 <div id="history-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start pb-6 content-start scroll-smooth"></div>
             </div>
 
-            <!-- VISTA INVENTARIO -->
+            <!-- VISTA INVENTARIO (AHORA CON AÑADIR PRODUCTO) -->
             <div id="view-inventario" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
-                <div class="mb-4 shrink-0">
-                    <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                        <i data-lucide="boxes" class="text-purple-600 w-8 h-8"></i> Control de Inventario
-                    </h2>
-                    <p class="text-gray-500">Stock de ingredientes y productos terminados.</p>
+                <div class="mb-4 shrink-0 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                            <i data-lucide="boxes" class="text-purple-600 w-8 h-8"></i> Control de Inventario
+                        </h2>
+                        <p class="text-gray-500">Stock de ingredientes y productos terminados.</p>
+                    </div>
+                    <button onclick="window.openAddInventoryModal()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-xl shadow-md transition-colors flex items-center gap-2 active:scale-95">
+                        <i data-lucide="plus-circle" class="w-5 h-5"></i> Añadir Insumo
+                    </button>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex-1 overflow-hidden flex flex-col">
                     <div class="p-4 bg-gray-50 border-b flex justify-between items-center shrink-0">
@@ -696,7 +715,7 @@
         </div>
     </div>
 
-    <!-- 11. INVENTARIO EDITAR -->
+    <!-- 11. INVENTARIO EDITAR Y AÑADIR -->
     <div id="inventory-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center hw-accelerate">
             <div class="mx-auto w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mb-4"><i data-lucide="package-plus" class="w-6 h-6"></i></div>
@@ -710,6 +729,29 @@
             <div class="flex gap-2">
                 <button onclick="window.closeInventoryModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
                 <button onclick="window.saveInventoryStock()" class="flex-1 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow-md transition-colors">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA CREAR NUEVO INSUMO -->
+    <div id="add-inventory-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 text-center hw-accelerate">
+            <div class="mx-auto w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4"><i data-lucide="plus-circle" class="w-6 h-6"></i></div>
+            <h3 class="text-xl font-bold text-gray-800 mb-1">Nuevo Insumo</h3>
+            <p class="text-sm text-gray-500 mb-6">Añade un nuevo producto al inventario.</p>
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-left text-sm font-bold text-gray-700 mb-1">Nombre del Insumo</label>
+                    <input type="text" id="new-inv-name" placeholder="Ej: Salsa de Piña" class="w-full border-2 border-gray-300 rounded-xl p-3 text-sm font-bold focus:border-green-500 outline-none uppercase text-gray-700">
+                </div>
+                <div>
+                    <label class="block text-left text-sm font-bold text-gray-700 mb-1">Stock Inicial</label>
+                    <input type="number" id="new-inv-stock" placeholder="0" class="w-full border-2 border-gray-300 rounded-xl p-3 text-lg font-bold focus:border-green-500 outline-none">
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="window.closeAddInventoryModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
+                <button onclick="window.saveNewInventoryItem()" class="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-md transition-colors">Crear</button>
             </div>
         </div>
     </div>
@@ -730,7 +772,8 @@
                   deferredPrompt = null;
               }
           } else {
-              window.showToast("Para instalar: Ve al menú del navegador (3 puntos o botón Compartir) y elige 'Agregar a inicio' o 'Instalar aplicación'.", "success");
+              // Si no sale el prompt automático, mostramos el paso a paso
+              window.showToast("Ve al menú de tu navegador (3 puntos arriba o botón compartir abajo) y presiona 'Agregar a pantalla de inicio' o 'Instalar'.", "success");
           }
       };
 
@@ -834,7 +877,8 @@
             { id: 17, left: '90%', top: '85%' }, { id: 18, left: '96%', top: '85%' }, { id: 19, left: '82%', top: '58%' }, { id: 20, left: '92%', top: '58%' }
         ];
 
-        const INVENTORY_DICT = {
+        // INVENTORY BASE DICT PARA CREAR LOS PRIMEROS DOCUMENTOS SI ESTÁ VACÍO
+        const INVENTORY_BASE = {
             'pan_perro': 'Pan de Perro', 'salchicha': 'Salchicha Tradicional', 'salchicha_ranchera': 'Salchicha Ranchera', 'salchicha_americana': 'Salchicha Americana',
             'pan_san_bernardo': 'Pan San Bernardo', 'pan_hamburguesa': 'Pan de Hamburguesa', 'carne_res': 'Carne de Res (Hamb)', 'carne_pollo': 'Carne de Pollo (Hamb)',
             'carne_cerdo': 'Carne de Cerdo (Hamb)', 'arepa': 'Arepa Base', 'queso': 'Porción de Queso', 'papa_mini': 'Porción Papa Mini (100g)',
@@ -879,7 +923,8 @@
             lastSubmittedOrder: null, zReportData: null, editingInvId: null, editingOrderId: null,
             isAdminUnlocked: false, pendingView: null, pendingPayOrder: null, 
             financeType: 'gasto', paymentMethod: 'efectivo', splitSelection: [], pendingSplitOrder: null,
-            menu: null, editingMenu: null, editMenuCategory: null, activeCategory: null, domiCategory: null
+            menu: null, editingMenu: null, editMenuCategory: null, activeCategory: null, domiCategory: null,
+            historySearchTerm: ''
         };
 
         let toastTimeout;
@@ -987,7 +1032,6 @@
             const printedToLAN = await window.sendToLocalPrinterServer(job.html, job.data, job.type);
 
             if (printedToLAN) {
-                // Si funcionó, procesa el siguiente inmediatamente
                 window.processPrintQueue();
             } else {
                 // INTENTO 2: Plan de Respaldo (Imprimir a través del navegador actual)
@@ -1034,7 +1078,15 @@
                 html += `<div class="ticket-container">`;
                 
                 if (format === 'caja') {
-                    html += `<div class="header-title">PERROS LA 30</div><p>Los Originales</p><p style="font-size:12px;margin-bottom:10px;">Ticket de Venta</p><div class="info-text"><b>Orden #:</b> ${data.orderId}</div>`;
+                    // PLANTILLA PARA DATOS LEGALES
+                    html += `<div class="header-title">PERROS LA 30</div>`;
+                    html += `<p>Los Originales</p>`;
+                    html += `<p style="font-size:11px;">NIT: [TU NIT AQUÍ]</p>`;
+                    html += `<p style="font-size:11px;">Régimen / IVA: [TUS DATOS AQUÍ]</p>`;
+                    html += `<p style="font-size:11px;">Dir: [TU DIRECCIÓN AQUÍ]</p>`;
+                    html += `<div class="divider"></div>`;
+
+                    html += `<p style="font-size:14px;margin-bottom:10px; font-weight:bold;">Ticket de Venta</p><div class="info-text"><b>Orden #:</b> ${data.orderId}</div>`;
                     if(data.type === 'domicilio') {
                         html += `<div class="info-text" style="font-size:16px; font-weight:bold; border: 1px solid #000; padding: 4px; margin-bottom: 5px; text-align:center;">DOMICILIO</div>`;
                         if(data.name) html += `<div class="info-text"><b>Cliente:</b> ${data.name}</div>`;
@@ -1182,9 +1234,26 @@
             } catch (error) { console.error("Error:", error); window.showToast("Error al limpiar.", "error"); }
         };
 
+        // --- SISTEMA DE ELIMINAR CIERRE Z ---
+        window.deleteCierreZ = async function(id) {
+            const pin = prompt("Ingresa la Clave Maestra para eliminar este Cierre permanentemente:");
+            if (pin === '1089607033') {
+                if(confirm("¿Estás 100% seguro de que deseas eliminar este Cierre Z? (Esta acción no se puede deshacer)")) {
+                    try {
+                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cierres', id));
+                        window.showToast("Cierre Z eliminado correctamente", "success");
+                    } catch(e) {
+                        console.error(e); window.showToast("Error al eliminar el cierre", "error");
+                    }
+                }
+            } else if (pin !== null) {
+                window.showToast("Clave Incorrecta", "error");
+            }
+        };
+
         window.openInventoryModal = function(invId) {
             window.state.editingInvId = invId;
-            const name = INVENTORY_DICT[invId] || invId;
+            const name = window.state.inventory[invId]?.name || invId;
             const currentStock = window.state.inventory[invId]?.stock || 0;
             document.getElementById('inv-modal-item-name').innerText = name;
             document.getElementById('inv-modal-input').value = currentStock;
@@ -1204,11 +1273,37 @@
             let newStock = parseInt(input.value);
             if (isNaN(newStock)) newStock = 0;
             try {
-                const name = INVENTORY_DICT[invId] || invId;
+                const name = window.state.inventory[invId]?.name || INVENTORY_DICT[invId] || invId;
                 setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', invId), { name: name, stock: newStock }, { merge: true });
                 window.closeInventoryModal();
                 window.showToast("Stock ajustado");
             } catch (e) { console.error(e); window.showToast("Error ajustando stock", "error"); }
+        };
+
+        // --- SISTEMA AÑADIR NUEVO INSUMO ---
+        window.openAddInventoryModal = function() {
+            document.getElementById('new-inv-name').value = '';
+            document.getElementById('new-inv-stock').value = '';
+            document.getElementById('add-inventory-modal').classList.remove('hidden');
+        };
+
+        window.closeAddInventoryModal = function() { document.getElementById('add-inventory-modal').classList.add('hidden'); };
+
+        window.saveNewInventoryItem = async function() {
+            const name = document.getElementById('new-inv-name').value.trim();
+            const stock = parseInt(document.getElementById('new-inv-stock').value) || 0;
+            
+            if(!name) { window.showToast('El nombre del insumo es obligatorio', 'error'); return; }
+            
+            const id = 'inv_' + Date.now(); // Crear ID único
+            
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', id), { name: name, stock: stock });
+                window.closeAddInventoryModal();
+                window.showToast("Nuevo Insumo Añadido a la lista", "success");
+            } catch (e) {
+                console.error(e); window.showToast("Error al añadir insumo", "error");
+            }
         };
 
         // ==========================================
@@ -1288,6 +1383,118 @@
             } catch(e) {
                 console.error(e);
                 window.showToast("Error guardando menú", "error");
+            }
+        };
+
+        // ==========================================
+        // LÓGICA DEL EDITOR DE RECETAS
+        // ==========================================
+        window.getInventoryName = function(invId) {
+            if(window.state.inventory[invId] && window.state.inventory[invId].name) return window.state.inventory[invId].name;
+            if(INVENTORY_BASE[invId]) return INVENTORY_BASE[invId];
+            return invId;
+        };
+
+        window.renderRecetasView = function() {
+            const container = document.getElementById('recetas-menu-list');
+            if(!container || !window.state.menu) return;
+            const flatMenu = window.getFlatMenu();
+            flatMenu.sort((a,b) => a.name.localeCompare(b.name));
+            
+            container.innerHTML = flatMenu.map(p => `
+                <button onclick="window.selectProductForRecipe('${p.id}', '${p.name.replace(/'/g, "\\'")}')" 
+                        class="w-full text-left px-3 py-2 rounded-lg font-bold text-sm transition-colors border ${window.state.editingRecipeProductId === p.id ? 'bg-indigo-100 border-indigo-300 text-indigo-800' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}">
+                    ${p.name}
+                </button>
+            `).join('');
+            lucide.createIcons();
+        };
+
+        window.selectProductForRecipe = function(productId, productName) {
+            window.state.editingRecipeProductId = productId;
+            window.state.editingRecipeProductName = productName;
+            window.state.editingRecipeItems = { ...(window.state.recipes[productId] || {}) };
+            window.renderRecipeEditor();
+            window.renderRecetasView();
+        };
+
+        window.renderRecipeEditor = function() {
+            const area = document.getElementById('recetas-editor-area');
+            const title = document.getElementById('recetas-active-title');
+            if(!window.state.editingRecipeProductId) {
+                area.classList.add('hidden');
+                title.innerText = 'Selecciona un producto...';
+                return;
+            }
+            area.classList.remove('hidden');
+            area.classList.add('flex');
+            title.innerText = `Receta: ${window.state.editingRecipeProductName}`;
+
+            const select = document.getElementById('recetas-add-insumo');
+            let invOptions = [];
+            const allInvIds = new Set([...Object.keys(INVENTORY_BASE), ...Object.keys(window.state.inventory)]);
+            allInvIds.forEach(id => {
+                invOptions.push({ id: id, name: window.getInventoryName(id) });
+            });
+            invOptions.sort((a,b) => a.name.localeCompare(b.name));
+            
+            select.innerHTML = '<option value="" disabled selected>Seleccionar un insumo...</option>' + 
+                invOptions.map(opt => `<option value="${opt.id}">${opt.name}</option>`).join('');
+
+            const list = document.getElementById('recetas-ingredients-list');
+            const ingredients = Object.keys(window.state.editingRecipeItems);
+            
+            if(ingredients.length === 0) {
+                list.innerHTML = `<p class="text-center text-gray-400 my-8">Este producto no descuenta insumos.</p>`;
+            } else {
+                list.innerHTML = ingredients.map(invId => `
+                    <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm flex items-center justify-between gap-3">
+                        <span class="font-bold text-gray-700 flex-1 truncate">${window.getInventoryName(invId)}</span>
+                        <div class="flex items-center gap-2">
+                            <label class="text-[10px] uppercase font-bold text-gray-400">Cant:</label>
+                            <input type="number" step="0.1" value="${window.state.editingRecipeItems[invId]}" onchange="window.updateRecipeIngredientQty('${invId}', this.value)" class="w-16 border border-gray-300 rounded p-1 text-center font-bold focus:border-indigo-500 outline-none">
+                            <button onclick="window.removeRecipeIngredient('${invId}')" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded transition-colors ml-2" title="Quitar insumo">
+                                <i data-lucide="trash-2" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            lucide.createIcons();
+        };
+
+        window.addIngredientToRecipe = function() {
+            const select = document.getElementById('recetas-add-insumo');
+            const invId = select.value;
+            if(!invId) { window.showToast('Selecciona un insumo primero', 'error'); return; }
+            if(window.state.editingRecipeItems[invId]) { window.showToast('El insumo ya está en la receta', 'error'); return; }
+            
+            window.state.editingRecipeItems[invId] = 1;
+            window.renderRecipeEditor();
+        };
+
+        window.updateRecipeIngredientQty = function(invId, val) {
+            let qty = parseFloat(val) || 0;
+            if(qty < 0) qty = 0;
+            window.state.editingRecipeItems[invId] = qty;
+        };
+
+        window.removeRecipeIngredient = function(invId) {
+            delete window.state.editingRecipeItems[invId];
+            window.renderRecipeEditor();
+        };
+
+        window.saveRecipeToFirebase = async function() {
+            const productId = window.state.editingRecipeProductId;
+            if(!productId) return;
+            
+            try {
+                const updatedRecipes = { ...window.state.recipes, [productId]: window.state.editingRecipeItems };
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'recipes'), { recipesData: updatedRecipes });
+                window.showToast("Receta actualizada con éxito", "success");
+            } catch(e) {
+                console.error(e);
+                window.showToast("Error al guardar la receta", "error");
             }
         };
 
@@ -1412,16 +1619,53 @@
             lucide.createIcons();
         };
 
+        window.handleHistorySearch = function(val) {
+            window.state.historySearchTerm = val.toLowerCase().trim();
+            window.renderHistory();
+        };
+
         window.renderHistory = function() {
             const container = document.getElementById('history-container');
+            const searchSummary = document.getElementById('history-search-summary');
             let html = '';
 
-            // SECCIÓN CIERRES DE CAJA PASADOS
-            if (window.state.historyCierres && window.state.historyCierres.length > 0) {
+            // --- LÓGICA DE FILTRADO POR BÚSQUEDA (LUPITA) ---
+            const term = window.state.historySearchTerm;
+            let ordersToRender = window.state.historyOrders;
+            
+            if (term !== '') {
+                let qtyFound = 0;
+                let totalFound = 0;
+                
+                ordersToRender = window.state.historyOrders.filter(order => {
+                    let hasItem = false;
+                    order.items.forEach(item => {
+                        if(item.name.toLowerCase().includes(term) && order.status === 'paid') {
+                            hasItem = true;
+                            qtyFound += item.quantity;
+                            totalFound += (item.price * item.quantity);
+                        }
+                    });
+                    return hasItem;
+                });
+
+                document.getElementById('h-search-term').innerText = `"${term.toUpperCase()}"`;
+                document.getElementById('h-search-qty').innerText = qtyFound;
+                document.getElementById('h-search-total').innerText = window.formatCurrency(totalFound);
+                searchSummary.classList.remove('hidden');
+            } else {
+                searchSummary.classList.add('hidden');
+            }
+
+            // SECCIÓN CIERRES DE CAJA PASADOS (Solo se muestran si NO se está buscando nada)
+            if (term === '' && window.state.historyCierres && window.state.historyCierres.length > 0) {
                 html += `<div class="col-span-full mb-2 mt-2"><h3 class="font-bold text-xl text-gray-800 border-b pb-2">Registros de Cierres de Caja</h3></div>`;
                 html += window.state.historyCierres.map(cierre => `
-                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 shadow-sm flex flex-col justify-between">
-                        <div class="flex justify-between items-center mb-2 border-b border-blue-200 pb-2">
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 shadow-sm flex flex-col justify-between relative group">
+                        <button onclick="window.deleteCierreZ('${cierre.id}')" class="absolute top-2 right-2 text-blue-300 hover:text-red-500 transition-colors p-1" title="Eliminar este cierre">
+                            <i data-lucide="trash-2" class="w-5 h-5"></i>
+                        </button>
+                        <div class="flex justify-between items-center mb-2 border-b border-blue-200 pb-2 pr-8">
                             <span class="font-black text-blue-900"><i data-lucide="calendar" class="w-4 h-4 inline mb-1"></i> ${cierre.date} ${cierre.time}</span>
                             <span class="bg-blue-200 text-blue-800 text-xs font-bold px-2 py-1 rounded">Neto: ${window.formatCurrency(cierre.efectivoNeto)}</span>
                         </div>
@@ -1437,14 +1681,16 @@
             }
 
             // SECCIÓN HISTORIAL DE ÓRDENES HOY
-            if (window.state.historyOrders.length === 0) {
-                if(!window.state.historyCierres || window.state.historyCierres.length === 0) {
+            if (ordersToRender.length === 0) {
+                if(term !== '') {
+                    html += `<div class="col-span-full text-center text-gray-400 mt-6"><p>No se encontraron órdenes pagadas que contengan "${term}".</p></div>`;
+                } else if(!window.state.historyCierres || window.state.historyCierres.length === 0) {
                     html = `<div class="col-span-full flex flex-col items-center justify-center text-gray-400 mt-20"><i data-lucide="history" class="w-16 h-16 mb-4 text-blue-200"></i><p class="text-xl">Aún no hay ventas registradas hoy.</p></div>`;
                 } else {
                     html += `<div class="col-span-full text-center text-gray-400 mt-6"><p>No hay ventas nuevas después del último cierre.</p></div>`;
                 }
             } else {
-                html += window.state.historyOrders.map(order => {
+                html += ordersToRender.map(order => {
                     const isPaid = order.status === 'paid';
                     const statusColor = isPaid ? 'green' : 'red';
                     const statusText = isPaid ? 'PAGADO' : 'ANULADO';
@@ -1483,7 +1729,7 @@
                             <div class="space-y-1 mb-4 mt-2 max-h-32 overflow-y-auto pr-2 flex-1 border-b border-gray-100 pb-2">
                                 ${order.items.map(item => `
                                     <div class="flex justify-between text-xs text-gray-500">
-                                        <span>${item.quantity}x ${item.name}</span>
+                                        <span class="${term !== '' && item.name.toLowerCase().includes(term) ? 'bg-yellow-200 font-bold text-gray-800 px-1 rounded' : ''}">${item.quantity}x ${item.name}</span>
                                     </div>
                                 `).join('')}
                             </div>
@@ -1504,12 +1750,22 @@
 
         window.renderInventory = function() {
             const container = document.getElementById('inventory-list');
-            const invList = Object.keys(INVENTORY_DICT).map(id => {
-                const stockInfo = window.state.inventory[id];
-                const stock = stockInfo ? stockInfo.stock : 0;
-                return { id, name: INVENTORY_DICT[id], stock };
-            });
+            
+            // Si la base de datos de inventario está vacía, usamos el dict por defecto
+            let invList = [];
+            if (Object.keys(window.state.inventory).length === 0) {
+                invList = Object.keys(INVENTORY_BASE).map(id => ({ id, name: INVENTORY_BASE[id], stock: 0 }));
+            } else {
+                invList = Object.keys(window.state.inventory).map(id => {
+                    const stockInfo = window.state.inventory[id];
+                    const name = stockInfo.name || INVENTORY_BASE[id] || id;
+                    const stock = stockInfo.stock || 0;
+                    return { id, name, stock };
+                });
+            }
+            
             invList.sort((a,b) => a.name.localeCompare(b.name));
+            
             container.innerHTML = invList.map(item => {
                 const stockColor = item.stock <= 5 ? (item.stock <= 0 ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') : 'bg-purple-100 text-purple-800';
                 return `<div class="bg-white border border-gray-200 rounded-lg p-3 flex justify-between items-center shadow-sm"><div class="flex-1"><h4 class="font-bold text-gray-800 text-sm leading-tight">${item.name}</h4></div><div class="flex items-center gap-3"><div class="${stockColor} font-black px-3 py-1 rounded-lg text-lg min-w-[3rem] text-center">${item.stock}</div><button onclick="window.openInventoryModal('${item.id}')" class="p-2 bg-gray-100 hover:bg-purple-50 text-gray-600 hover:text-purple-600 rounded-lg transition-colors border border-gray-200"><i data-lucide="edit-3" class="w-4 h-4"></i></button></div></div>`;
@@ -1717,7 +1973,11 @@
 
         window.printReporteZ = function() {
             const data = window.state.zReportData; if (!data) return;
-            let html = `<html><head><style>@page{margin:0;size:auto;} body{font-family:'Courier New',Courier,monospace;width:280px;margin:0;padding:10px;font-size:14px;} h1,p{margin:0;padding:2px 0;text-align:center;} .divider{border-top:1px dashed #000;margin:8px 0;} .item-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;} .item-qty{font-weight:bold;width:30px;} .item-name{flex:1;} .item-price{font-weight:bold;text-align:right;} .totals{margin-top:10px;font-weight:bold;font-size:16px;text-align:right;} .header-title{font-size:20px;font-weight:bold;text-align:center;} .summary-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;}</style></head><body><div class="header-title">PERROS LA 30</div><p>REPORTE Z (CIERRE DIARIO)</p><div class="divider"></div><p style="text-align:left;font-size:12px;"><b>Fecha:</b> ${data.date}</p><p style="text-align:left;font-size:12px;"><b>Hora:</b> ${data.time}</p><div class="divider"></div>`;
+            let html = `<html><head><style>@page{margin:0;size:auto;} body{font-family:'Courier New',Courier,monospace;width:280px;margin:0;padding:10px;font-size:14px;} h1,p{margin:0;padding:2px 0;text-align:center;} .divider{border-top:1px dashed #000;margin:8px 0;} .item-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;} .item-qty{font-weight:bold;width:30px;} .item-name{flex:1;} .item-price{font-weight:bold;text-align:right;} .totals{margin-top:10px;font-weight:bold;font-size:16px;text-align:right;} .header-title{font-size:20px;font-weight:bold;text-align:center;} .summary-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;}</style></head><body><div class="header-title">PERROS LA 30</div><p>REPORTE Z (CIERRE DIARIO)</p><div class="divider"></div>`;
+            html += `<p style="font-size:11px;">NIT: [TU NIT AQUÍ]</p>`;
+            html += `<p style="font-size:11px;">Régimen / IVA: [TUS DATOS AQUÍ]</p>`;
+            html += `<p style="font-size:11px;">Dir: [TU DIRECCIÓN AQUÍ]</p><div class="divider"></div>`;
+            html += `<p style="text-align:left;font-size:12px;"><b>Fecha:</b> ${data.date}</p><p style="text-align:left;font-size:12px;"><b>Hora:</b> ${data.time}</p><div class="divider"></div>`;
             html += `<div class="summary-row"><span>Total Ventas Prod.:</span><b>${window.formatCurrency(data.totalVentas)}</b></div>`;
             html += `<div class="summary-row"><span>Ventas Efectivo:</span><span>${window.formatCurrency(data.efectivo)}</span></div>`;
             html += `<div class="summary-row"><span>Ventas Transf:</span><span>${window.formatCurrency(data.transferencia)}</span></div>`;
@@ -2229,7 +2489,8 @@
             try {
                 const updates = {};
                 payOrder.items.forEach(item => { const recipe = RECIPES[item.id]; if (recipe) { for (const [invId, qtyNeeded] of Object.entries(recipe)) { if (!updates[invId]) updates[invId] = 0; updates[invId] += (qtyNeeded * item.quantity); } } });
-                for (const [invId, deductedQty] of Object.entries(updates)) { let currentStock = window.state.inventory[invId]?.stock || 0; let newStock = currentStock - deductedQty; const name = INVENTORY_DICT[invId] || invId; setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', invId), { name: name, stock: newStock }, { merge: true }); }
+                for (const [invId, deductedQty] of Object.entries(updates)) { let currentStock = window.state.inventory[invId]?.stock || 0; let newStock = currentStock - deductedQty; const name = window.state.inventory[invId]?.name || INVENTORY_BASE[invId] || invId; setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', invId), { name: name, stock: newStock }, { merge: true }); }
+                
                 if (payOrder.isPartial) {
                     const originalOrder = payOrder.originalOrder; const paidItems = payOrder.items; let remainingItems = [];
                     originalOrder.items.forEach(origItem => { const paidItem = paidItems.find(pi => pi.id === origItem.id && pi.note === origItem.note); const paidQty = paidItem ? paidItem.quantity : 0; const remainingQty = origItem.quantity - paidQty; if (remainingQty > 0) { remainingItems.push({...origItem, quantity: remainingQty}); } });
@@ -2269,133 +2530,121 @@
                     deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets', t.ticketId));
                 }
                 window.showToast(`Orden #${id} anulada.`, 'error');
-        } catch (error) { console.error("Error anulando:", error); }
-    };
+            } catch (error) { console.error("Error anulando:", error); }
+        };
 
-    window.actionNewOrderSameTable = function() { window.state.lastSubmittedOrder = null; document.getElementById('success-modal').classList.add('hidden'); };
-    window.actionNewOrderOtherTable = function() { window.state.lastSubmittedOrder = null; window.state.selectedTables = []; document.getElementById('success-modal').classList.add('hidden'); window.renderCart(); window.openMapModal(); };
+        window.actionNewOrderSameTable = function() { window.state.lastSubmittedOrder = null; document.getElementById('success-modal').classList.add('hidden'); };
+        window.actionNewOrderOtherTable = function() { window.state.lastSubmittedOrder = null; window.state.selectedTables = []; document.getElementById('success-modal').classList.add('hidden'); window.renderCart(); window.openMapModal(); };
 
-    window.initAuth = async () => {
-        try {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token);
-            } else {
-                await signInAnonymously(auth);
+        window.initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Error Auth Firebase:", error);
+                document.getElementById('connection-status').innerText = "Modo Local";
+                document.getElementById('connection-status').className = "ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-inner";
             }
-        } catch (error) {
-            console.error("Error Auth Firebase:", error);
-            document.getElementById('connection-status').innerText = "Modo Local";
-            document.getElementById('connection-status').className = "ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-inner";
-        }
-    };
+        };
 
-    onAuthStateChanged(auth, (user) => {
-        window.state.currentUser = user;
-        const statusEl = document.getElementById('connection-status');
-        if (user) {
-            statusEl.innerText = "Nube Conectada";
-            statusEl.className = "ml-2 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-inner";
-            setupFirebaseListeners();
-        } else {
-            statusEl.innerText = "Desconectado";
-            statusEl.className = "ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-inner";
-        }
-    });
-
-    function setupFirebaseListeners() {
-        if (!window.state.currentUser) return;
-        
-        // MENU DINAMICO
-        onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'menu'), (snapshot) => {
-            if(snapshot.exists()) {
-                window.state.menu = snapshot.data().menuData;
-                window.state.editingMenu = JSON.parse(JSON.stringify(window.state.menu));
+        onAuthStateChanged(auth, (user) => {
+            window.state.currentUser = user;
+            const statusEl = document.getElementById('connection-status');
+            if (user) {
+                statusEl.innerText = "Nube Conectada";
+                statusEl.className = "ml-2 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-inner";
+                setupFirebaseListeners();
             } else {
-                window.state.menu = window.defaultMenu;
-                window.state.editingMenu = JSON.parse(JSON.stringify(window.defaultMenu));
-                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'menu'), { menuData: window.defaultMenu });
+                statusEl.innerText = "Desconectado";
+                statusEl.className = "ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-inner";
             }
+        });
+
+        function setupFirebaseListeners() {
+            if (!window.state.currentUser) return;
             
-            // Asegurar categorías activas válidas
-            if (!window.state.activeCategory || !window.state.menu[window.state.activeCategory]) {
-                window.state.activeCategory = Object.keys(window.state.menu)[0];
-            }
-            if (!window.state.domiCategory || !window.state.menu[window.state.domiCategory]) {
-                window.state.domiCategory = Object.keys(window.state.menu)[0];
-            }
-            if (!window.state.editMenuCategory || !window.state.menu[window.state.editMenuCategory]) {
-                window.state.editMenuCategory = Object.keys(window.state.menu)[0];
-            }
+            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'menu'), (snapshot) => {
+                if(snapshot.exists()) {
+                    window.state.menu = snapshot.data().menuData;
+                    window.state.editingMenu = JSON.parse(JSON.stringify(window.state.menu));
+                } else {
+                    window.state.menu = window.defaultMenu;
+                    window.state.editingMenu = JSON.parse(JSON.stringify(window.defaultMenu));
+                    setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'menu'), { menuData: window.defaultMenu });
+                }
+                
+                if (!window.state.activeCategory || !window.state.menu[window.state.activeCategory]) window.state.activeCategory = Object.keys(window.state.menu)[0];
+                if (!window.state.domiCategory || !window.state.menu[window.state.domiCategory]) window.state.domiCategory = Object.keys(window.state.menu)[0];
+                if (!window.state.editMenuCategory || !window.state.menu[window.state.editMenuCategory]) window.state.editMenuCategory = Object.keys(window.state.menu)[0];
 
-            // Refrescar vistas que dependen del menú
-            if(window.state.currentView === 'mesero') { window.renderCategories(); window.renderProducts(); }
-            if(window.state.currentView === 'domicilios') { window.renderDomiCategories(); window.renderDomiProducts(); }
-            if(window.state.currentView === 'editar-menu') { window.renderEditMenu(); }
-        }, (e) => console.error(e));
+                if(window.state.currentView === 'mesero') { window.renderCategories(); window.renderProducts(); }
+                if(window.state.currentView === 'domicilios') { window.renderDomiCategories(); window.renderDomiProducts(); }
+                if(window.state.currentView === 'editar-menu') { window.renderEditMenu(); }
+            }, (e) => console.error(e));
 
-        // CIERRES Z
-        onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'history_cierres'), (snapshot) => {
-            window.state.historyCierres = [];
-            snapshot.forEach(doc => window.state.historyCierres.push({id: doc.id, ...doc.data()}));
-            window.state.historyCierres.sort((a,b) => b.id - a.id);
-            if (window.state.currentView === 'historial') window.renderHistory();
-        }, (e) => console.error(e));
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'history_cierres'), (snapshot) => {
+                window.state.historyCierres = [];
+                snapshot.forEach(doc => window.state.historyCierres.push({id: doc.id, ...doc.data()}));
+                window.state.historyCierres.sort((a,b) => b.id - a.id);
+                if (window.state.currentView === 'historial') window.renderHistory();
+            }, (e) => console.error(e));
 
-        // ORDENES
-        onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), (snapshot) => {
-            if (snapshot.exists() && !window.state.editingOrderId) {
-                window.state.orderCounter = snapshot.data().value + 1;
-                document.getElementById('order-counter-display').innerText = window.state.orderCounter;
-                document.getElementById('domi-order-counter-display').innerText = window.state.orderCounter;
-            } else if(!window.state.editingOrderId) {
-                window.state.orderCounter = 1;
-                document.getElementById('order-counter-display').innerText = window.state.orderCounter;
-                document.getElementById('domi-order-counter-display').innerText = window.state.orderCounter;
-            }
-        }, (e) => console.error(e));
+            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), (snapshot) => {
+                if (snapshot.exists() && !window.state.editingOrderId) {
+                    window.state.orderCounter = snapshot.data().value + 1;
+                    document.getElementById('order-counter-display').innerText = window.state.orderCounter;
+                    document.getElementById('domi-order-counter-display').innerText = window.state.orderCounter;
+                } else if(!window.state.editingOrderId) {
+                    window.state.orderCounter = 1;
+                    document.getElementById('order-counter-display').innerText = window.state.orderCounter;
+                    document.getElementById('domi-order-counter-display').innerText = window.state.orderCounter;
+                }
+            }, (e) => console.error(e));
 
-        onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets'), (snapshot) => {
-            window.state.kitchenTickets = [];
-            snapshot.forEach(doc => window.state.kitchenTickets.push(doc.data()));
-            window.state.kitchenTickets.sort((a,b) => a.orderId - b.orderId);
-            window.updateBadges(); if (window.state.currentView === 'cocina') window.renderKitchen();
-        }, (e) => console.error(e));
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'kitchenTickets'), (snapshot) => {
+                window.state.kitchenTickets = [];
+                snapshot.forEach(doc => window.state.kitchenTickets.push(doc.data()));
+                window.state.kitchenTickets.sort((a,b) => a.orderId - b.orderId);
+                window.updateBadges(); if (window.state.currentView === 'cocina') window.renderKitchen();
+            }, (e) => console.error(e));
 
-        onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'cashierOrders'), (snapshot) => {
-            window.state.cashierOrders = [];
-            snapshot.forEach(doc => window.state.cashierOrders.push(doc.data()));
-            window.state.cashierOrders.sort((a,b) => a.orderId - b.orderId);
-            window.updateBadges(); if (window.state.currentView === 'caja') window.renderCashier();
-            if(!document.getElementById('active-orders-modal').classList.contains('hidden')) window.renderActiveOrdersModal();
-        }, (e) => console.error(e));
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'cashierOrders'), (snapshot) => {
+                window.state.cashierOrders = [];
+                snapshot.forEach(doc => window.state.cashierOrders.push(doc.data()));
+                window.state.cashierOrders.sort((a,b) => a.orderId - b.orderId);
+                window.updateBadges(); if (window.state.currentView === 'caja') window.renderCashier();
+                if(!document.getElementById('active-orders-modal').classList.contains('hidden')) window.renderActiveOrdersModal();
+            }, (e) => console.error(e));
 
-        onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders'), (snapshot) => {
-            window.state.historyOrders = [];
-            snapshot.forEach(doc => window.state.historyOrders.push(doc.data()));
-            window.state.historyOrders.sort((a,b) => b.orderId - a.orderId);
-            if (window.state.currentView === 'historial') window.renderHistory();
-            if (window.state.currentView === 'estadisticas') window.renderEstadisticas();
-        }, (e) => console.error(e));
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders'), (snapshot) => {
+                window.state.historyOrders = [];
+                snapshot.forEach(doc => window.state.historyOrders.push(doc.data()));
+                window.state.historyOrders.sort((a,b) => b.orderId - a.orderId);
+                if (window.state.currentView === 'historial') window.renderHistory();
+                if (window.state.currentView === 'estadisticas') window.renderEstadisticas();
+            }, (e) => console.error(e));
 
-        onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'inventory'), (snapshot) => {
-            window.state.inventory = {};
-            snapshot.forEach(doc => { window.state.inventory[doc.id] = doc.data(); });
-            if (window.state.currentView === 'inventario') window.renderInventory();
-        }, (e) => console.error(e));
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'inventory'), (snapshot) => {
+                window.state.inventory = {};
+                snapshot.forEach(doc => { window.state.inventory[doc.id] = doc.data(); });
+                if (window.state.currentView === 'inventario') window.renderInventory();
+            }, (e) => console.error(e));
 
-        onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'finances'), (snapshot) => {
-            if(snapshot.exists()) { window.state.finances = snapshot.data(); } 
-            else { window.state.finances = { base: 0, expenses: [] }; }
-            if (typeof window.renderFinances === 'function') window.renderFinances();
-        }, (e) => console.error(e));
-    }
+            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'finances'), (snapshot) => {
+                if(snapshot.exists()) { window.state.finances = snapshot.data(); } 
+                else { window.state.finances = { base: 0, expenses: [] }; }
+                if (typeof window.renderFinances === 'function') window.renderFinances();
+            }, (e) => console.error(e));
+        }
 
-    const initApp = () => {
-        window.state.activeCategory = window.state.activeCategory || Object.keys(window.defaultMenu)[0];
+        const initApp = () => {
+            window.state.activeCategory = window.state.activeCategory || Object.keys(window.defaultMenu)[0];
             window.state.domiCategory = window.state.domiCategory || Object.keys(window.defaultMenu)[0];
             window.state.editMenuCategory = window.state.editMenuCategory || Object.keys(window.defaultMenu)[0];
             
-            // Inicializar renderizados base con el defaultMenu por si tarda la conexión
             if (!window.state.menu) {
                 window.state.menu = window.defaultMenu;
                 window.state.editingMenu = JSON.parse(JSON.stringify(window.defaultMenu));
@@ -2413,7 +2662,7 @@
                 document.getElementById('app-wrapper').classList.add('flex');
             }
             
-            initAuth(); 
+            window.initAuth(); 
         };
 
         if (document.readyState === 'loading') {
