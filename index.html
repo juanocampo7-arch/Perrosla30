@@ -119,6 +119,13 @@
                 <button onclick="window.attemptSwitchView('recetas')" id="menu-recetas" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
                     <i data-lucide="book-open" class="w-5 h-5"></i> Recetas
                 </button>
+                <button onclick="window.attemptOpenFiscalModal()" id="menu-fiscal" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
+                    <i data-lucide="file-text" class="w-5 h-5"></i> Datos Fiscales
+                </button>
+                <button onclick="window.openPrinterModeModal()" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
+                    <i data-lucide="printer" class="w-5 h-5"></i> Modo Impresión
+                    <span id="sidebar-print-mode-badge" class="ml-auto text-[10px] font-bold bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">—</span>
+                </button>
                 
                 <!-- BOTÓN INSTALAR PWA (SIEMPRE VISIBLE) -->
                 <div class="mt-auto pt-4 border-t border-gray-200">
@@ -1000,7 +1007,9 @@
             menu: null, editingMenu: null, editMenuCategory: null, activeCategory: null, domiCategory: null,
             historySearchTerm: '', recetaFilterTerm: '',
             editingRecipeProductId: null, editingRecipeProductName: '', editingRecipeItems: {},
-            recipes: {}
+            recipes: {},
+            printMode: sessionStorage.getItem('pos_printMode') || null,
+            fiscalData: {}
         };
 
         let toastTimeout;
@@ -1032,6 +1041,12 @@
                     document.getElementById('app-wrapper').classList.add('flex');
                 }, 300);
                 window.showToast('Bienvenido a Perros La 30');
+                if (!window.state.printMode) {
+                    setTimeout(() => {
+                        document.getElementById('printer-mode-modal').classList.remove('hidden');
+                        lucide.createIcons();
+                    }, 400);
+                }
             } else {
                 window.showToast('Usuario o contraseña incorrectos', 'error');
             }
@@ -1072,61 +1087,141 @@
         }
 
         // ==========================================
+        // MODO DE IMPRESIÓN
+        // ==========================================
+        window.openPrinterModeModal = function() {
+            document.getElementById('printer-mode-modal').classList.remove('hidden');
+            lucide.createIcons();
+            window.toggleSidebar();
+        };
+
+        window.setPrintMode = function(mode) {
+            window.state.printMode = mode;
+            sessionStorage.setItem('pos_printMode', mode);
+            document.getElementById('printer-mode-modal').classList.add('hidden');
+            const badge = document.getElementById('sidebar-print-mode-badge');
+            if(badge) { badge.textContent = mode === 'lan' ? '🖨️ LAN' : '📋 Manual'; badge.className = `ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${mode === 'lan' ? 'bg-green-200 text-green-800' : 'bg-orange-200 text-orange-800'}`; }
+            window.showToast(mode === 'lan' ? '🖨️ Modo LAN activado' : '📋 Modo Manual activado');
+        };
+
+        window.updatePrintModeBadge = function() {
+            const badge = document.getElementById('sidebar-print-mode-badge');
+            const mode = window.state.printMode;
+            if(badge && mode) { badge.textContent = mode === 'lan' ? '🖨️ LAN' : '📋 Manual'; badge.className = `ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${mode === 'lan' ? 'bg-green-200 text-green-800' : 'bg-orange-200 text-orange-800'}`; }
+        };
+
+        // ==========================================
+        // DATOS FISCALES (Firebase)
+        // ==========================================
+        window.attemptOpenFiscalModal = function() {
+            if (window.state.isAdminUnlocked) { window.openFiscalModal(); }
+            else { window.state.pendingView = '__fiscal__'; document.getElementById('tab-security-pin').value = ''; document.getElementById('tab-security-modal').classList.remove('hidden'); }
+        };
+
+        window.openFiscalModal = function() {
+            const fd = window.state.fiscalData || {};
+            document.getElementById('fiscal-nit').value  = fd.nit || '';
+            document.getElementById('fiscal-iva').value  = fd.regimenIva || 'No Responsable de IVA';
+            document.getElementById('fiscal-dir').value  = fd.direccion || '';
+            document.getElementById('fiscal-tel').value  = fd.telefono || '';
+            document.getElementById('fiscal-modal').classList.remove('hidden');
+            lucide.createIcons();
+            window.toggleSidebar();
+        };
+
+        window.closeFiscalModal = function() { document.getElementById('fiscal-modal').classList.add('hidden'); };
+
+        window.saveFiscalData = async function() {
+            const data = {
+                nit:        document.getElementById('fiscal-nit').value.trim(),
+                regimenIva: document.getElementById('fiscal-iva').value,
+                direccion:  document.getElementById('fiscal-dir').value.trim(),
+                telefono:   document.getElementById('fiscal-tel').value.trim()
+            };
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'business'), data);
+                window.state.fiscalData = data;
+                window.closeFiscalModal();
+                window.showToast('✅ Datos fiscales guardados en Firebase');
+            } catch(e) {
+                console.error(e);
+                window.showToast('Error al guardar datos fiscales', 'error');
+            }
+        };
+
+        // ==========================================
         // COMUNICACIÓN DE IMPRESIÓN (LAN / NAVEGADOR)
         // ==========================================
         window.printQueue = [];
         window.isPrinting = false;
 
         // Función para enviar orden al Servidor Local (PC de Administración)
+        // IPs de impresoras LAN — se configuran cuando lleguen las impresoras
+        window.LAN_PRINTERS = {
+            cocina: '192.168.1.101',  // ← IP impresora cocina (cambiar cuando llegue)
+            caja:   '192.168.1.102',  // ← IP impresora caja   (cambiar cuando llegue)
+            port:   3000
+        };
+
         window.sendToLocalPrinterServer = async function(htmlContent, rawData, type) {
+            if (window.state.printMode !== 'lan') return false;
             try {
-                // IMPORTANTE: CAMBIAR ESTA IP POR LA IP FIJA DEL PC DE ADMINISTRACIÓN.
-                const adminPC_IP = '192.168.1.100'; 
-                const response = await fetch(`http://${adminPC_IP}:3000/print`, {
+                const ip = (type === 'caja') ? window.LAN_PRINTERS.caja : window.LAN_PRINTERS.cocina;
+                const ctrl = new AbortController();
+                const tid = setTimeout(() => ctrl.abort(), 3500);
+                const response = await fetch(`http://${ip}:${window.LAN_PRINTERS.port}/print`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ html: htmlContent, data: rawData, type: type })
+                    body: JSON.stringify({ html: htmlContent, data: rawData, type: type }),
+                    signal: ctrl.signal
                 });
+                clearTimeout(tid);
                 return response.ok;
             } catch (error) {
-                // Si el PC está apagado o no se encuentra, retornamos falso para usar el plan de respaldo.
-                console.warn("Servidor LAN no disponible. Usando impresión nativa del navegador.");
+                console.warn('Impresora LAN no disponible, usando impresión nativa.');
                 return false;
             }
         };
 
-        window.processPrintQueue = async function() {
-            if (window.printQueue.length === 0) {
-                window.isPrinting = false;
-                return;
-            }
-            window.isPrinting = true;
-            
-            const job = window.printQueue.shift();
-            
-            // INTENTO 1: Imprimir directo a la LAN vía PC Administración
-            const printedToLAN = await window.sendToLocalPrinterServer(job.html, job.data, job.type);
+        // Impresión vía ventana popup — mucho más rápido que iframe
+        window.printViaPopup = function(job, onDone) {
+            try {
+                const win = window.open('', '_blank', 'width=390,height=560,top=60,left=60,toolbar=no,menubar=no,status=no');
+                if (win) {
+                    win.document.write(job.html);
+                    win.document.close();
+                    win.focus();
+                    setTimeout(() => {
+                        try { win.print(); } catch(e) {}
+                        setTimeout(() => {
+                            try { win.close(); } catch(e) {}
+                            onDone();
+                        }, 400);
+                    }, 120);
+                } else {
+                    // Popup bloqueado → toast y continuar
+                    window.showToast('⚠️ Activa las ventanas emergentes en el navegador', 'error');
+                    onDone();
+                }
+            } catch(e) { onDone(); }
+        };
 
-            if (printedToLAN) {
-                window.processPrintQueue();
+        window.processPrintQueue = async function() {
+            if (window.printQueue.length === 0) { window.isPrinting = false; return; }
+            window.isPrinting = true;
+            const job = window.printQueue.shift();
+
+            if (window.state.printMode === 'lan') {
+                // Modo LAN: intenta impresora de red, fallback a popup
+                const sent = await window.sendToLocalPrinterServer(job.html, job.data, job.type);
+                if (sent) {
+                    setTimeout(() => window.processPrintQueue(), 100);
+                } else {
+                    window.printViaPopup(job, () => window.processPrintQueue());
+                }
             } else {
-                // INTENTO 2: Plan de Respaldo (Imprimir a través del navegador actual)
-                const iframe = document.createElement('iframe');
-                iframe.style.position = 'fixed'; iframe.style.right = '0'; iframe.style.bottom = '0'; iframe.style.width = '0'; iframe.style.height = '0'; iframe.style.border = '0';
-                document.body.appendChild(iframe);
-                
-                const doc = iframe.contentWindow.document;
-                doc.open(); doc.write(job.html); doc.close();
-                
-                setTimeout(() => {
-                    iframe.contentWindow.focus();
-                    iframe.contentWindow.print();
-                    
-                    setTimeout(() => { 
-                        document.body.removeChild(iframe); 
-                        window.processPrintQueue(); 
-                    }, 2500); 
-                }, 500);
+                // Modo Manual: popup inmediato
+                window.printViaPopup(job, () => window.processPrintQueue());
             }
         };
 
@@ -1157,9 +1252,11 @@
                     // PLANTILLA PARA DATOS LEGALES
                     html += `<div class="header-title">PERROS LA 30</div>`;
                     html += `<p>Los Originales</p>`;
-                    html += `<p style="font-size:11px;">NIT: [TU NIT AQUÍ]</p>`;
-                    html += `<p style="font-size:11px;">Régimen / IVA: [TUS DATOS AQUÍ]</p>`;
-                    html += `<p style="font-size:11px;">Dir: [TU DIRECCIÓN AQUÍ]</p>`;
+                    const _fd = window.state.fiscalData || {};
+                    html += `<p style="font-size:11px;">NIT: ${_fd.nit || '—'}</p>`;
+                    html += `<p style="font-size:11px;">${_fd.regimenIva || 'No Responsable de IVA'}</p>`;
+                    html += `<p style="font-size:11px;">Dir: ${_fd.direccion || '—'}</p>`;
+                    if(_fd.telefono) html += `<p style="font-size:11px;">Tel: ${_fd.telefono}</p>`;
                     html += `<div class="divider"></div>`;
 
                     html += `<p style="font-size:14px;margin-bottom:10px; font-weight:bold;">Ticket de Venta</p><div class="info-text"><b>Orden #:</b> ${data.orderId}</div>`;
@@ -2080,9 +2177,10 @@
         window.printReporteZ = function() {
             const data = window.state.zReportData; if (!data) return;
             let html = `<html><head><style>@page{margin:0;size:auto;} body{font-family:'Courier New',Courier,monospace;width:280px;margin:0;padding:10px;font-size:14px;} h1,p{margin:0;padding:2px 0;text-align:center;} .divider{border-top:1px dashed #000;margin:8px 0;} .item-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;} .item-qty{font-weight:bold;width:30px;} .item-name{flex:1;} .item-price{font-weight:bold;text-align:right;} .totals{margin-top:10px;font-weight:bold;font-size:16px;text-align:right;} .header-title{font-size:20px;font-weight:bold;text-align:center;} .summary-row{display:flex;justify-content:space-between;margin-bottom:2px;font-size:13px;}</style></head><body><div class="header-title">PERROS LA 30</div><p>REPORTE Z (CIERRE DIARIO)</p><div class="divider"></div>`;
-            html += `<p style="font-size:11px;">NIT: [TU NIT AQUÍ]</p>`;
-            html += `<p style="font-size:11px;">Régimen / IVA: [TUS DATOS AQUÍ]</p>`;
-            html += `<p style="font-size:11px;">Dir: [TU DIRECCIÓN AQUÍ]</p><div class="divider"></div>`;
+            const _fdz = window.state.fiscalData || {};
+            html += `<p style="font-size:11px;">NIT: ${_fdz.nit || '—'}</p>`;
+            html += `<p style="font-size:11px;">${_fdz.regimenIva || 'No Responsable de IVA'}</p>`;
+            html += `<p style="font-size:11px;">Dir: ${_fdz.direccion || '—'}</p><div class="divider"></div>`;
             html += `<p style="text-align:left;font-size:12px;"><b>Fecha:</b> ${data.date}</p><p style="text-align:left;font-size:12px;"><b>Hora:</b> ${data.time}</p><div class="divider"></div>`;
             html += `<div class="summary-row"><span>Total Ventas Prod.:</span><b>${window.formatCurrency(data.totalVentas)}</b></div>`;
             html += `<div class="summary-row"><span>Ventas Efectivo:</span><span>${window.formatCurrency(data.efectivo)}</span></div>`;
@@ -2123,7 +2221,8 @@
             if (pin === '1089607033') {
                 window.state.isAdminUnlocked = true; document.getElementById('tab-security-modal').classList.add('hidden');
                 document.getElementById('admin-unlocked-badge').classList.remove('hidden'); document.getElementById('admin-unlocked-badge').classList.add('flex');
-                if (window.state.pendingView) window.switchView(window.state.pendingView);
+                if (window.state.pendingView === '__fiscal__') { window.state.pendingView = null; window.openFiscalModal(); }
+                else if (window.state.pendingView) window.switchView(window.state.pendingView);
                 window.showToast("Sesión de Administrador Desbloqueada");
             } else { window.showToast("PIN Incorrecto", "error"); }
         };
@@ -2757,6 +2856,11 @@
                 else { window.state.finances = { base: 0, expenses: [] }; }
                 if (typeof window.renderFinances === 'function') window.renderFinances();
             }, (e) => console.error(e));
+
+            // Listener datos fiscales
+            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'business'), (snapshot) => {
+                window.state.fiscalData = snapshot.exists() ? snapshot.data() : {};
+            }, (e) => console.error(e));
         }
 
         const initApp = () => {
@@ -2781,7 +2885,17 @@
                 document.getElementById('app-wrapper').classList.add('flex');
             }
             
-            window.initAuth(); 
+            window.initAuth();
+            window.updatePrintModeBadge();
+            // Mostrar selector de modo impresión si no ha sido configurado en esta sesión
+            if (!window.state.printMode) {
+                setTimeout(() => {
+                    if (window.state.isAuthenticated) {
+                        document.getElementById('printer-mode-modal').classList.remove('hidden');
+                        lucide.createIcons();
+                    }
+                }, 600);
+            }
         };
 
         if (document.readyState === 'loading') {
@@ -2804,6 +2918,74 @@
     }
 
     </script>
+    <!-- MODAL MODO DE IMPRESIÓN -->
+    <div id="printer-mode-modal" class="fixed inset-0 bg-black/70 z-[300] flex items-center justify-center p-4 backdrop-blur-sm fade-in">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden hw-accelerate">
+            <div class="bg-gray-900 text-white p-5 text-center">
+                <i data-lucide="printer" class="w-10 h-10 mx-auto mb-2 text-red-400"></i>
+                <h3 class="text-xl font-black">¿Cómo vas a imprimir?</h3>
+                <p class="text-gray-400 text-sm mt-1">Puedes cambiarlo después desde el menú lateral</p>
+            </div>
+            <div class="p-5 space-y-3">
+                <button onclick="window.setPrintMode('manual')" class="w-full flex items-center gap-4 p-4 border-2 border-gray-200 hover:border-orange-500 hover:bg-orange-50 rounded-xl transition-all active:scale-95 text-left">
+                    <div class="bg-orange-100 p-3 rounded-xl shrink-0">
+                        <i data-lucide="mouse-pointer-click" class="w-7 h-7 text-orange-600"></i>
+                    </div>
+                    <div>
+                        <p class="font-black text-gray-800 text-lg">Manual</p>
+                        <p class="text-sm text-gray-500">Imprime desde el navegador con un clic. Más lento pero siempre funciona.</p>
+                    </div>
+                </button>
+                <button onclick="window.setPrintMode('lan')" class="w-full flex items-center gap-4 p-4 border-2 border-gray-200 hover:border-green-500 hover:bg-green-50 rounded-xl transition-all active:scale-95 text-left">
+                    <div class="bg-green-100 p-3 rounded-xl shrink-0">
+                        <i data-lucide="wifi" class="w-7 h-7 text-green-600"></i>
+                    </div>
+                    <div>
+                        <p class="font-black text-gray-800 text-lg">LAN <span class="text-xs font-normal text-gray-400">(Próximamente)</span></p>
+                        <p class="text-sm text-gray-500">Impresoras de red. Automático e instantáneo al enviar la orden.</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DATOS FISCALES -->
+    <div id="fiscal-modal" class="fixed inset-0 bg-black/60 z-[200] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden hw-accelerate">
+            <div class="bg-blue-700 text-white p-4 flex justify-between items-center">
+                <h3 class="text-lg font-bold flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5"></i> Datos Fiscales del Negocio</h3>
+                <button onclick="window.closeFiscalModal()" class="text-blue-200 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">NIT / Cédula</label>
+                    <input id="fiscal-nit" type="text" placeholder="Ej: 901.234.567-8" class="w-full border-2 border-gray-300 rounded-xl p-3 focus:border-blue-500 outline-none font-bold text-gray-700">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Responsable de IVA</label>
+                    <select id="fiscal-iva" class="w-full border-2 border-gray-300 rounded-xl p-3 focus:border-blue-500 outline-none bg-white text-gray-700 font-medium">
+                        <option value="No Responsable de IVA">No Responsable de IVA</option>
+                        <option value="Responsable de IVA">Responsable de IVA</option>
+                        <option value="Gran Contribuyente">Gran Contribuyente</option>
+                        <option value="Régimen Simple">Régimen Simple de Tributación</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Dirección</label>
+                    <input id="fiscal-dir" type="text" placeholder="Ej: Calle 30 # 15-40, Pereira" class="w-full border-2 border-gray-300 rounded-xl p-3 focus:border-blue-500 outline-none text-gray-700">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Teléfono</label>
+                    <input id="fiscal-tel" type="text" placeholder="Ej: (606) 300 000 0000" class="w-full border-2 border-gray-300 rounded-xl p-3 focus:border-blue-500 outline-none text-gray-700">
+                </div>
+            </div>
+            <div class="px-5 pb-5 flex gap-2">
+                <button onclick="window.closeFiscalModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
+                <button onclick="window.saveFiscalData()" class="flex-[2] py-3 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-xl shadow-md transition-colors flex items-center justify-center gap-2"><i data-lucide="save" class="w-5 h-5"></i> Guardar en Firebase</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL INSTRUCCIONES INSTALACIÓN PWA -->
     <div id="pwa-install-modal" class="fixed inset-0 bg-black/70 z-[200] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden hw-accelerate">
