@@ -31,6 +31,40 @@
         #connection-status { transition: all 0.3s; }
         .ticket-container { page-break-after: always; padding-bottom: 20px; }
         .hw-accelerate { transform: translateZ(0); will-change: transform; }
+
+        /* =============================================
+           PERMISOS POR ROL — CSS puro, indestructible
+           ============================================= */
+        /* Mesero: ocultar todo lo que no es su trabajo */
+        body.role-mesero #menu-domicilios,
+        body.role-mesero #menu-caja,
+        body.role-mesero #menu-historial,
+        body.role-mesero #menu-estadisticas,
+        body.role-mesero #menu-nomina,
+        body.role-mesero #menu-inventario,
+        body.role-mesero #menu-editar-menu,
+        body.role-mesero #menu-recetas,
+        body.role-mesero #menu-fiscal,
+        body.role-mesero #label-admin-section,
+        body.role-mesero #label-config-section,
+        body.role-mesero #admin-unlocked-badge {
+            display: none !important;
+        }
+        /* Recepcionista: ocultar mesas y mis pedidos */
+        body.role-recepcionista #menu-mesero,
+        body.role-recepcionista #menu-mis-pedidos,
+        body.role-recepcionista #menu-caja,
+        body.role-recepcionista #menu-historial,
+        body.role-recepcionista #menu-estadisticas,
+        body.role-recepcionista #menu-nomina,
+        body.role-recepcionista #menu-inventario,
+        body.role-recepcionista #menu-editar-menu,
+        body.role-recepcionista #menu-recetas,
+        body.role-recepcionista #menu-fiscal,
+        body.role-recepcionista #label-admin-section,
+        body.role-recepcionista #label-config-section {
+            display: none !important;
+        }
     </style>
 </head>
 <body class="bg-gray-100 flex flex-col font-sans min-h-screen overflow-x-hidden">
@@ -1156,48 +1190,31 @@
         };
 
         window.adaptUIForRole = function(role, name) {
-            const adminItems = ['menu-caja','menu-editar-menu','menu-nomina','menu-historial','menu-inventario','menu-estadisticas','menu-recetas','menu-fiscal','label-admin-section','label-config-section'];
-            const meserosItems = ['menu-mesero','menu-domicilios','menu-mis-pedidos','menu-cocina'];
-            
+            // Limpiar clases de rol anteriores y aplicar la nueva
+            document.body.classList.remove('role-admin', 'role-mesero', 'role-recepcionista');
+            document.body.classList.add('role-' + role);
+
             if (role === 'admin') {
-                // Admin ve todo, está desbloqueado
                 window.state.isAdminUnlocked = true;
                 const badge = document.getElementById('admin-unlocked-badge');
                 if(badge) { badge.classList.remove('hidden'); badge.classList.add('flex'); }
-                adminItems.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('hidden'); });
-                meserosItems.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('hidden'); });
-                document.getElementById('menu-mis-pedidos')?.classList.add('hidden');
-                // Admin puede tomar pedidos como cualquier mesero
                 const waiterSel = document.getElementById('waiter-name');
                 if(waiterSel) { waiterSel.value = ''; }
                 window.switchView('mesero');
             } else if (role === 'mesero') {
-                // Mesero solo ve: Mesas, Cocina, Mis Pedidos (sin toast, sin secciones admin)
-                adminItems.forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('hidden'); });
-                // Ocultar también Domicilios para meseros
-                const domiBtn = document.getElementById('menu-domicilios');
-                if(domiBtn) domiBtn.classList.add('hidden');
-                // Ocultar badge de admin
-                const badge = document.getElementById('admin-unlocked-badge');
-                if(badge) { badge.classList.add('hidden'); badge.classList.remove('flex'); }
-                // Mostrar Mis Pedidos
+                window.state.isAdminUnlocked = false;
+                // Mostrar Mis Pedidos (estaba hidden por defecto en HTML)
                 const misPedidosBtn = document.getElementById('menu-mis-pedidos');
                 if(misPedidosBtn) misPedidosBtn.classList.remove('hidden');
-                // Auto-seleccionar nombre del mesero
                 window.state.waiterName = name;
                 const waiterSel = document.getElementById('waiter-name');
                 if(waiterSel) { waiterSel.value = name; }
                 window.switchView('mesero');
-                // Volver a ocultar por si switchView los re-expuso
-                adminItems.forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('hidden'); });
-                if(domiBtn) domiBtn.classList.add('hidden');
             } else if (role === 'recepcionista') {
-                adminItems.forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('hidden'); });
-                document.getElementById('menu-mesero')?.classList.add('hidden');
-                document.getElementById('menu-mis-pedidos')?.classList.add('hidden');
+                window.state.isAdminUnlocked = false;
                 window.switchView('domicilios');
             }
-            
+
             // Mostrar nombre del usuario en el header
             const userNameEl = document.getElementById('header-user-name');
             if(userNameEl) userNameEl.textContent = name;
