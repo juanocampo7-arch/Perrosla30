@@ -88,62 +88,82 @@
                 </div>
                 <button onclick="window.toggleSidebar()" class="hover:bg-red-700 p-1.5 rounded-lg transition-colors active:scale-90"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
-            <div class="flex flex-col p-4 space-y-2 overflow-y-auto flex-1">
-                <button onclick="window.switchView('mesero')" id="menu-mesero" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all bg-red-50 text-red-600 active:scale-95">
-                    <i data-lucide="utensils" class="w-5 h-5"></i> Mesas / Barra
+            <div class="flex flex-col p-3 overflow-y-auto flex-1 gap-1">
+
+                <!-- SECCIÓN: SERVICIO -->
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2 pt-2 pb-1">Servicio</p>
+                <button onclick="window.switchView('mesero')" id="menu-mesero" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
+                    <i data-lucide="utensils" class="w-5 h-5 shrink-0"></i>
+                    <span class="flex-1">Mesas / Barra</span>
                 </button>
                 <button onclick="window.switchView('domicilios')" id="menu-domicilios" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
-                    <i data-lucide="bike" class="w-5 h-5"></i> Domicilios
+                    <i data-lucide="bike" class="w-5 h-5 shrink-0"></i>
+                    <span class="flex-1">Domicilios</span>
                 </button>
-                <div class="h-px bg-gray-200 my-2"></div>
-                <button onclick="window.switchView('cocina')" id="menu-cocina" class="flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
-                    <div class="flex items-center gap-3"><i data-lucide="chef-hat" class="w-5 h-5"></i> Cocina</div>
+                <button onclick="window.switchView('cocina')" id="menu-cocina" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
+                    <i data-lucide="chef-hat" class="w-5 h-5 shrink-0"></i>
+                    <span class="flex-1">Cocina</span>
                     <span id="menu-badge-cocina" class="hidden bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-0.5 rounded-full shadow-inner">0</span>
                 </button>
                 <button onclick="window.switchView('mis-pedidos')" id="menu-mis-pedidos" class="hidden flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
-                    <i data-lucide="clipboard-list" class="w-5 h-5"></i> Mis Pedidos
-                    <span id="menu-badge-mis-pedidos" class="hidden ml-auto bg-red-400 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-inner">0</span>
+                    <i data-lucide="clipboard-list" class="w-5 h-5 shrink-0"></i>
+                    <span class="flex-1">Mis Pedidos</span>
+                    <span id="menu-badge-mis-pedidos" class="hidden bg-red-400 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-inner">0</span>
                 </button>
-                <button onclick="window.attemptSwitchView('caja')" id="menu-caja" class="flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
-                    <div class="flex items-center gap-3"><i data-lucide="receipt" class="w-5 h-5"></i> Caja & Pagos</div>
+                <button onclick="window.attemptSwitchView('caja')" id="menu-caja" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
+                    <i data-lucide="receipt" class="w-5 h-5 shrink-0"></i>
+                    <span class="flex-1">Caja &amp; Pagos</span>
                     <span id="menu-badge-caja" class="hidden bg-green-400 text-green-900 text-xs font-bold px-2 py-0.5 rounded-full shadow-inner">0</span>
                 </button>
-                <div class="h-px bg-gray-200 my-2"></div>
-                
-                <button onclick="window.attemptSwitchView('editar-menu')" id="menu-editar-menu" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
-                    <i data-lucide="edit" class="w-5 h-5"></i> Editor de Menú
-                </button>
-                
-                <button onclick="window.attemptSwitchView('nomina')" id="menu-nomina" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
-                    <i data-lucide="users" class="w-5 h-5"></i> Nómina y Gastos
-                </button>
+
+                <!-- SECCIÓN: ADMINISTRACIÓN -->
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2 pt-3 pb-1" id="label-admin-section">Administración</p>
                 <button onclick="window.attemptSwitchView('historial')" id="menu-historial" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
-                    <i data-lucide="history" class="w-5 h-5"></i> Historial y Cierres
-                </button>
-                <button onclick="window.attemptSwitchView('inventario')" id="menu-inventario" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
-                    <i data-lucide="boxes" class="w-5 h-5"></i> Inventario
+                    <i data-lucide="history" class="w-5 h-5 shrink-0"></i>
+                    <span class="flex-1">Historial y Cierres</span>
                 </button>
                 <button onclick="window.attemptSwitchView('estadisticas')" id="menu-estadisticas" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
-                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i> Estadísticas
+                    <i data-lucide="bar-chart-3" class="w-5 h-5 shrink-0"></i>
+                    <span class="flex-1">Estadísticas</span>
+                </button>
+                <button onclick="window.attemptSwitchView('nomina')" id="menu-nomina" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
+                    <i data-lucide="users" class="w-5 h-5 shrink-0"></i>
+                    <span class="flex-1">Nómina y Gastos</span>
+                </button>
+                <button onclick="window.attemptSwitchView('inventario')" id="menu-inventario" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
+                    <i data-lucide="boxes" class="w-5 h-5 shrink-0"></i>
+                    <span class="flex-1">Inventario</span>
+                </button>
+                <button onclick="window.attemptSwitchView('editar-menu')" id="menu-editar-menu" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
+                    <i data-lucide="edit" class="w-5 h-5 shrink-0"></i>
+                    <span class="flex-1">Editor de Menú</span>
                 </button>
                 <button onclick="window.attemptSwitchView('recetas')" id="menu-recetas" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
-                    <i data-lucide="book-open" class="w-5 h-5"></i> Recetas
+                    <i data-lucide="book-open" class="w-5 h-5 shrink-0"></i>
+                    <span class="flex-1">Recetas</span>
                 </button>
+
+                <!-- SECCIÓN: CONFIGURACIÓN -->
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2 pt-3 pb-1" id="label-config-section">Configuración</p>
                 <button onclick="window.attemptOpenFiscalModal()" id="menu-fiscal" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
-                    <i data-lucide="file-text" class="w-5 h-5"></i> Datos Fiscales
+                    <i data-lucide="file-text" class="w-5 h-5 shrink-0"></i>
+                    <span class="flex-1">Datos Fiscales</span>
                 </button>
                 <button onclick="window.openPrinterModeModal()" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
-                    <i data-lucide="printer" class="w-5 h-5"></i> Modo Impresión
-                    <span id="sidebar-print-mode-badge" class="ml-auto text-[10px] font-bold bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">—</span>
+                    <i data-lucide="printer" class="w-5 h-5 shrink-0"></i>
+                    <span class="flex-1">Modo Impresión</span>
+                    <span id="sidebar-print-mode-badge" class="text-[10px] font-bold bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">—</span>
                 </button>
-                
-                <!-- BOTÓN INSTALAR PWA (SIEMPRE VISIBLE) -->
-                <div class="mt-auto pt-4 border-t border-gray-200">
-                    <button onclick="window.installApp()" id="btn-install-app" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold bg-indigo-600 text-white hover:bg-indigo-700 transition-all active:scale-95 shadow-md">
-                        <i data-lucide="download" class="w-5 h-5"></i> Instalar App POS
+
+                <!-- BOTONES INFERIORES -->
+                <div class="mt-auto pt-3 border-t border-gray-200 flex flex-col gap-2">
+                    <button onclick="window.installApp()" id="btn-install-app" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold bg-indigo-600 text-white hover:bg-indigo-700 transition-all active:scale-95 shadow-md">
+                        <i data-lucide="download" class="w-5 h-5 shrink-0"></i>
+                        <span class="flex-1">Instalar App POS</span>
                     </button>
-                    <button onclick="window.logout()" class="w-full flex items-center gap-3 px-4 py-3 mt-2 rounded-xl text-left font-bold transition-all text-red-600 hover:bg-red-50 active:scale-95">
-                        <i data-lucide="log-out" class="w-5 h-5"></i> Cerrar Sesión
+                    <button onclick="window.logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-red-600 hover:bg-red-50 active:scale-95">
+                        <i data-lucide="log-out" class="w-5 h-5 shrink-0"></i>
+                        <span class="flex-1">Cerrar Sesión</span>
                     </button>
                 </div>
             </div>
@@ -438,23 +458,47 @@
                 <div id="history-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start pb-6 content-start scroll-smooth"></div>
             </div>
 
-            <!-- VISTA INVENTARIO (AHORA CON AÑADIR PRODUCTO) -->
+            <!-- VISTA INVENTARIO -->
             <div id="view-inventario" class="hidden flex flex-col fade-in lg:h-[calc(100vh-7rem)] min-h-[80vh]">
-                <div class="mb-4 shrink-0 flex justify-between items-center">
+                <!-- Header -->
+                <div class="mb-4 shrink-0 flex flex-wrap gap-3 justify-between items-center">
                     <div>
                         <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
                             <i data-lucide="boxes" class="text-purple-600 w-8 h-8"></i> Control de Inventario
                         </h2>
-                        <p class="text-gray-500">Stock de ingredientes y productos terminados.</p>
+                        <p class="text-gray-500 text-sm">Stock actualizado en tiempo real.</p>
                     </div>
-                    <button onclick="window.openAddInventoryModal()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-xl shadow-md transition-colors flex items-center gap-2 active:scale-95">
-                        <i data-lucide="plus-circle" class="w-5 h-5"></i> Añadir Insumo
-                    </button>
+                    <div class="flex gap-2 flex-wrap">
+                        <button onclick="window.openEntradaMercanciaModal()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-xl shadow-md transition-colors flex items-center gap-2 active:scale-95">
+                            <i data-lucide="package-plus" class="w-5 h-5"></i> Entrada de Mercancía
+                        </button>
+                        <button onclick="window.openAddInventoryModal()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-xl shadow-md transition-colors flex items-center gap-2 active:scale-95">
+                            <i data-lucide="plus-circle" class="w-5 h-5"></i> Nuevo Insumo
+                        </button>
+                    </div>
                 </div>
+
+                <!-- Buscador de inventario -->
+                <div class="mb-3 shrink-0 relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-lucide="search" class="text-gray-400 w-5 h-5"></i>
+                    </div>
+                    <input type="text" id="inv-search-input" oninput="window.filterInventory(this.value)" placeholder="Buscar producto en inventario... (Ej: Gaseosa, Carne)" class="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:border-purple-500 outline-none font-semibold text-gray-700 transition-colors shadow-sm bg-white">
+                </div>
+                <!-- Banner de resultado de búsqueda -->
+                <div id="inv-search-result" class="hidden mb-3 shrink-0 bg-purple-50 border border-purple-200 rounded-xl p-3 flex items-center gap-3">
+                    <i data-lucide="package-search" class="text-purple-500 w-6 h-6 shrink-0"></i>
+                    <div>
+                        <span class="font-bold text-purple-800" id="inv-search-name">—</span>
+                        <span class="text-gray-600 text-sm ml-2">Stock actual:</span>
+                        <span class="font-black text-xl ml-1" id="inv-search-stock">—</span>
+                    </div>
+                </div>
+
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex-1 overflow-hidden flex flex-col">
                     <div class="p-4 bg-gray-50 border-b flex justify-between items-center shrink-0">
                         <h3 class="font-bold text-gray-700">Artículos Registrados</h3>
-                        <span class="text-xs text-gray-500 italic">*Cantidades se actualizan en vivo</span>
+                        <span class="text-xs text-gray-500 italic">*Se actualiza en vivo</span>
                     </div>
                     <div class="flex-1 overflow-y-auto p-4">
                         <div id="inventory-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
@@ -1112,7 +1156,7 @@
         };
 
         window.adaptUIForRole = function(role, name) {
-            const adminItems = ['menu-caja','menu-editar-menu','menu-nomina','menu-historial','menu-inventario','menu-estadisticas','menu-recetas','menu-fiscal'];
+            const adminItems = ['menu-caja','menu-editar-menu','menu-nomina','menu-historial','menu-inventario','menu-estadisticas','menu-recetas','menu-fiscal','label-admin-section','label-config-section'];
             const meserosItems = ['menu-mesero','menu-domicilios','menu-mis-pedidos','menu-cocina'];
             
             if (role === 'admin') {
@@ -1128,8 +1172,7 @@
                 if(waiterSel) { waiterSel.value = ''; }
                 window.switchView('mesero');
             } else if (role === 'mesero') {
-                // Mesero solo ve: Mesas, Cocina, Mis Pedidos
-                // Ocultar todos los items de admin
+                // Mesero solo ve: Mesas, Cocina, Mis Pedidos (sin toast, sin secciones admin)
                 adminItems.forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('hidden'); });
                 // Ocultar también Domicilios para meseros
                 const domiBtn = document.getElementById('menu-domicilios');
@@ -2232,12 +2275,135 @@
             }
             
             invList.sort((a,b) => a.name.localeCompare(b.name));
+            window._invList = invList; // Guardar para búsqueda
             
+            window._renderInventoryList(invList);
+        };
+
+        window._renderInventoryList = function(invList) {
+            const container = document.getElementById('inventory-list');
+            if(!container) return;
+            if(invList.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center text-gray-400 py-10"><p>No se encontraron productos.</p></div>`;
+                return;
+            }
             container.innerHTML = invList.map(item => {
-                const stockColor = item.stock <= 5 ? (item.stock <= 0 ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') : 'bg-purple-100 text-purple-800';
-                return `<div class="bg-white border border-gray-200 rounded-lg p-3 flex justify-between items-center shadow-sm"><div class="flex-1"><h4 class="font-bold text-gray-800 text-sm leading-tight">${item.name}</h4></div><div class="flex items-center gap-3"><div class="${stockColor} font-black px-3 py-1 rounded-lg text-lg min-w-[3rem] text-center">${item.stock}</div><button onclick="window.openInventoryModal('${item.id}')" class="p-2 bg-gray-100 hover:bg-purple-50 text-gray-600 hover:text-purple-600 rounded-lg transition-colors border border-gray-200"><i data-lucide="edit-3" class="w-4 h-4"></i></button></div></div>`;
+                const stockColor = item.stock <= 5 ? (item.stock <= 0 ? 'bg-red-100 text-red-800 border-red-200' : 'bg-yellow-100 text-yellow-800 border-yellow-200') : 'bg-green-50 text-green-800 border-green-200';
+                const stockLabel = item.stock <= 0 ? 'AGOTADO' : (item.stock <= 5 ? 'BAJO' : '');
+                return `<div class="bg-white border border-gray-200 rounded-xl p-3 flex justify-between items-center shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex-1 min-w-0 pr-3">
+                        <h4 class="font-bold text-gray-800 text-sm leading-tight truncate">${item.name}</h4>
+                        ${stockLabel ? `<span class="text-[10px] font-black uppercase ${item.stock <= 0 ? 'text-red-500' : 'text-yellow-600'}">${stockLabel}</span>` : ''}
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <div class="${stockColor} border font-black px-3 py-1 rounded-lg text-lg min-w-[3rem] text-center">${item.stock}</div>
+                        <button onclick="window.openInventoryModal('${item.id}')" class="p-2 bg-gray-100 hover:bg-purple-50 text-gray-600 hover:text-purple-600 rounded-lg transition-colors border border-gray-200" title="Ajustar stock">
+                            <i data-lucide="edit-3" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>`;
             }).join('');
             lucide.createIcons();
+        };
+
+        // --- BUSCADOR DE INVENTARIO ---
+        window.filterInventory = function(val) {
+            const term = val.toLowerCase().trim();
+            const searchResult = document.getElementById('inv-search-result');
+            const invList = window._invList || [];
+
+            if (term === '') {
+                searchResult.classList.add('hidden');
+                window._renderInventoryList(invList);
+                return;
+            }
+            const filtered = invList.filter(item => item.name.toLowerCase().includes(term));
+            window._renderInventoryList(filtered);
+
+            // Banner de resultado exacto (primer match)
+            if (filtered.length > 0) {
+                const first = filtered[0];
+                const stockEl = document.getElementById('inv-search-stock');
+                const nameEl = document.getElementById('inv-search-name');
+                nameEl.textContent = first.name;
+                stockEl.textContent = first.stock;
+                stockEl.className = `font-black text-xl ml-1 ${first.stock <= 0 ? 'text-red-600' : first.stock <= 5 ? 'text-yellow-600' : 'text-green-600'}`;
+                searchResult.classList.remove('hidden');
+            } else {
+                searchResult.classList.add('hidden');
+            }
+        };
+
+        // --- ENTRADA DE MERCANCÍA ---
+        window._entradaItems = {};
+        window._entradaFilterTerm = '';
+
+        window.openEntradaMercanciaModal = function() {
+            window._entradaItems = {};
+            window._entradaFilterTerm = '';
+            document.getElementById('entrada-search').value = '';
+            document.getElementById('entrada-mercancia-modal').classList.remove('hidden');
+            window._renderEntradaList();
+            lucide.createIcons();
+        };
+
+        window.closeEntradaMercanciaModal = function() {
+            document.getElementById('entrada-mercancia-modal').classList.add('hidden');
+        };
+
+        window.filterEntradaList = function(val) {
+            window._entradaFilterTerm = val.toLowerCase().trim();
+            window._renderEntradaList();
+        };
+
+        window._renderEntradaList = function() {
+            const container = document.getElementById('entrada-items-list');
+            if(!container) return;
+            const invList = window._invList || [];
+            const term = window._entradaFilterTerm;
+            const filtered = term ? invList.filter(item => item.name.toLowerCase().includes(term)) : invList;
+
+            container.innerHTML = filtered.map(item => {
+                const qty = window._entradaItems[item.id] || '';
+                const hasQty = qty > 0;
+                return `<div class="flex items-center gap-3 p-3 rounded-xl border ${hasQty ? 'bg-green-50 border-green-300' : 'bg-white border-gray-200'} transition-colors">
+                    <div class="flex-1 min-w-0">
+                        <p class="font-bold text-gray-800 text-sm truncate">${item.name}</p>
+                        <p class="text-xs text-gray-500">Stock actual: <span class="font-bold ${item.stock <= 0 ? 'text-red-500' : 'text-gray-700'}">${item.stock}</span></p>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <span class="text-xs text-gray-400 font-bold">+</span>
+                        <input type="number" min="0" placeholder="0" value="${qty || ''}"
+                            oninput="window._entradaItems['${item.id}'] = parseInt(this.value) || 0; this.closest('div.flex').className = 'flex items-center gap-3 p-3 rounded-xl border ' + (parseInt(this.value) > 0 ? 'bg-green-50 border-green-300' : 'bg-white border-gray-200') + ' transition-colors';"
+                            class="w-20 border-2 ${hasQty ? 'border-green-400' : 'border-gray-300'} rounded-xl p-2 text-center text-lg font-black focus:border-green-500 outline-none">
+                    </div>
+                </div>`;
+            }).join('');
+        };
+
+        window.saveEntradaMercancia = async function() {
+            const entries = Object.entries(window._entradaItems).filter(([id, qty]) => qty > 0);
+            if (entries.length === 0) {
+                window.showToast('No has ingresado ninguna cantidad', 'error');
+                return;
+            }
+            try {
+                const invList = window._invList || [];
+                let savedCount = 0;
+                for (const [invId, qty] of entries) {
+                    const item = invList.find(i => i.id === invId) || {};
+                    const currentStock = item.stock || 0;
+                    const newStock = currentStock + qty;
+                    const name = item.name || INVENTORY_BASE[invId] || invId;
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', invId), { name: name, stock: newStock }, { merge: true });
+                    savedCount++;
+                }
+                window.closeEntradaMercanciaModal();
+                window.showToast(`✅ Entrada guardada: ${savedCount} producto(s) actualizados`);
+            } catch(e) {
+                console.error(e);
+                window.showToast('Error al guardar la entrada', 'error');
+            }
         };
 
         window.renderFinances = function() {
@@ -2476,11 +2642,10 @@
         };
 
         window.attemptSwitchView = function(view) {
-            // Si es mesero, solo puede ver: mesero, cocina, mis-pedidos
+            // Si es mesero, solo puede ver: mesero, cocina, mis-pedidos (silencioso, sin toast)
             if (window.state.currentRole === 'mesero') {
                 const meseroAllowed = ['mesero', 'cocina', 'mis-pedidos'];
-                if (meseroAllowed.includes(view)) { window.switchView(view); }
-                else { window.showToast('No tienes permiso para acceder a esta sección', 'error'); }
+                if (meseroAllowed.includes(view)) window.switchView(view);
                 return;
             }
             if (window.state.isAdminUnlocked || view === 'mesero' || view === 'domicilios') { window.switchView(view); } 
@@ -2507,13 +2672,10 @@
         };
 
         window.switchView = function(view) {
-            // Guardia de rol: mesero solo puede acceder a vistas permitidas
+            // Guardia de rol: mesero solo puede acceder a vistas permitidas (sin toast, silencioso)
             if (window.state.currentRole === 'mesero') {
                 const meseroAllowed = ['mesero', 'cocina', 'mis-pedidos'];
-                if (!meseroAllowed.includes(view)) {
-                    window.showToast('No tienes permiso para acceder a esta sección', 'error');
-                    return;
-                }
+                if (!meseroAllowed.includes(view)) return;
             }
             window.state.currentView = view;
             ['mesero', 'cocina', 'caja', 'historial', 'inventario', 'domicilios', 'estadisticas', 'nomina', 'editar-menu', 'recetas', 'mis-pedidos'].forEach(v => {
@@ -3281,6 +3443,36 @@
             <div class="px-5 pb-5 flex gap-2">
                 <button onclick="window.closeFiscalModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
                 <button onclick="window.saveFiscalData()" class="flex-[2] py-3 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-xl shadow-md transition-colors flex items-center justify-center gap-2"><i data-lucide="save" class="w-5 h-5"></i> Guardar en Firebase</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ENTRADA DE MERCANCÍA -->
+    <div id="entrada-mercancia-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm hidden fade-in">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden hw-accelerate flex flex-col max-h-[90vh]">
+            <div class="bg-green-600 text-white p-4 flex justify-between items-center shrink-0">
+                <h3 class="text-lg font-bold flex items-center gap-2">
+                    <i data-lucide="package-plus" class="w-5 h-5"></i> Entrada de Mercancía
+                </h3>
+                <button onclick="window.closeEntradaMercanciaModal()" class="text-green-200 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="p-4 border-b shrink-0 bg-green-50">
+                <p class="text-sm text-green-800 font-medium">Selecciona cada insumo que llegó hoy y escribe la cantidad que recibiste. Se <b>sumará</b> al stock actual.</p>
+                <div class="relative mt-3">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-lucide="search" class="text-gray-400 w-4 h-4"></i>
+                    </div>
+                    <input type="text" id="entrada-search" oninput="window.filterEntradaList(this.value)" placeholder="Filtrar insumo..." class="w-full pl-9 pr-3 py-2 border-2 border-gray-300 rounded-xl focus:border-green-500 outline-none text-sm font-semibold text-gray-700">
+                </div>
+            </div>
+            <div class="flex-1 overflow-y-auto p-4">
+                <div id="entrada-items-list" class="space-y-2"></div>
+            </div>
+            <div class="p-4 border-t bg-gray-50 flex gap-2 shrink-0">
+                <button onclick="window.closeEntradaMercanciaModal()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
+                <button onclick="window.saveEntradaMercancia()" class="flex-[2] py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-md transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="save" class="w-5 h-5"></i> Guardar Entrada
+                </button>
             </div>
         </div>
     </div>
