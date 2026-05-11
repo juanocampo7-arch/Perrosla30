@@ -3259,12 +3259,24 @@
             }
         });
 
+        // Orden canónico de categorías — siempre se respeta
+        const CATEGORY_ORDER = ['Perros','Hamburguesas','Bebidas','Salchipapas','Asados','Arepas','Desgranados','Adicionales'];
+
+        function sortMenuCategories(menu) {
+            const sorted = {};
+            // Primero las categorías en el orden canónico
+            CATEGORY_ORDER.forEach(cat => { if (menu[cat]) sorted[cat] = menu[cat]; });
+            // Luego cualquier categoría extra que no esté en la lista
+            Object.keys(menu).forEach(cat => { if (!sorted[cat]) sorted[cat] = menu[cat]; });
+            return sorted;
+        }
+
         function setupFirebaseListeners() {
             if (!window.state.currentUser) return;
             
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'menu'), (snapshot) => {
                 if(snapshot.exists()) {
-                    window.state.menu = snapshot.data().menuData;
+                    window.state.menu = sortMenuCategories(snapshot.data().menuData);
                     window.state.editingMenu = JSON.parse(JSON.stringify(window.state.menu));
                 } else {
                     window.state.menu = window.defaultMenu;
