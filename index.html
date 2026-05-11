@@ -1177,6 +1177,9 @@
                 // Ocultar también Domicilios para meseros
                 const domiBtn = document.getElementById('menu-domicilios');
                 if(domiBtn) domiBtn.classList.add('hidden');
+                // Ocultar badge de admin
+                const badge = document.getElementById('admin-unlocked-badge');
+                if(badge) { badge.classList.add('hidden'); badge.classList.remove('flex'); }
                 // Mostrar Mis Pedidos
                 const misPedidosBtn = document.getElementById('menu-mis-pedidos');
                 if(misPedidosBtn) misPedidosBtn.classList.remove('hidden');
@@ -1185,6 +1188,9 @@
                 const waiterSel = document.getElementById('waiter-name');
                 if(waiterSel) { waiterSel.value = name; }
                 window.switchView('mesero');
+                // Volver a ocultar por si switchView los re-expuso
+                adminItems.forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('hidden'); });
+                if(domiBtn) domiBtn.classList.add('hidden');
             } else if (role === 'recepcionista') {
                 adminItems.forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('hidden'); });
                 document.getElementById('menu-mesero')?.classList.add('hidden');
@@ -2682,8 +2688,15 @@
                 const viewEl = document.getElementById(`view-${v}`); if(viewEl) viewEl.classList.add('hidden');
                 const menuBtn = document.getElementById(`menu-${v}`);
                 if(menuBtn) {
-                    if (v === view) menuBtn.className = "flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-all bg-red-50 text-red-600 active:scale-95";
-                    else menuBtn.className = "flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95";
+                    // Solo cambiar color activo/inactivo, NO tocar el 'hidden'
+                    const isHidden = menuBtn.classList.contains('hidden');
+                    if (v === view) {
+                        menuBtn.className = "flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all bg-red-50 text-red-600 active:scale-95";
+                    } else {
+                        menuBtn.className = "flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95";
+                    }
+                    // Restaurar hidden si estaba oculto
+                    if (isHidden) menuBtn.classList.add('hidden');
                 }
             });
             const activeView = document.getElementById(`view-${view}`); if(activeView) activeView.classList.remove('hidden');
