@@ -69,6 +69,7 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
+                        <span id="header-user-name" class="hidden sm:inline-flex items-center gap-1 bg-red-700 text-white px-3 py-1 rounded-full text-sm font-bold"></span>
                         <span id="admin-unlocked-badge" class="hidden items-center gap-1 bg-green-500 text-white px-2 py-1 rounded text-xs font-bold shadow-inner transition-all">
                             <i data-lucide="unlock" class="w-3 h-3"></i> <span class="hidden sm:inline">Admin</span>
                         </span>
@@ -98,6 +99,10 @@
                 <button onclick="window.switchView('cocina')" id="menu-cocina" class="flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
                     <div class="flex items-center gap-3"><i data-lucide="chef-hat" class="w-5 h-5"></i> Cocina</div>
                     <span id="menu-badge-cocina" class="hidden bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-0.5 rounded-full shadow-inner">0</span>
+                </button>
+                <button onclick="window.switchView('mis-pedidos')" id="menu-mis-pedidos" class="hidden flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
+                    <i data-lucide="clipboard-list" class="w-5 h-5"></i> Mis Pedidos
+                    <span id="menu-badge-mis-pedidos" class="hidden ml-auto bg-red-400 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-inner">0</span>
                 </button>
                 <button onclick="window.attemptSwitchView('caja')" id="menu-caja" class="flex items-center justify-between px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
                     <div class="flex items-center gap-3"><i data-lucide="receipt" class="w-5 h-5"></i> Caja & Pagos</div>
@@ -173,7 +178,7 @@
 
                     <div class="p-4 border-b space-y-3 shrink-0">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Mesero</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Mesero</label>
                             <select id="waiter-name" onchange="window.state.waiterName = this.value" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-red-500 outline-none bg-white cursor-pointer transition-shadow">
                                 <option value="" disabled selected>Selecciona un mesero...</option>
                                 <option value="Juanjo">Juanjo</option>
@@ -560,6 +565,32 @@
                 </div>
             </div>
 
+            <!-- VISTA MIS PEDIDOS (MESERO) -->
+            <div id="view-mis-pedidos" class="hidden flex flex-col gap-4 fade-in">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                        <i data-lucide="clipboard-list" class="text-red-500 w-8 h-8"></i> 
+                        Mis Pedidos
+                    </h2>
+                    <div id="mis-pedidos-total-badge" class="bg-green-100 text-green-800 px-4 py-2 rounded-xl font-black text-lg border border-green-200"></div>
+                </div>
+                
+                <!-- Tabs: En Cocina / Listos / Entregados -->
+                <div class="flex bg-gray-100 rounded-xl p-1 gap-1 sticky top-20 z-10">
+                    <button onclick="window.setMisPedidosTab('cocina')" id="tab-mp-cocina" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-all bg-white text-red-600 shadow">
+                        🔥 En Cocina <span id="badge-mp-cocina" class="bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 ml-1">0</span>
+                    </button>
+                    <button onclick="window.setMisPedidosTab('listo')" id="tab-mp-listo" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-all text-gray-500 hover:bg-white">
+                        ✅ Listos <span id="badge-mp-listo" class="bg-green-500 text-white text-xs rounded-full px-1.5 py-0.5 ml-1">0</span>
+                    </button>
+                    <button onclick="window.setMisPedidosTab('cuentas')" id="tab-mp-cuentas" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-all text-gray-500 hover:bg-white">
+                        💰 Cuentas <span id="badge-mp-cuentas" class="bg-blue-500 text-white text-xs rounded-full px-1.5 py-0.5 ml-1">0</span>
+                    </button>
+                </div>
+                
+                <div id="mis-pedidos-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+
         </main>
     </div>
 
@@ -623,7 +654,11 @@
         <div class="bg-white rounded-2xl p-6 md:p-8 max-w-sm w-full text-center shadow-2xl hw-accelerate">
             <i data-lucide="check-circle" class="text-green-500 w-20 h-20 mx-auto mb-4"></i>
             <h3 id="success-title" class="text-2xl font-bold text-gray-800 mb-2">¡Orden Registrada!</h3>
-            <p id="success-subtitle" class="text-gray-600 mb-6 font-bold text-blue-600 animate-pulse">Imprimiendo tickets automáticamente...</p>
+            <p id="success-subtitle" class="text-gray-600 mb-4 font-bold text-green-600">✅ Comanda enviada a cocina</p>
+            <!-- Botón imprimir cuenta (manual, no automático) -->
+            <button onclick="window.printTicket('last-caja'); window.showToast('Imprimiendo cuenta...');" class="w-full mb-4 flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl transition-colors border-2 border-gray-200 active:scale-95">
+                <i data-lucide="printer" class="w-5 h-5"></i> Imprimir Cuenta
+            </button>
             <div class="space-y-3">
                 <button onclick="window.actionNewOrderSameTable()" id="btn-same-table" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl transition-colors shadow-md active:scale-95 text-lg">Nueva Orden</button>
                 <button onclick="window.actionNewOrderOtherTable()" class="w-full bg-white border-2 border-gray-200 hover:border-red-500 text-gray-800 hover:text-red-600 font-bold py-4 rounded-xl transition-colors active:scale-95">Atender Otra Mesa</button>
@@ -643,6 +678,7 @@
             <div class="grid grid-cols-2 gap-2 mb-4">
                 <button onclick="window.setPaymentMethod('efectivo')" id="btn-pay-efectivo" class="border-2 border-green-500 bg-green-50 text-green-700 font-bold py-2 rounded-xl transition-colors">💵 Efectivo</button>
                 <button onclick="window.setPaymentMethod('transferencia')" id="btn-pay-transferencia" class="border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-gray-600 font-bold py-2 rounded-xl transition-colors">📱 Nequi / Transf.</button>
+                <button onclick="window.setPaymentMethod('datafono')" id="btn-pay-datafono" class="col-span-2 border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 text-gray-600 font-bold py-2 rounded-xl transition-colors">💳 Datáfono / Tarjeta</button>
             </div>
             <button onclick="window.setPaymentMethod('dividido')" id="btn-pay-dividido" class="w-full border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 text-gray-600 font-bold py-2 rounded-xl transition-colors mb-4">⚖️ Pago Mixto / Dividido</button>
             <div id="pay-mixed-section" class="hidden bg-blue-50 p-4 rounded-xl mb-6 border border-blue-200">
@@ -998,10 +1034,25 @@
             'ad10': { salchicha: 1 }, 'ad11': { salchicha_ranchera: 1 }, 'ad12': { salchicha_americana: 1 }, 'ad13': { chorizo_santarrosano: 1 }
         };
 
+        // ==========================================
+        // SISTEMA DE USUARIOS Y ROLES
+        // ==========================================
+        const POS_USERS = {
+            'ADMIN':      { pass: '1234',     role: 'admin',          name: 'Administrador' },
+            'PERROSLA30': { pass: '1234',     role: 'admin',          name: 'Administrador' },
+            'JUANJO':     { pass: 'juanjo1',  role: 'mesero',         name: 'Juanjo' },
+            'NATALIA':    { pass: 'natalia1', role: 'mesero',         name: 'Natalia' },
+            'JUNIOR':     { pass: 'junior1',  role: 'mesero',         name: 'Junior' },
+            'SEBAS':      { pass: 'sebas1',   role: 'mesero',         name: 'Sebas' },
+            'RECEPCION':  { pass: 'recep1',   role: 'recepcionista',  name: 'Recepcionista' },
+        };
+
         window.state = {
             isAuthenticated: sessionStorage.getItem('pos_auth') === 'true',
             currentUser: null, currentView: 'mesero', kitchenStation: 'perrero',
-            waiterName: '', selectedTables: [], isMultipleTableMode: false,
+            currentRole: sessionStorage.getItem('pos_role') || null,
+            currentUserName: sessionStorage.getItem('pos_username') || null,
+            waiterName: sessionStorage.getItem('pos_username') || '', selectedTables: [], isMultipleTableMode: false,
             currentOrderItems: [], generalNote: '',
             domiOrderItems: [], domiAddress: '', domiPhone: '', domiName: '', domiFee: 0, domiNote: '',
             orderCounter: 1, kitchenTickets: [], cashierOrders: [], historyOrders: [], historyCierres: [],
@@ -1013,7 +1064,7 @@
             historySearchTerm: '', recetaFilterTerm: '',
             editingRecipeProductId: null, editingRecipeProductName: '', editingRecipeItems: {},
             recipes: {},
-            printMode: sessionStorage.getItem('pos_printMode') || null,
+            printMode: sessionStorage.getItem('pos_printMode') || 'manual',
             fiscalData: {}
         };
 
@@ -1031,41 +1082,85 @@
             return flat;
         };
 
-        // --- SISTEMA DE LOGIN DE SEGURIDAD ---
+        // --- SISTEMA DE LOGIN CON ROLES ---
         window.attemptLogin = function() {
-            const u = document.getElementById('login-user').value.toUpperCase().trim();
+            const u = document.getElementById('login-user').value.toUpperCase().trim().replace(/\s/g,'');
             const p = document.getElementById('login-pass').value.trim();
             
-            if ((u === 'PERROS LA 30' || u === 'PERROSLA30') && p === '1234') {
+            const userEntry = POS_USERS[u];
+            if (userEntry && userEntry.pass === p) {
                 window.state.isAuthenticated = true;
+                window.state.currentRole = userEntry.role;
+                window.state.currentUserName = userEntry.name;
                 sessionStorage.setItem('pos_auth', 'true');
+                sessionStorage.setItem('pos_role', userEntry.role);
+                sessionStorage.setItem('pos_username', userEntry.name);
                 document.getElementById('login-screen').classList.add('opacity-0');
                 setTimeout(() => {
                     document.getElementById('login-screen').classList.add('hidden');
                     document.getElementById('app-wrapper').classList.remove('hidden');
                     document.getElementById('app-wrapper').classList.add('flex');
+                    window.adaptUIForRole(userEntry.role, userEntry.name);
                 }, 300);
-                window.showToast('Bienvenido a Perros La 30');
-                if (!window.state.printMode) {
-                    setTimeout(() => {
-                        document.getElementById('printer-mode-modal').classList.remove('hidden');
-                        lucide.createIcons();
-                    }, 400);
-                }
+                window.showToast(`¡Bienvenid@ ${userEntry.name}!`);
             } else {
                 window.showToast('Usuario o contraseña incorrectos', 'error');
+                const loginBtn = document.querySelector('#login-screen button');
+                if(loginBtn) { loginBtn.classList.add('bg-red-800'); setTimeout(()=>loginBtn.classList.remove('bg-red-800'),500); }
             }
+        };
+
+        window.adaptUIForRole = function(role, name) {
+            const adminItems = ['menu-caja','menu-editar-menu','menu-nomina','menu-historial','menu-inventario','menu-estadisticas','menu-recetas','menu-fiscal'];
+            const meserosItems = ['menu-mesero','menu-domicilios','menu-mis-pedidos','menu-cocina'];
+            
+            if (role === 'admin') {
+                // Admin ve todo, está desbloqueado
+                window.state.isAdminUnlocked = true;
+                const badge = document.getElementById('admin-unlocked-badge');
+                if(badge) { badge.classList.remove('hidden'); badge.classList.add('flex'); }
+                adminItems.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('hidden'); });
+                meserosItems.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('hidden'); });
+                document.getElementById('menu-mis-pedidos')?.classList.add('hidden');
+                // Admin puede tomar pedidos como cualquier mesero
+                const waiterSel = document.getElementById('waiter-name');
+                if(waiterSel) { waiterSel.value = ''; }
+                window.switchView('mesero');
+            } else if (role === 'mesero') {
+                // Mesero solo ve su vista y sus pedidos
+                adminItems.forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('hidden'); });
+                const misPedidosBtn = document.getElementById('menu-mis-pedidos');
+                if(misPedidosBtn) misPedidosBtn.classList.remove('hidden');
+                // Auto-seleccionar nombre del mesero
+                window.state.waiterName = name;
+                const waiterSel = document.getElementById('waiter-name');
+                if(waiterSel) { waiterSel.value = name; }
+                window.switchView('mesero');
+            } else if (role === 'recepcionista') {
+                adminItems.forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('hidden'); });
+                document.getElementById('menu-mesero')?.classList.add('hidden');
+                document.getElementById('menu-mis-pedidos')?.classList.add('hidden');
+                window.switchView('domicilios');
+            }
+            
+            // Mostrar nombre del usuario en el header
+            const userNameEl = document.getElementById('header-user-name');
+            if(userNameEl) userNameEl.textContent = name;
         };
 
         window.logout = function() {
             window.state.isAuthenticated = false;
+            window.state.currentRole = null;
+            window.state.currentUserName = null;
             sessionStorage.removeItem('pos_auth');
+            sessionStorage.removeItem('pos_role');
+            sessionStorage.removeItem('pos_username');
             document.getElementById('login-user').value = '';
             document.getElementById('login-pass').value = '';
             document.getElementById('app-wrapper').classList.add('hidden');
             document.getElementById('app-wrapper').classList.remove('flex');
             document.getElementById('login-screen').classList.remove('hidden', 'opacity-0');
-            window.toggleSidebar();
+            if(!document.getElementById('sidebar').classList.contains('-translate-x-full')) window.toggleSidebar();
         };
 
         window.getSafeNumber = function(val, fallback = 0) {
@@ -1703,6 +1798,164 @@
             }
         };
 
+        // ==========================================
+        // MIS PEDIDOS - VISTA PERSONAL DEL MESERO
+        // ==========================================
+        window.currentMisPedidosTab = 'cocina';
+
+        window.setMisPedidosTab = function(tab) {
+            window.currentMisPedidosTab = tab;
+            ['cocina','listo','cuentas'].forEach(t => {
+                const btn = document.getElementById(`tab-mp-${t}`);
+                if(btn) {
+                    if(t === tab) btn.className = 'flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-all bg-white text-red-600 shadow';
+                    else btn.className = 'flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-all text-gray-500 hover:bg-white';
+                }
+            });
+            window.renderMisPedidos();
+        };
+
+        window.renderMisPedidos = function() {
+            const container = document.getElementById('mis-pedidos-container');
+            if (!container) return;
+            const myName = window.state.currentUserName || window.state.waiterName;
+            const tab = window.currentMisPedidosTab;
+
+            // Mis tickets en cocina
+            const myKitchenTickets = window.state.kitchenTickets.filter(t => t.waiter === myName || t.type === 'domicilio');
+            // Mis órdenes en caja (sin pagar)
+            const myCashierOrders = window.state.cashierOrders.filter(o => o.waiter === myName || o.type === 'domicilio');
+            // Órdenes entregadas (tiene deliveredAt)
+            const myDeliveredOrders = myCashierOrders.filter(o => o.deliveredAt);
+            // Órdenes listas (kitchen terminado pero no entregadas)
+            const myReadyOrders = myCashierOrders.filter(o => {
+                if(o.deliveredAt) return false;
+                const hasKitchen = myKitchenTickets.some(t => t.orderId == o.orderId);
+                return !hasKitchen; // Si no hay ticket en cocina, está listo
+            });
+            // En proceso (tiene tickets en cocina)
+            const myInProcessOrders = myCashierOrders.filter(o => {
+                if(o.deliveredAt) return false;
+                return myKitchenTickets.some(t => t.orderId == o.orderId);
+            });
+
+            // Actualizar badges
+            const bdgCocina = document.getElementById('badge-mp-cocina');
+            const bdgListo = document.getElementById('badge-mp-listo');
+            const bdgCuentas = document.getElementById('badge-mp-cuentas');
+            if(bdgCocina) bdgCocina.textContent = myInProcessOrders.length;
+            if(bdgListo) bdgListo.textContent = myReadyOrders.length;
+            if(bdgCuentas) bdgCuentas.textContent = myCashierOrders.length;
+
+            // Total en caja de mis órdenes
+            const myTotal = myCashierOrders.reduce((a,o) => a + (o.total || 0), 0);
+            const totalBadge = document.getElementById('mis-pedidos-total-badge');
+            if(totalBadge) totalBadge.textContent = `Mi total: ${window.formatCurrency(myTotal)}`;
+
+            // Badge en sidebar
+            const sideBadge = document.getElementById('menu-badge-mis-pedidos');
+            const totalPending = myInProcessOrders.length + myReadyOrders.length;
+            if(sideBadge) { 
+                if(totalPending > 0) { sideBadge.textContent = totalPending; sideBadge.classList.remove('hidden'); }
+                else sideBadge.classList.add('hidden');
+            }
+
+            let ordersToShow = [];
+            if(tab === 'cocina') ordersToShow = myInProcessOrders;
+            else if(tab === 'listo') ordersToShow = myReadyOrders;
+            else ordersToShow = myCashierOrders;
+
+            if(ordersToShow.length === 0) {
+                const msgs = { cocina: 'No tienes órdenes en cocina ahora.', listo: '¡Todo entregado! No hay órdenes listas.', cuentas: 'No tienes cuentas activas.' };
+                container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center text-gray-400 mt-16"><i data-lucide="check-circle" class="w-16 h-16 mb-4 text-green-200"></i><p class="text-xl font-semibold">${msgs[tab]}</p></div>`;
+                lucide.createIcons();
+                return;
+            }
+
+            container.innerHTML = ordersToShow.map(order => {
+                const myTickets = myKitchenTickets.filter(t => t.orderId == order.orderId);
+                const isReady = tab === 'listo';
+                const headerColor = tab === 'cocina' ? 'bg-red-500' : (tab === 'listo' ? 'bg-green-500' : 'bg-gray-800');
+                
+                let kitchenHTML = '';
+                if(tab === 'cocina' && myTickets.length > 0) {
+                    kitchenHTML = myTickets.map(t => `
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mt-2">
+                            <p class="text-xs font-bold text-yellow-700 uppercase mb-2">🔥 En Cocina (${t.station})</p>
+                            ${t.items.map(item => `
+                                <div class="flex items-start gap-2 py-1 border-b border-yellow-100 last:border-0">
+                                    <span class="font-black text-xl text-gray-800 w-8 shrink-0">${item.quantity}x</span>
+                                    <div>
+                                        <p class="font-bold text-gray-800 text-base">${item.name}</p>
+                                        ${item.note ? `<p class="text-red-600 font-bold text-base bg-red-50 px-2 py-1 rounded mt-1">📝 ${item.note}</p>` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                            ${t.generalNote ? `<p class="mt-2 bg-orange-100 text-orange-800 p-2 rounded font-bold text-sm">⚠️ ${t.generalNote}</p>` : ''}
+                        </div>
+                    `).join('');
+                }
+
+                const deliverBtn = (tab === 'listo') ? `
+                    <button onclick="window.markOrderDelivered(${order.orderId})" class="w-full bg-green-500 hover:bg-green-600 text-white font-black py-3 rounded-xl flex items-center justify-center gap-2 shadow transition-all active:scale-95">
+                        <i data-lucide="check-circle" class="w-5 h-5"></i> Marcar como Entregado
+                    </button>` : '';
+
+                return `
+                <div class="bg-white rounded-xl border-2 ${isReady ? 'border-green-300' : 'border-gray-200'} shadow-md overflow-hidden flex flex-col">
+                    <div class="${headerColor} text-white p-3 flex justify-between items-center">
+                        <span class="font-black text-xl">${order.table}</span>
+                        <span class="font-bold">Orden #${order.orderId}</span>
+                    </div>
+                    <div class="p-4 flex-1 space-y-2">
+                        <p class="text-xs text-gray-500">⏰ ${order.timestamp}</p>
+                        ${order.items.map(item => `
+                            <div class="border-b border-gray-100 pb-2 last:border-0">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-black text-xl text-gray-900">${item.quantity}x</span>
+                                    <span class="font-bold text-gray-800 text-base">${item.name}</span>
+                                    <span class="ml-auto text-gray-600 font-semibold text-sm">${window.formatCurrency(item.price * item.quantity)}</span>
+                                </div>
+                                ${item.note ? `<p class="ml-8 mt-1 text-red-700 font-bold text-base bg-red-50 border border-red-200 px-2 py-1 rounded">📝 ${item.note}</p>` : ''}
+                            </div>
+                        `).join('')}
+                        ${kitchenHTML}
+                        ${order.generalNote ? `<p class="bg-orange-50 border border-orange-200 p-2 rounded text-orange-800 font-bold text-sm mt-2">⚠️ Nota: ${order.generalNote}</p>` : ''}
+                        <div class="pt-2 border-t border-gray-200 flex justify-between items-center font-black text-lg">
+                            <span class="text-gray-600">Total:</span>
+                            <span class="text-green-600">${window.formatCurrency(order.total)}</span>
+                        </div>
+                    </div>
+                    <div class="p-3 space-y-2">
+                        ${deliverBtn}
+                        ${tab === 'cuentas' ? `
+                        <div class="flex gap-2">
+                            <button onclick="window.editOrder(${order.orderId}); window.switchView('mesero');" class="flex-1 bg-yellow-100 text-yellow-700 font-bold py-3 rounded-xl flex items-center justify-center gap-1 hover:bg-yellow-200 active:scale-95">
+                                <i data-lucide="edit-2" class="w-4 h-4"></i> Editar
+                            </button>
+                            <button onclick="window.printTicket('caja','${order.orderId}')" class="flex-1 bg-gray-100 text-gray-700 font-bold py-3 rounded-xl flex items-center justify-center gap-1 hover:bg-gray-200 active:scale-95">
+                                <i data-lucide="printer" class="w-4 h-4"></i> Cuenta
+                            </button>
+                        </div>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+            lucide.createIcons();
+        };
+
+        window.markOrderDelivered = async function(orderId) {
+            const order = window.state.cashierOrders.find(o => o.orderId == orderId);
+            if(!order) return;
+            try {
+                const now = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'cashierOrders', orderId.toString()), 
+                    { ...order, deliveredAt: now }, { merge: true });
+                window.showToast(`✅ Orden #${orderId} marcada como entregada`);
+            } catch(e) {
+                console.error(e); window.showToast('Error al marcar entrega', 'error');
+            }
+        };
+
         window.updateBadges = function() {
             const kb = document.getElementById('badge-cocina'); const cb = document.getElementById('badge-caja');
             const mkb = document.getElementById('menu-badge-cocina'); const mcb = document.getElementById('menu-badge-caja');
@@ -1904,7 +2157,7 @@
                     let paymentMethodBadge = '';
                     if (isPaid && order.payment) {
                         const m = order.payment.method;
-                        const mText = m === 'efectivo' ? '💵 Efectivo' : (m === 'transferencia' ? '📱 Transf.' : '⚖️ Mixto');
+                        const mText = m === 'efectivo' ? '💵 Efectivo' : (m === 'transferencia' ? '📱 Transf.' : (m === 'datafono' ? '💳 Datáfono' : '⚖️ Mixto'));
                         paymentMethodBadge = `<span class="bg-gray-200 text-gray-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase">${mText}</span>`;
                     }
 
@@ -1994,7 +2247,7 @@
         };
 
         window.renderEstadisticas = function() {
-            let totalVentas = 0, totalOrders = 0, totalEfectivo = 0, totalTransf = 0;
+            let totalVentas = 0, totalOrders = 0, totalEfectivo = 0, totalTransf = 0, totalDatafono = 0;
             const itemsSold = {};
 
             window.state.historyOrders.forEach(order => {
@@ -2004,6 +2257,7 @@
                     let orderTotal = window.getSafeNumber(order.total, 0);
                     let vEfectivo = order.payment ? window.getSafeNumber(order.payment.cashAmount, 0) : orderTotal;
                     let vTransf = order.payment ? window.getSafeNumber(order.payment.transferAmount, 0) : 0;
+                    let vDatafono = order.payment ? window.getSafeNumber(order.payment.datafonoAmount, 0) : 0;
 
                     if(order.type === 'domicilio') {
                         const fee = window.getSafeNumber(order.domiFee, 0);
@@ -2018,6 +2272,7 @@
 
                     totalEfectivo += vEfectivo;
                     totalTransf += vTransf;
+                    totalDatafono += vDatafono;
 
                     if(order.items && Array.isArray(order.items)){
                         order.items.forEach(item => {
@@ -2039,10 +2294,10 @@
             window.salesChartInstance = new Chart(ctxPayment, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Efectivo', 'Nequi / Transferencia'],
+                    labels: ['Efectivo', 'Nequi / Transferencia', 'Datáfono'],
                     datasets: [{
-                        data: [totalEfectivo, totalTransf],
-                        backgroundColor: ['#22c55e', '#a855f7'],
+                        data: [totalEfectivo, totalTransf, totalDatafono],
+                        backgroundColor: ['#22c55e', '#a855f7', '#3b82f6'],
                         hoverOffset: 4
                     }]
                 },
@@ -2240,7 +2495,7 @@
 
         window.switchView = function(view) {
             window.state.currentView = view;
-            ['mesero', 'cocina', 'caja', 'historial', 'inventario', 'domicilios', 'estadisticas', 'nomina', 'editar-menu', 'recetas'].forEach(v => {
+            ['mesero', 'cocina', 'caja', 'historial', 'inventario', 'domicilios', 'estadisticas', 'nomina', 'editar-menu', 'recetas', 'mis-pedidos'].forEach(v => {
                 const viewEl = document.getElementById(`view-${v}`); if(viewEl) viewEl.classList.add('hidden');
                 const menuBtn = document.getElementById(`menu-${v}`);
                 if(menuBtn) {
@@ -2257,6 +2512,7 @@
             if(view === 'estadisticas') window.renderEstadisticas();
             if(view === 'editar-menu') window.renderEditMenu();
             if(view === 'recetas') window.renderRecetasView();
+            if(view === 'mis-pedidos') window.renderMisPedidos();
             const sidebar = document.getElementById('sidebar'); if (!sidebar.classList.contains('-translate-x-full')) window.toggleSidebar();
         };
 
@@ -2317,7 +2573,7 @@
                 document.getElementById('btn-clear-order').classList.add('hidden');
             } else {
                 document.getElementById('btn-clear-order').classList.remove('hidden');
-                container.innerHTML = window.state.currentOrderItems.map((item, index) => `<div class="bg-white p-3 rounded-lg shadow-sm border text-sm relative group"><div class="flex justify-between items-start mb-2 pr-6"><span class="font-bold text-gray-800">${item.name}</span><span class="font-semibold text-gray-600 whitespace-nowrap">${window.formatCurrency(item.price * item.quantity)}</span></div><div class="flex justify-between items-center"><div class="flex items-center space-x-3 bg-gray-100 rounded-lg p-1"><button onclick="window.updateItemQuantity(${index}, -1)" class="p-1 bg-white rounded shadow-sm text-red-600 hover:bg-red-50"><i data-lucide="minus" class="w-4 h-4"></i></button><span class="font-bold w-4 text-center">${item.quantity}</span><button onclick="window.updateItemQuantity(${index}, 1)" class="p-1 bg-white rounded shadow-sm text-green-600 hover:bg-green-50"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div><button onclick="window.removeItem(${index})" class="absolute top-3 right-3 text-gray-300 hover:text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="mt-3 bg-gray-50 p-2 rounded-lg border border-gray-200 flex items-start gap-2 focus-within:border-red-400 focus-within:bg-white transition-all shadow-inner"><i data-lucide="message-square" class="text-gray-400 mt-0.5 flex-shrink-0 w-4 h-4"></i><textarea rows="1" placeholder="Especificaciones..." oninput="window.updateItemNoteText(${index}, this.value, this)" class="w-full text-sm bg-transparent outline-none resize-none overflow-hidden text-gray-700">${item.note}</textarea></div></div>`).join('');
+                container.innerHTML = window.state.currentOrderItems.map((item, index) => `<div class="bg-white p-3 rounded-lg shadow-sm border text-sm relative group"><div class="flex justify-between items-start mb-2 pr-6"><span class="font-bold text-gray-800">${item.name}</span><span class="font-semibold text-gray-600 whitespace-nowrap">${window.formatCurrency(item.price * item.quantity)}</span></div><div class="flex justify-between items-center"><div class="flex items-center space-x-3 bg-gray-100 rounded-lg p-1"><button onclick="window.updateItemQuantity(${index}, -1)" class="p-1 bg-white rounded shadow-sm text-red-600 hover:bg-red-50"><i data-lucide="minus" class="w-4 h-4"></i></button><span class="font-bold w-4 text-center">${item.quantity}</span><button onclick="window.updateItemQuantity(${index}, 1)" class="p-1 bg-white rounded shadow-sm text-green-600 hover:bg-green-50"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div><button onclick="window.removeItem(${index})" class="absolute top-3 right-3 text-gray-300 hover:text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="mt-3 bg-red-50 p-2 rounded-lg border border-red-200 flex items-start gap-2 focus-within:border-red-400 focus-within:bg-white transition-all shadow-inner"><i data-lucide="message-square" class="text-red-400 mt-0.5 flex-shrink-0 w-5 h-5"></i><textarea rows="2" placeholder="Especificaciones del producto..." oninput="window.updateItemNoteText(${index}, this.value, this)" class="w-full text-base font-semibold bg-transparent outline-none resize-none overflow-hidden text-gray-700 placeholder:text-gray-400 placeholder:font-normal">${item.note}</textarea></div></div>`).join('');
             }
             const total = window.state.currentOrderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
             document.getElementById('cart-total').innerText = window.formatCurrency(total);
@@ -2597,9 +2853,11 @@
                 document.getElementById('success-modal').classList.remove('hidden');
                 lucide.createIcons();
 
-                // DISPARAR IMPRESIÓN AUTOMÁTICA
-                window.printTicket('last-cocina');
-                window.printTicket('last-caja');
+                // AUTO-IMPRIMIR SOLO COCINA (la cuenta se imprime manualmente si se necesita)
+                const kitchenPrinted = window.printTicket('last-cocina');
+                // Mostrar botón de cuenta si hay items de cocina
+                const subtitleEl = document.getElementById('success-subtitle');
+                if(subtitleEl) subtitleEl.textContent = '✅ Comanda enviada a cocina automáticamente';
             }
 
             setTimeout(async () => {
@@ -2644,11 +2902,22 @@
         
         window.setPaymentMethod = function(method) {
             window.state.paymentMethod = method;
-            const btnEfectivo = document.getElementById('btn-pay-efectivo'); const btnTransf = document.getElementById('btn-pay-transferencia'); const btnMixto = document.getElementById('btn-pay-dividido'); const mixedSection = document.getElementById('pay-mixed-section');
-            btnEfectivo.className = "border-2 border-gray-200 hover:border-green-500 hover:bg-green-50 text-gray-600 font-bold py-2 rounded-xl transition-colors"; btnTransf.className = "border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-gray-600 font-bold py-2 rounded-xl transition-colors"; btnMixto.className = "w-full border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 text-gray-600 font-bold py-2 rounded-xl transition-colors mb-4"; mixedSection.classList.add('hidden');
-            if (method === 'efectivo') { btnEfectivo.className = "border-2 border-green-500 bg-green-50 text-green-700 font-bold py-2 rounded-xl transition-colors"; } 
-            else if (method === 'transferencia') { btnTransf.className = "border-2 border-purple-500 bg-purple-50 text-purple-700 font-bold py-2 rounded-xl transition-colors"; } 
-            else if (method === 'dividido') { btnMixto.className = "w-full border-2 border-blue-500 bg-blue-50 text-blue-700 font-bold py-2 rounded-xl transition-colors mb-4"; mixedSection.classList.remove('hidden'); document.getElementById('mixed-cash-input').value = ''; document.getElementById('mixed-transfer-display').innerText = window.formatCurrency(window.state.pendingPayOrder.total); }
+            const btnEfectivo = document.getElementById('btn-pay-efectivo'); 
+            const btnTransf = document.getElementById('btn-pay-transferencia'); 
+            const btnDatf = document.getElementById('btn-pay-datafono');
+            const btnMixto = document.getElementById('btn-pay-dividido'); 
+            const mixedSection = document.getElementById('pay-mixed-section');
+            // Reset all
+            const baseClass = "border-2 border-gray-200 hover:border-green-500 hover:bg-green-50 text-gray-600 font-bold py-2 rounded-xl transition-colors";
+            if(btnEfectivo) btnEfectivo.className = baseClass;
+            if(btnTransf) btnTransf.className = "border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-gray-600 font-bold py-2 rounded-xl transition-colors";
+            if(btnDatf) btnDatf.className = "col-span-2 border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 text-gray-600 font-bold py-2 rounded-xl transition-colors";
+            if(btnMixto) btnMixto.className = "w-full border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 text-gray-600 font-bold py-2 rounded-xl transition-colors mb-4"; 
+            if(mixedSection) mixedSection.classList.add('hidden');
+            if (method === 'efectivo') { if(btnEfectivo) btnEfectivo.className = "border-2 border-green-500 bg-green-50 text-green-700 font-bold py-2 rounded-xl transition-colors"; } 
+            else if (method === 'transferencia') { if(btnTransf) btnTransf.className = "border-2 border-purple-500 bg-purple-50 text-purple-700 font-bold py-2 rounded-xl transition-colors"; } 
+            else if (method === 'datafono') { if(btnDatf) btnDatf.className = "col-span-2 border-2 border-blue-500 bg-blue-50 text-blue-700 font-bold py-2 rounded-xl transition-colors"; }
+            else if (method === 'dividido') { if(btnMixto) btnMixto.className = "w-full border-2 border-blue-500 bg-blue-50 text-blue-700 font-bold py-2 rounded-xl transition-colors mb-4"; if(mixedSection) { mixedSection.classList.remove('hidden'); document.getElementById('mixed-cash-input').value = ''; document.getElementById('mixed-transfer-display').innerText = window.formatCurrency(window.state.pendingPayOrder.total); } }
         };
         
         window.updateMixedTransfer = function() {
@@ -2689,9 +2958,12 @@
 
         window.confirmPayment = function() {
             const order = window.state.pendingPayOrder; const method = window.state.paymentMethod; if (!order) return;
-            let cashAmount = 0; let transferAmount = 0;
-            if (method === 'efectivo') { cashAmount = order.total; } else if (method === 'transferencia') { transferAmount = order.total; } else if (method === 'dividido') { cashAmount = parseInt(document.getElementById('mixed-cash-input').value) || 0; transferAmount = order.total - cashAmount; if(transferAmount < 0) transferAmount = 0; }
-            const paymentData = { method: method, cashAmount: cashAmount, transferAmount: transferAmount };
+            let cashAmount = 0; let transferAmount = 0; let datafonoAmount = 0;
+            if (method === 'efectivo') { cashAmount = order.total; } 
+            else if (method === 'transferencia') { transferAmount = order.total; } 
+            else if (method === 'datafono') { datafonoAmount = order.total; }
+            else if (method === 'dividido') { cashAmount = parseInt(document.getElementById('mixed-cash-input').value) || 0; transferAmount = order.total - cashAmount; if(transferAmount < 0) transferAmount = 0; }
+            const paymentData = { method: method, cashAmount: cashAmount, transferAmount: transferAmount, datafonoAmount: datafonoAmount };
             window.processPayOrder(order, paymentData); window.closePayModal();
         };
 
@@ -2819,14 +3091,18 @@
                 window.state.kitchenTickets = [];
                 snapshot.forEach(doc => window.state.kitchenTickets.push(doc.data()));
                 window.state.kitchenTickets.sort((a,b) => a.orderId - b.orderId);
-                window.updateBadges(); if (window.state.currentView === 'cocina') window.renderKitchen();
+                window.updateBadges(); 
+                if (window.state.currentView === 'cocina') window.renderKitchen();
+                if (window.state.currentView === 'mis-pedidos') window.renderMisPedidos();
             }, (e) => console.error(e));
 
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'cashierOrders'), (snapshot) => {
                 window.state.cashierOrders = [];
                 snapshot.forEach(doc => window.state.cashierOrders.push(doc.data()));
                 window.state.cashierOrders.sort((a,b) => a.orderId - b.orderId);
-                window.updateBadges(); if (window.state.currentView === 'caja') window.renderCashier();
+                window.updateBadges(); 
+                if (window.state.currentView === 'caja') window.renderCashier();
+                if (window.state.currentView === 'mis-pedidos') window.renderMisPedidos();
                 if(!document.getElementById('active-orders-modal').classList.contains('hidden')) window.renderActiveOrdersModal();
             }, (e) => console.error(e));
 
@@ -2888,19 +3164,16 @@
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('app-wrapper').classList.remove('hidden');
                 document.getElementById('app-wrapper').classList.add('flex');
+                // Restaurar rol de sesión guardada
+                const savedRole = window.state.currentRole;
+                const savedName = window.state.currentUserName;
+                if(savedRole && savedName) {
+                    window.adaptUIForRole(savedRole, savedName);
+                }
             }
             
             window.initAuth();
             window.updatePrintModeBadge();
-            // Mostrar selector de modo impresión si no ha sido configurado en esta sesión
-            if (!window.state.printMode) {
-                setTimeout(() => {
-                    if (window.state.isAuthenticated) {
-                        document.getElementById('printer-mode-modal').classList.remove('hidden');
-                        lucide.createIcons();
-                    }
-                }, 600);
-            }
         };
 
         if (document.readyState === 'loading') {
