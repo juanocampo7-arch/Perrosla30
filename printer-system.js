@@ -1,5 +1,6 @@
 // ==========================================
-// SISTEMA DE IMPRESIÓN MEJORADO
+// SISTEMA DE IMPRESIÓN MEJORADO v2
+// SIN POPUPS - SILENCIOSO Y CONFIABLE
 // ==========================================
 
 window.printerConfig = {
@@ -21,6 +22,12 @@ window.printerConfig = {
     printQueue: [],
     isPrinting: false,
     printMode: sessionStorage.getItem('pos_printMode') || 'manual',
+    printHistory: [], // Guardar historial de intentos
+
+    // Detectar si es dispositivo móvil
+    isMobileDevice: function() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    },
 
     // Enviar a impresora LAN (sin abrir pestaña)
     sendToLANPrinter: async function(ticketHTML, printerType) {
@@ -49,19 +56,39 @@ window.printerConfig = {
 
             await Promise.race([request, timeout]);
             console.log(`✅ Enviado a impresora ${printerType}`);
+            this.logPrintAttempt(printerType, true);
             return true;
 
         } catch (error) {
             console.warn(`❌ Impresora LAN no disponible: ${error.message}`);
+            this.logPrintAttempt(printerType, false, error.message);
             return false;
         }
     },
 
-    // Impresión vía popup (sin visible, solo para imprimir)
+    // Registrar intentos de impresión (para debugging)
+    logPrintAttempt: function(printerType, success, errorMsg = '') {
+        this.printHistory.push({
+            timestamp: new Date().toISOString(),
+            printer: printerType,
+            success: success,
+            error: errorMsg
+        });
+        // Guardar últimos 50 intentos
+        if (this.printHistory.length > 50) {
+            this.printHistory.shift();
+        }
+    },
+
+    // Impresión vía iframe OCULTO (silenciosa, sin popup)
     printViaHiddenFrame: function(ticketHTML, onComplete) {
         try {
             const iframe = document.createElement('iframe');
             iframe.style.display = 'none';
+            iframe.style.position = 'absolute';
+            iframe.style.width = '0';
+            iframe.style.height = '0';
+            
             iframe.onload = function() {
                 try {
                     iframe.contentWindow.document.write(ticketHTML);
@@ -69,16 +96,29 @@ window.printerConfig = {
                     iframe.contentWindow.focus();
                     
                     setTimeout(() => {
-                        iframe.contentWindow.print();
+                        try {
+                            iframe.contentWindow.print();
+                            console.log('✅ Impresión enviada al navegador');
+                        } catch (e) {
+                            console.error('Error al imprimir:', e);
+                        }
+                        
                         setTimeout(() => {
-                            document.body.removeChild(iframe);
+                            try {
+                                document.body.removeChild(iframe);
+                            } catch (e) {}
                             onComplete();
-                        }, 500);
-                    }, 200);
+                        }, 800);
+                    }, 300);
                 } catch (e) {
-                    console.error('Error en impresión:', e);
+                    console.error('Error en iframe:', e);
                     onComplete();
                 }
+            };
+            
+            iframe.onerror = function() {
+                console.error('Error cargando iframe');
+                onComplete();
             };
             
             document.body.appendChild(iframe);
@@ -102,19 +142,21 @@ window.printerConfig = {
             // Intentar impresora LAN, si falla usa frame oculto
             const sent = await this.sendToLANPrinter(job.html, job.type);
             if (!sent) {
+                console.log('🔄 Fallback: Usando impresión local (iframe)');
                 this.printViaHiddenFrame(job.html, () => this.processPrintQueue());
             } else {
                 setTimeout(() => this.processPrintQueue(), 200);
             }
         } else {
-            // Modo manual: usar frame oculto
+            // Modo manual: usar frame oculto silenciosamente
             this.printViaHiddenFrame(job.html, () => this.processPrintQueue());
         }
     },
 
     // Agregar trabajo a la cola
     queuePrint: function(html, type = 'cocina') {
-        this.printQueue.push({ html, type });
+        this.printQueue.push({ html, type, timestamp: new Date() });
+        console.log(`📋 Trabajo de impresión encolado (${type}). Cola: ${this.printQueue.length}`);
         if (!this.isPrinting) {
             this.processPrintQueue();
         }
@@ -124,6 +166,12 @@ window.printerConfig = {
     setMode: function(mode) {
         this.printMode = mode;
         sessionStorage.setItem('pos_printMode', mode);
+        console.log(`🖨️ Modo de impresión: ${mode}`);
+    },
+
+    // Obtener historial de impresión (para debugging)
+    getPrintHistory: function() {
+        return this.printHistory;
     }
 };
 
@@ -161,6 +209,8 @@ window.printTicket = function(type, id = null) {
         let html = window.generateTicketHTML(format, data);
         window.printerConfig.queuePrint(html, format === 'cocina' ? 'cocina' : 'caja');
     });
+
+    // NO mostrar notificación de éxito aquí - dejar silencioso
 };
 
 // Generar HTML del ticket
