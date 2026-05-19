@@ -1330,15 +1330,14 @@
         // Función para enviar orden al Servidor Local (PC de Administración)
         // IPs de impresoras LAN — se configuran cuando lleguen las impresoras
         window.LAN_PRINTERS = {
-            cocina: '192.168.1.101',  // ← IP impresora cocina (cambiar cuando llegue)
-            caja:   '192.168.1.102',  // ← IP impresora caja   (cambiar cuando llegue)
+            cocina: '192.168.1.200',
             port:   3000
         };
 
         window.sendToLocalPrinterServer = async function(htmlContent, rawData, type) {
             if (window.state.printMode !== 'lan') return false;
             try {
-                const ip = (type === 'caja') ? window.LAN_PRINTERS.caja : window.LAN_PRINTERS.cocina;
+                const ip = window.LAN_PRINTERS.cocina;
                 const ctrl = new AbortController();
                 const tid = setTimeout(() => ctrl.abort(), 3500);
                 const response = await fetch(`http://${ip}:${window.LAN_PRINTERS.port}/print`, {
