@@ -14,7 +14,6 @@
     <meta name="apple-mobile-web-app-title" content="Perros La 30">
     <meta name="theme-color" content="#cc0000">
     <link rel="apple-touch-icon" href="/logo.png">
-    <link rel="manifest" href="/manifest.json">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perros La 30 - Sistema POS</title>
     
@@ -2668,13 +2667,7 @@
             html += `<div class="divider"></div>`;
             html += `<div style="margin-bottom:5px;font-weight:bold;display:flex;font-size:12px;"><span style="width:30px;">CANT</span><span style="flex:1;">PRODUCTO</span><span>TOTAL</span></div><div class="divider"></div>`;
             data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.qty}x</span><span class="item-name">${item.name}</span><span class="item-price">${window.formatCurrency(item.revenue)}</span></div>`; });
-            html += `<div class="divider"></div><p style="font-size:12px;margin-top:20px;">Fin del Reporte</p>
-    <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js');
-      }
-    </script>
-</body></html>`;
+            html += `<div class="divider"></div><p style="font-size:12px;margin-top:20px;">Fin del Reporte</p></div>`;
             
             window.printQueue.push({ html: html, data: data, type: 'caja' });
             if (!window.isPrinting) window.processPrintQueue();
@@ -3571,10 +3564,6 @@
     </div>
 
 
-    <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js');
-      }
-    </script>
+
 </body>
 </html>
