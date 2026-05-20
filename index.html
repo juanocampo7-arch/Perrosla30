@@ -1448,16 +1448,17 @@
                     if(data.payment) { html += `<p style="text-align:right;font-size:12px;">Efectivo: ${window.formatCurrency(data.payment.cashAmount)}<br>Nequi/Transf: ${window.formatCurrency(data.payment.transferAmount)}</p>`; }
                     html += `<p style="margin-top:15px;font-size:12px;">¡Gracias por su compra!</p>`;
                 } else if (format === 'cocina') {
-                    html += `<div class="station-title">${data.station}</div>`;
+                    html += `<div class="station-title" style="font-size:26px;">${data.station}</div>`;
                     if(data.type === 'domicilio') {
-                        html += `<div class="info-text" style="font-size:22px; font-weight:bold; border: 2px solid #000; padding: 4px; margin-bottom: 5px; text-align:center;">DOMICILIO</div><div class="info-text" style="font-size:16px;"><b>Dir:</b> ${data.address}</div>`;
+                        html += `<div class="info-text" style="font-size:26px; font-weight:bold; border: 2px solid #000; padding: 4px; margin-bottom: 5px; text-align:center;">DOMICILIO</div><div class="info-text" style="font-size:20px;"><b>Dir:</b> ${data.address}</div>`;
                     } else {
-                        html += `<div class="info-text" style="font-size:18px;"><b>Mesa:</b> ${data.table}</div>`;
+                        html += `<div class="info-text" style="font-size:22px;"><b>Mesa:</b> ${data.table}</div>`;
                     }
-                    html += `<div class="info-text" style="font-size:16px;"><b>Orden #:</b> ${data.orderId}</div><div class="info-text"><b>Hora:</b> ${data.timestamp}</div><div class="divider" style="border-top:2px solid #000;"></div>`;
-                    data.items.forEach(item => { html += `<div style="font-weight:bold;font-size:18px;margin-top:5px;display:flex;"><span style="margin-right:10px;">${item.quantity}</span><span>${item.name}</span></div>${item.note ? `<div class="note">>> ${item.note}</div>` : ''}<div class="divider"></div>`; });
-                    if (data.generalNote) html += `<div style="margin-top:10px;border:1px solid #000;padding:5px;"><b>NOTA GENERAL:</b><br>${data.generalNote}</div>`;
-                    html += `<p style="margin-top:20px;">--- Fin Comanda ---</p>`;
+                    if(data.waiter) html += `<div class="info-text" style="font-size:22px;"><b>Mesero:</b> ${data.waiter}</div>`;
+                    html += `<div class="info-text" style="font-size:20px;"><b>Orden #:</b> ${data.orderId}</div><div class="info-text" style="font-size:18px;"><b>Hora:</b> ${data.timestamp}</div><div class="divider" style="border-top:2px solid #000;"></div>`;
+                    data.items.forEach(item => { html += `<div style="font-weight:bold;font-size:24px;margin-top:5px;display:flex;"><span style="margin-right:10px;">${item.quantity}</span><span>${item.name}</span></div>${item.note ? `<div class="note" style="font-size:18px;">>> ${item.note}</div>` : ''}<div class="divider"></div>`; });
+                    if (data.generalNote) html += `<div style="margin-top:10px;border:1px solid #000;padding:5px;font-size:20px;"><b>NOTA GENERAL:</b><br>${data.generalNote}</div>`;
+                    html += `<p style="margin-top:20px;font-size:16px;">--- Fin Comanda ---</p>`;
                 }
                 
                 html += `</div></body></html>`;
