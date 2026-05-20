@@ -83,10 +83,12 @@ function enviarAImpresora(buffer, callback) {
 
 http.createServer((req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, ngrok-skip-browser-warning');
     res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
-    res.setHeader('ngrok-skip-browser-warning', 'true');
-    if (req.method === 'OPTIONS') return res.writeHead(204).end();
+    if (req.method === 'OPTIONS') {
+        res.writeHead(204);
+        return res.end();
+    }
 
     // Ruta de impresión
     if (req.method === 'POST' && req.url === '/print') {
