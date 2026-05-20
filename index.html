@@ -1471,13 +1471,7 @@
                     html += `<p style="margin-top:20px;font-size:16px;">--- Fin Comanda ---</p>`;
                 }
                 
-                html += `</div>
-    <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js');
-      }
-    </script>
-</body></html>`;
+                html += `</div>`;
                 window.printQueue.push({ html: html, data: data, type: format });
             });
 
