@@ -8,6 +8,14 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Perros La 30">
+    <meta name="theme-color" content="#cc0000">
+    <link rel="apple-touch-icon" href="/logo.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perros La 30 - Sistema POS</title>
     
     <!-- Etiquetas PWA para instalación de App -->
@@ -1334,13 +1342,15 @@
             port:   3000
         };
 
+        window.NGROK_URL = 'https://dirtiness-shrapnel-tapping.ngrok-free.app';
+
         window.sendToLocalPrinterServer = async function(htmlContent, rawData, type) {
             if (window.state.printMode !== 'lan') return false;
             try {
-                const ip = window.LAN_PRINTERS.cocina;
+                const printUrl = window.NGROK_URL + '/print';
                 const ctrl = new AbortController();
-                const tid = setTimeout(() => ctrl.abort(), 3500);
-                const response = await fetch(`http://${ip}:${window.LAN_PRINTERS.port}/print`, {
+                const tid = setTimeout(() => ctrl.abort(), 8000);
+                const response = await fetch(printUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ html: htmlContent, data: rawData, type: type }),
@@ -1461,7 +1471,13 @@
                     html += `<p style="margin-top:20px;font-size:16px;">--- Fin Comanda ---</p>`;
                 }
                 
-                html += `</div></body></html>`;
+                html += `</div>
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js');
+      }
+    </script>
+</body></html>`;
                 window.printQueue.push({ html: html, data: data, type: format });
             });
 
@@ -2658,7 +2674,13 @@
             html += `<div class="divider"></div>`;
             html += `<div style="margin-bottom:5px;font-weight:bold;display:flex;font-size:12px;"><span style="width:30px;">CANT</span><span style="flex:1;">PRODUCTO</span><span>TOTAL</span></div><div class="divider"></div>`;
             data.items.forEach(item => { html += `<div class="item-row"><span class="item-qty">${item.qty}x</span><span class="item-name">${item.name}</span><span class="item-price">${window.formatCurrency(item.revenue)}</span></div>`; });
-            html += `<div class="divider"></div><p style="font-size:12px;margin-top:20px;">Fin del Reporte</p></body></html>`;
+            html += `<div class="divider"></div><p style="font-size:12px;margin-top:20px;">Fin del Reporte</p>
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js');
+      }
+    </script>
+</body></html>`;
             
             window.printQueue.push({ html: html, data: data, type: 'caja' });
             if (!window.isPrinting) window.processPrintQueue();
@@ -3554,5 +3576,11 @@
         </div>
     </div>
 
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js');
+      }
+    </script>
 </body>
 </html>
