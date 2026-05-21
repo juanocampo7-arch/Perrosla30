@@ -1351,7 +1351,8 @@
                 const tid = setTimeout(() => ctrl.abort(), 8000);
                 const response = await fetch(printUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify({ html: htmlContent, data: rawData, type: type }),
                     signal: ctrl.signal
                 });
