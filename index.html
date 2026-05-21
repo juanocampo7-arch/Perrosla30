@@ -1349,7 +1349,7 @@
                 const printUrl = window.NGROK_URL + '/print';
                 const ctrl = new AbortController();
                 const tid = setTimeout(() => ctrl.abort(), 8000);
-                const response = await fetch(printUrl, {
+                await fetch(printUrl, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'text/plain' },
@@ -1357,7 +1357,7 @@
                     signal: ctrl.signal
                 });
                 clearTimeout(tid);
-                return response.ok;
+                return true;
             } catch (error) {
                 console.warn('Impresora LAN no disponible, usando impresión nativa.');
                 return false;
