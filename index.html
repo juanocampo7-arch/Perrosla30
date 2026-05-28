@@ -203,8 +203,8 @@
                 </button>
                 <button onclick="window.openNgrokConfig()" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
                     <i data-lucide="server" class="w-5 h-5 shrink-0"></i>
-                    <span class="flex-1">Servidor Impresora</span>
-                    <span class="text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">URL</span>
+                    <span class="flex-1">IP Impresora</span>
+                    <span class="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">LAN</span>
                 </button>
 
                 <!-- BOTONES INFERIORES -->
@@ -888,6 +888,10 @@
                     <div class="space-y-2 text-sm">
                         <div class="flex justify-between text-gray-600"><span>Ventas Prod. (Efectivo):</span> <span id="z-ventas-efectivo" class="font-semibold text-gray-900">$0</span></div>
                         <div class="flex justify-between text-gray-600"><span>Ventas Prod. (Nequi/Trans):</span> <span id="z-ventas-transf" class="font-semibold text-gray-900">$0</span></div>
+                        <div class="flex justify-between text-gray-600"><span>Ventas Prod. (Datáfono):</span> <span id="z-ventas-datafono" class="font-semibold text-gray-900">$0</span></div>
+                        <div class="flex justify-between text-green-700 bg-green-50 p-1.5 rounded font-black border border-green-200 text-base">
+                            <span>TOTAL VENTAS:</span> <span id="z-total-ventas">$0</span>
+                        </div>
                         <div class="flex justify-between text-orange-600 bg-orange-50 p-1.5 rounded font-semibold border border-orange-100">
                             <span>Fletes Domicilios (Recaudo):</span> <span id="z-fletes">$0</span>
                         </div>
@@ -1389,7 +1393,7 @@
             port:   3000
         };
 
-        window.NGROK_URL = localStorage.getItem('pos_ngrok_url') || 'https://dirtiness-shrapnel-tapping.ngrok-free.app';
+        window.NGROK_URL = localStorage.getItem('pos_ngrok_url') || 'http://192.168.1.39:3000';
 
         window.saveNgrokUrl = function() {
             const input = document.getElementById('ngrok-url-input');
@@ -2605,7 +2609,7 @@
                 return; 
             }
             
-            let totalRecaudadoVentas = 0, totalEfectivoVentas = 0, totalTransfVentas = 0, totalFletesDomi = 0;
+            let totalRecaudadoVentas = 0, totalEfectivoVentas = 0, totalTransfVentas = 0, totalDatafonoVentas = 0, totalFletesDomi = 0;
             const itemsVendidos = {}; const waiterStats = {}; 
 
             window.state.historyOrders.forEach(order => {
@@ -2614,6 +2618,7 @@
                     let orderTotal = window.getSafeNumber(order.total, 0);
                     let vEfectivo = order.payment ? window.getSafeNumber(order.payment.cashAmount, 0) : orderTotal;
                     let vTransf = order.payment ? window.getSafeNumber(order.payment.transferAmount, 0) : 0;
+                    let vDatafono = order.payment ? window.getSafeNumber(order.payment.datafonoAmount, 0) : 0;
 
                     if(order.type === 'domicilio') {
                         const fee = window.getSafeNumber(order.domiFee, 0);
@@ -2629,7 +2634,7 @@
                         totalRecaudadoVentas += orderTotal;
                     }
 
-                    totalEfectivoVentas += vEfectivo; totalTransfVentas += vTransf;
+                    totalEfectivoVentas += vEfectivo; totalTransfVentas += vTransf; totalDatafonoVentas += vDatafono;
 
                     if(order.type !== 'domicilio') {
                         const wName = order.waiter || 'Desconocido';
@@ -2681,15 +2686,18 @@
             const sortedItems = Object.keys(itemsVendidos).map(name => ({ name, qty: itemsVendidos[name].qty, revenue: itemsVendidos[name].revenue })).sort((a, b) => b.qty - a.qty);
             const sortedWaiters = Object.keys(waiterStats).map(name => ({name, ...waiterStats[name]})).sort((a,b) => b.total - a.total);
             
+            const totalTodosMetodos = totalEfectivoVentas + totalTransfVentas + totalDatafonoVentas;
             window.state.zReportData = { 
                 date: new Date().toLocaleDateString('es-CO'), time: new Date().toLocaleTimeString('es-CO'), 
-                totalVentas: totalRecaudadoVentas, efectivo: totalEfectivoVentas, transferencia: totalTransfVentas, totalFletes: totalFletesDomi,
+                totalVentas: totalRecaudadoVentas, efectivo: totalEfectivoVentas, transferencia: totalTransfVentas, datafono: totalDatafonoVentas, totalTodos: totalTodosMetodos, totalFletes: totalFletesDomi,
                 base: base, gastos: totalGastos, efectivoNeto: efectivoNeto, items: sortedItems, waiters: sortedWaiters, expenses: groupedExpensesArray 
             };
             
             if(!silent) {
                 document.getElementById('z-ventas-efectivo').innerText = window.formatCurrency(totalEfectivoVentas);
                 document.getElementById('z-ventas-transf').innerText = window.formatCurrency(totalTransfVentas);
+                document.getElementById('z-ventas-datafono').innerText = window.formatCurrency(totalDatafonoVentas);
+                document.getElementById('z-total-ventas').innerText = window.formatCurrency(totalTodosMetodos);
                 document.getElementById('z-fletes').innerText = window.formatCurrency(totalFletesDomi);
                 document.getElementById('z-base').innerText = "+" + window.formatCurrency(base);
                 document.getElementById('z-gastos').innerText = "-" + window.formatCurrency(totalGastos);
@@ -2905,7 +2913,9 @@
             html += `<p style="text-align:left;font-size:12px;"><b>Fecha:</b> ${data.date}</p><p style="text-align:left;font-size:12px;"><b>Hora:</b> ${data.time}</p><div class="divider"></div>`;
             html += `<div class="summary-row"><span>Total Ventas Prod.:</span><b>${window.formatCurrency(data.totalVentas)}</b></div>`;
             html += `<div class="summary-row"><span>Ventas Efectivo:</span><span>${window.formatCurrency(data.efectivo)}</span></div>`;
-            html += `<div class="summary-row"><span>Ventas Transf:</span><span>${window.formatCurrency(data.transferencia)}</span></div>`;
+            html += `<div class="summary-row"><span>Ventas Transf/Nequi:</span><span>${window.formatCurrency(data.transferencia)}</span></div>`;
+            html += `<div class="summary-row"><span>Ventas Datafono:</span><span>${window.formatCurrency(data.datafono || 0)}</span></div>`;
+            html += `<div class="summary-row" style="font-weight:bold;margin-top:4px;border-top:1px solid #000;padding-top:4px;"><span>TOTAL VENTAS:</span><span>${window.formatCurrency(data.totalTodos || 0)}</span></div>`;
             html += `<div class="summary-row" style="margin-top:5px;"><span>Fletes (Mensajero):</span><span>${window.formatCurrency(data.totalFletes)}</span></div><div class="divider"></div>`;
             html += `<div class="summary-row"><span>Base Inicial:</span><span>+${window.formatCurrency(data.base)}</span></div>`;
             html += `<div class="summary-row"><span>Gastos/Salidas:</span><span>-${window.formatCurrency(data.gastos)}</span></div>`;
@@ -3260,11 +3270,21 @@
             const tableStr = window.state.selectedTables.join(' y ');
             const preparedDrinksIds = ['b7', 'b8', 'b9', 'b10', 'b11', 'b12'];
 
-            const itemsPerrero = window.state.currentOrderItems.filter(i => i.category === 'Perros' || i.id === 'ad1');
-            const itemsHamburguesero = window.state.currentOrderItems.filter(i => i.category === 'Hamburguesas' || i.category === 'Arepas');
+            const PERRERO_ADICS = ['ad1','ad10','ad11','ad12','ad13'];
+            const HAMBURGUESERO_ADICS = ['ad7','ad8','ad9'];
+            // ad2=Tocineta, ad3=Maiz, ad4=Piña Calada, ad5=Queso → solo cuenta, no van a cocina
+
+            const itemsPerrero = window.state.currentOrderItems.filter(i =>
+                i.category === 'Perros' || PERRERO_ADICS.includes(i.id) || i.id === 'd3'
+            );
+            const itemsHamburguesero = window.state.currentOrderItems.filter(i =>
+                i.category === 'Hamburguesas' || i.category === 'Arepas' || HAMBURGUESERO_ADICS.includes(i.id)
+            );
             const itemsGeneral = window.state.currentOrderItems.filter(i => {
                 if (['Perros', 'Hamburguesas', 'Arepas'].includes(i.category)) return false;
-                if (i.id === 'ad1') return false;
+                if (PERRERO_ADICS.includes(i.id) || i.id === 'd3') return false;
+                if (HAMBURGUESERO_ADICS.includes(i.id)) return false;
+                if (['ad2','ad3','ad4','ad5'].includes(i.id)) return false; // solo cuenta
                 if (i.category === 'Bebidas' && !preparedDrinksIds.includes(i.id)) return false;
                 return true; 
             });
@@ -3290,11 +3310,19 @@
             const now = new Date(); const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const preparedDrinksIds = ['b7', 'b8', 'b9', 'b10', 'b11', 'b12'];
             
-            const itemsPerrero = window.state.domiOrderItems.filter(i => i.category === 'Perros' || i.id === 'ad1');
-            const itemsHamburguesero = window.state.domiOrderItems.filter(i => i.category === 'Hamburguesas' || i.category === 'Arepas');
+            const PERRERO_ADICS_D = ['ad1','ad10','ad11','ad12','ad13'];
+            const HAMBURGUESERO_ADICS_D = ['ad7','ad8','ad9'];
+            const itemsPerrero = window.state.domiOrderItems.filter(i =>
+                i.category === 'Perros' || PERRERO_ADICS_D.includes(i.id) || i.id === 'd3'
+            );
+            const itemsHamburguesero = window.state.domiOrderItems.filter(i =>
+                i.category === 'Hamburguesas' || i.category === 'Arepas' || HAMBURGUESERO_ADICS_D.includes(i.id)
+            );
             const itemsGeneral = window.state.domiOrderItems.filter(i => {
                 if (['Perros', 'Hamburguesas', 'Arepas'].includes(i.category)) return false;
-                if (i.id === 'ad1') return false;
+                if (PERRERO_ADICS_D.includes(i.id) || i.id === 'd3') return false;
+                if (HAMBURGUESERO_ADICS_D.includes(i.id)) return false;
+                if (['ad2','ad3','ad4','ad5'].includes(i.id)) return false; // solo cuenta
                 if (i.category === 'Bebidas' && !preparedDrinksIds.includes(i.id)) return false;
                 return true; 
             });
@@ -3728,7 +3756,7 @@
                         <i data-lucide="server" class="w-8 h-8 text-green-400"></i>
                         <div>
                             <h3 class="text-xl font-black">Servidor de Impresión</h3>
-                            <p class="text-gray-400 text-xs mt-0.5">URL del servidor local o ngrok</p>
+                            <p class="text-gray-400 text-xs mt-0.5">IP y puerto del servidor en la red local</p>
                         </div>
                     </div>
                     <button onclick="window.closeNgrokConfig()" class="text-gray-400 hover:text-white p-1 rounded"><i data-lucide="x" class="w-6 h-6"></i></button>
@@ -3737,22 +3765,22 @@
             <div class="p-5 space-y-4">
                 <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-sm text-blue-800">
                     <p class="font-bold mb-1">¿Cómo usarlo?</p>
-                    <p>Cuando llegues al local, abre ngrok en la PC del servidor y copia la URL que te da (<code class="bg-blue-100 px-1 rounded">https://xxxx.ngrok-free.app</code>). Pégala aquí y guarda.</p>
+                    <p>Escribe la IP de la PC donde corre el servidor de impresión, con el puerto. Todos los dispositivos deben estar en la misma red WiFi. Ej: <code class="bg-blue-100 px-1 rounded">http://192.168.1.39:3000</code></p>
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">URL del Servidor</label>
-                    <input type="url" id="ngrok-url-input" placeholder="https://xxxx.ngrok-free.app"
+                    <label class="block text-sm font-bold text-gray-700 mb-2">IP y Puerto del Servidor</label>
+                    <input type="text" id="ngrok-url-input" placeholder="http://192.168.1.39:3000"
                         class="w-full border-2 border-gray-300 rounded-xl p-3 font-mono text-sm focus:border-green-500 outline-none text-gray-700 transition-colors">
                     <p class="text-xs text-gray-400 mt-1">Sin barra al final. Se guarda en este dispositivo.</p>
                 </div>
-                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-xs text-yellow-800">
-                    <b>💡 Tip:</b> Si la URL de ngrok cambia cada vez que reinicias el servidor, activa el modo LAN solo cuando estés en el local. En casa usa Modo Manual.
+                <div class="bg-green-50 border border-green-200 rounded-xl p-3 text-xs text-green-800">
+                    <b>✅ Red local directa:</b> No se necesita ngrok ni internet. Solo asegúrate de que todos los celulares estén conectados al mismo WiFi del local.
                 </div>
             </div>
             <div class="px-5 pb-5 flex gap-2">
                 <button onclick="window.closeNgrokConfig()" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">Cancelar</button>
                 <button onclick="window.saveNgrokUrl()" class="flex-[2] py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-md transition-colors flex items-center justify-center gap-2">
-                    <i data-lucide="save" class="w-5 h-5"></i> Guardar y Conectar
+                    <i data-lucide="save" class="w-5 h-5"></i> Guardar IP
                 </button>
             </div>
         </div>
