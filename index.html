@@ -53,6 +53,7 @@
         body.role-mesero #menu-recetas,
         body.role-mesero #menu-food-cost,
         body.role-mesero #menu-fiscal,
+        body.role-mesero #menu-factura-rapida,
         body.role-mesero #label-admin-section,
         body.role-mesero #label-config-section,
         body.role-mesero #admin-unlocked-badge {
@@ -70,6 +71,7 @@
         body.role-recepcionista #menu-recetas,
         body.role-recepcionista #menu-food-cost,
         body.role-recepcionista #menu-fiscal,
+        body.role-recepcionista #menu-factura-rapida,
         body.role-recepcionista #label-admin-section,
         body.role-recepcionista #label-config-section {
             display: none !important;
@@ -161,6 +163,11 @@
 
                 <!-- SECCIÓN: ADMINISTRACIÓN -->
                 <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2 pt-3 pb-1" id="label-admin-section">Administración</p>
+                <button onclick="window.attemptSwitchView('factura-rapida')" id="menu-factura-rapida" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
+                    <i data-lucide="zap" class="w-5 h-5 shrink-0"></i>
+                    <span class="flex-1">Facturación Rápida</span>
+                    <span class="text-[10px] font-bold bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full">SIN COCINA</span>
+                </button>
                 <button onclick="window.attemptSwitchView('historial')" id="menu-historial" class="flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold transition-all text-gray-600 hover:bg-gray-100 active:scale-95">
                     <i data-lucide="history" class="w-5 h-5 shrink-0"></i>
                     <span class="flex-1">Historial y Cierres</span>
@@ -402,6 +409,62 @@
                 <div id="cashier-container" class="overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start pb-6 content-start" style="max-height:calc(100vh - 280px)"></div>
             </div>
             
+            <!-- VISTA FACTURACIÓN RÁPIDA -->
+            <div id="view-factura-rapida" class="hidden flex flex-col lg:flex-row gap-4 fade-in lg:h-[calc(100vh-7rem)]">
+                <!-- Panel izquierdo: Menú de productos -->
+                <div class="flex-1 flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden h-[55vh] lg:h-full">
+                    <div class="bg-orange-50 border-b border-orange-200 px-4 py-3 shrink-0">
+                        <h2 class="text-lg font-black text-orange-700 flex items-center gap-2">
+                            <i data-lucide="zap" class="w-5 h-5"></i> Facturación Rápida
+                            <span class="text-xs font-bold bg-orange-200 text-orange-800 px-2 py-0.5 rounded-full ml-1">SIN COCINA</span>
+                        </h2>
+                        <p class="text-xs text-orange-600 font-medium">Cobra directamente sin enviar a cocina.</p>
+                    </div>
+                    <div id="fr-categories-container" class="flex overflow-x-auto bg-gray-50 p-2 gap-2 border-b shrink-0 scroll-smooth"></div>
+                    <div class="p-4 overflow-y-auto flex-1 bg-gray-50">
+                        <div id="fr-products-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+                    </div>
+                </div>
+
+                <!-- Panel derecho: Carrito y cobro -->
+                <div class="w-full lg:w-[400px] shrink-0 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col h-[70vh] lg:h-full overflow-hidden">
+                    <div class="p-4 bg-orange-600 text-white rounded-t-xl flex justify-between items-center shrink-0">
+                        <h2 class="text-xl font-bold">Factura Rápida</h2>
+                        <button onclick="window.clearFRCart()" id="btn-clear-fr" class="text-orange-200 hover:text-white p-1.5 bg-orange-700 rounded-full transition-colors flex items-center justify-center active:scale-90">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <div class="p-4 border-b space-y-3 shrink-0 bg-orange-50">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Cliente / Descripción (opcional)</label>
+                            <input type="text" id="fr-client-name" placeholder="Ej: Mesa 5, Cliente VIP..." class="w-full border-2 border-gray-300 rounded-xl p-2 focus:border-orange-500 outline-none text-gray-700 bg-white text-sm font-semibold">
+                        </div>
+                    </div>
+
+                    <div id="fr-cart-items" class="flex-1 overflow-y-auto p-2 space-y-2 bg-gray-50 scroll-smooth"></div>
+
+                    <div class="p-4 border-t bg-white rounded-b-xl shrink-0">
+                        <div class="flex justify-between items-center mb-3 text-lg">
+                            <span class="font-bold text-gray-600">Total:</span>
+                            <span id="fr-cart-total" class="font-extrabold text-2xl text-orange-600">$0</span>
+                        </div>
+                        <!-- Método de pago rápido -->
+                        <div class="mb-3">
+                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Método de Pago</p>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button id="fr-pay-efectivo" onclick="window.setFRPayMethod('efectivo')" class="border-2 border-green-500 bg-green-50 text-green-700 font-bold py-2 rounded-xl text-sm transition-colors active:scale-95">💵 Efectivo</button>
+                                <button id="fr-pay-transferencia" onclick="window.setFRPayMethod('transferencia')" class="border-2 border-gray-200 hover:border-purple-400 text-gray-600 font-bold py-2 rounded-xl text-sm transition-colors active:scale-95">📱 Transfer.</button>
+                                <button id="fr-pay-datafono" onclick="window.setFRPayMethod('datafono')" class="border-2 border-gray-200 hover:border-blue-400 text-gray-600 font-bold py-2 rounded-xl text-sm transition-colors active:scale-95">💳 Datáfono</button>
+                            </div>
+                        </div>
+                        <button onclick="window.processFRSale()" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-black py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-lg active:scale-95">
+                            <i data-lucide="receipt" class="w-6 h-6"></i> Cobrar y Registrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- VISTA EDITAR MENÚ -->
             <div id="view-editar-menu" class="hidden flex flex-col fade-in">
                 <div class="mb-4 shrink-0 flex justify-between items-center">
@@ -1048,7 +1111,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         try {
         // ==========================================
@@ -2977,7 +3040,7 @@
                 if (!meseroAllowed.includes(view)) return;
             }
             window.state.currentView = view;
-            ['mesero', 'cocina', 'caja', 'historial', 'inventario', 'domicilios', 'estadisticas', 'nomina', 'editar-menu', 'recetas', 'mis-pedidos', 'food-cost'].forEach(v => {
+            ['mesero', 'cocina', 'caja', 'historial', 'inventario', 'domicilios', 'estadisticas', 'nomina', 'editar-menu', 'recetas', 'mis-pedidos', 'food-cost', 'factura-rapida'].forEach(v => {
                 const viewEl = document.getElementById(`view-${v}`); if(viewEl) viewEl.classList.add('hidden');
                 const menuBtn = document.getElementById(`menu-${v}`);
                 if(menuBtn) {
@@ -3003,6 +3066,7 @@
             if(view === 'recetas') window.renderRecetasView();
             if(view === 'mis-pedidos') window.renderMisPedidos();
             if(view === 'food-cost') window.renderFoodCost();
+            if(view === 'factura-rapida') window.renderFRView();
             const sidebar = document.getElementById('sidebar'); if (!sidebar.classList.contains('-translate-x-full')) window.toggleSidebar();
         };
 
@@ -3525,6 +3589,26 @@
         };
 
         window.actionNewOrderSameTable = function() { window.state.lastSubmittedOrder = null; document.getElementById('success-modal').classList.add('hidden'); };
+
+        // ── Facturación Rápida: guardar en Firebase desde el scope correcto ──
+        window._frFirebaseSave = function(record, orderId) {
+            setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history_cashierOrders', orderId.toString()), record);
+            // Descontar inventario
+            const inv_updates = {};
+            record.items.forEach(item => {
+                const recipe = (window.state.recipes && window.state.recipes[item.id]) ? window.state.recipes[item.id] : RECIPES[item.id];
+                if (recipe) { for (const [invId, qty] of Object.entries(recipe)) { inv_updates[invId] = (inv_updates[invId] || 0) + qty * item.quantity; } }
+            });
+            for (const [invId, deducted] of Object.entries(inv_updates)) {
+                const current = window.state.inventory[invId]?.stock || 0;
+                const name = window.state.inventory[invId]?.name || invId;
+                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', invId), { name, stock: current - deducted }, { merge: true });
+            }
+            // Incrementar contador de órdenes
+            updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), { value: orderId }).catch(() => {
+                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'orderCounter'), { value: orderId });
+            });
+        };
         window.actionNewOrderOtherTable = function() { window.state.lastSubmittedOrder = null; window.state.selectedTables = []; document.getElementById('success-modal').classList.add('hidden'); window.renderCart(); window.openMapModal(); };
 
         window.initAuth = async () => {
@@ -3715,6 +3799,152 @@
         });
     }
 
+    </script>
+    </script>
+    <!-- SCRIPT FACTURACIÓN RÁPIDA -->
+    <script>
+    (function() {
+        window.frState = { items: [], category: null, payMethod: 'efectivo' };
+
+        window.renderFRView = function() {
+            window.frState.category = window.frState.category || Object.keys(window.state.menu || window.defaultMenu)[0];
+            window.renderFRCategories();
+            window.renderFRProducts();
+            window.renderFRCart();
+            window.setFRPayMethod(window.frState.payMethod || 'efectivo');
+            lucide.createIcons();
+        };
+
+        window.renderFRCategories = function() {
+            const container = document.getElementById('fr-categories-container');
+            if (!container || !window.state.menu) return;
+            container.innerHTML = Object.keys(window.state.menu).map(cat =>
+                `<button onclick="window.changeFRCategory('${cat}')" class="px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${window.frState.category === cat ? 'bg-orange-600 text-white shadow-md' : 'bg-white text-gray-700 border hover:bg-orange-50'}">${cat}</button>`
+            ).join('');
+        };
+
+        window.changeFRCategory = function(cat) {
+            window.frState.category = cat;
+            window.renderFRCategories();
+            window.renderFRProducts();
+        };
+
+        window.renderFRProducts = function() {
+            const container = document.getElementById('fr-products-container');
+            if (!container || !window.state.menu) return;
+            const products = window.state.menu[window.frState.category] || [];
+            container.innerHTML = products.map(p =>
+                `<button onclick="window.addFRItem('${p.id}')" class="bg-white border rounded-lg p-3 text-left shadow-sm hover:shadow-md hover:border-orange-500 transition-all flex flex-col justify-between h-24 active:scale-95"><span class="font-bold text-gray-800 text-sm leading-tight line-clamp-2">${p.name}</span><span class="text-orange-600 font-semibold text-sm">${window.formatCurrency(p.price)}</span></button>`
+            ).join('');
+        };
+
+        window.addFRItem = function(productId) {
+            const product = window.getFlatMenu().find(p => p.id === productId);
+            if (!product) return;
+            const idx = window.frState.items.findIndex(i => i.id === productId);
+            if (idx >= 0) window.frState.items[idx].quantity += 1;
+            else window.frState.items.push({ ...product, quantity: 1 });
+            window.renderFRCart();
+        };
+
+        window.updateFRQty = function(index, delta) {
+            const newQty = window.frState.items[index].quantity + delta;
+            if (newQty > 0) window.frState.items[index].quantity = newQty;
+            else window.frState.items.splice(index, 1);
+            window.renderFRCart();
+        };
+
+        window.clearFRCart = function() {
+            window.frState.items = [];
+            const inp = document.getElementById('fr-client-name');
+            if (inp) inp.value = '';
+            window.renderFRCart();
+            window.showToast('Factura vaciada.', 'error');
+        };
+
+        window.renderFRCart = function() {
+            const container = document.getElementById('fr-cart-items');
+            if (!container) return;
+            if (window.frState.items.length === 0) {
+                container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-gray-300 py-12"><i data-lucide="shopping-cart" class="w-12 h-12 mb-3"></i><p class="font-semibold">Agrega productos del menú</p></div>`;
+                const totalEl = document.getElementById('fr-cart-total');
+                if (totalEl) totalEl.innerText = '$0';
+                lucide.createIcons();
+                return;
+            }
+            let total = 0;
+            container.innerHTML = window.frState.items.map((item, idx) => {
+                const subtotal = item.price * item.quantity;
+                total += subtotal;
+                return `<div class="bg-white rounded-xl border border-gray-200 p-3 flex items-center justify-between shadow-sm">
+                    <div class="flex-1 pr-2">
+                        <p class="font-bold text-gray-800 text-sm leading-tight">${item.name}</p>
+                        <p class="text-xs text-orange-600 font-semibold">${window.formatCurrency(item.price)} × ${item.quantity} = ${window.formatCurrency(subtotal)}</p>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <button onclick="window.updateFRQty(${idx}, -1)" class="w-7 h-7 bg-gray-100 hover:bg-red-100 rounded-full flex items-center justify-center text-gray-600 active:scale-90 transition-colors"><i data-lucide="minus" class="w-3 h-3"></i></button>
+                        <span class="w-6 text-center font-black text-gray-800">${item.quantity}</span>
+                        <button onclick="window.updateFRQty(${idx}, 1)" class="w-7 h-7 bg-gray-100 hover:bg-green-100 rounded-full flex items-center justify-center text-gray-600 active:scale-90 transition-colors"><i data-lucide="plus" class="w-3 h-3"></i></button>
+                    </div>
+                </div>`;
+            }).join('');
+            const totalEl = document.getElementById('fr-cart-total');
+            if (totalEl) totalEl.innerText = window.formatCurrency(total);
+            lucide.createIcons();
+        };
+
+        window.setFRPayMethod = function(method) {
+            window.frState.payMethod = method;
+            const styles = {
+                efectivo:      { on: 'border-2 border-green-500 bg-green-50 text-green-700 font-bold py-2 rounded-xl text-sm transition-colors active:scale-95',   off: 'border-2 border-gray-200 hover:border-green-400 text-gray-600 font-bold py-2 rounded-xl text-sm transition-colors active:scale-95' },
+                transferencia: { on: 'border-2 border-purple-500 bg-purple-50 text-purple-700 font-bold py-2 rounded-xl text-sm transition-colors active:scale-95', off: 'border-2 border-gray-200 hover:border-purple-400 text-gray-600 font-bold py-2 rounded-xl text-sm transition-colors active:scale-95' },
+                datafono:      { on: 'border-2 border-blue-500 bg-blue-50 text-blue-700 font-bold py-2 rounded-xl text-sm transition-colors active:scale-95',         off: 'border-2 border-gray-200 hover:border-blue-400 text-gray-600 font-bold py-2 rounded-xl text-sm transition-colors active:scale-95' }
+            };
+            ['efectivo','transferencia','datafono'].forEach(k => {
+                const btn = document.getElementById('fr-pay-' + k);
+                if (btn) btn.className = styles[k][k === method ? 'on' : 'off'];
+            });
+        };
+
+        window.processFRSale = function() {
+            if (!window.state.currentUser) { window.showToast('Sin conexión a Firebase.', 'error'); return; }
+            if (window.frState.items.length === 0) { window.showToast('Agrega al menos un producto.', 'error'); return; }
+            try {
+                const total = window.frState.items.reduce((acc, i) => acc + i.price * i.quantity, 0);
+                const clientName = (document.getElementById('fr-client-name').value || '').trim() || 'Factura Rápida';
+                const orderId = window.state.orderCounter;
+                const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const method = window.frState.payMethod;
+                const paymentData = {
+                    method: method,
+                    cashAmount: method === 'efectivo' ? total : 0,
+                    transferAmount: method === 'transferencia' ? total : 0,
+                    datafonoAmount: method === 'datafono' ? total : 0
+                };
+                const record = {
+                    orderId: orderId,
+                    table: clientName,
+                    waiter: window.state.currentUserName || 'Admin',
+                    items: window.frState.items.map(i => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity, note: '' })),
+                    total: total,
+                    status: 'paid',
+                    type: 'factura-rapida',
+                    payment: paymentData,
+                    timestamp: timeStr,
+                    actionAt: timeStr
+                };
+                // Usar setDoc/doc del scope global del módulo principal via el wrapper
+                window._frFirebaseSave(record, orderId);
+                window.showToast('✅ Venta #' + orderId + ' registrada — ' + window.formatCurrency(total), 'success');
+                window.frState.items = [];
+                document.getElementById('fr-client-name').value = '';
+                window.renderFRCart();
+            } catch(e) {
+                console.error('Error Facturación Rápida:', e);
+                window.showToast('Error al registrar. Intenta de nuevo.', 'error');
+            }
+        };
+    })();
     </script>
     <!-- MODAL MODO DE IMPRESIÓN -->
     <div id="printer-mode-modal" class="fixed inset-0 bg-black/70 z-[300] flex items-center justify-center p-4 backdrop-blur-sm fade-in">
