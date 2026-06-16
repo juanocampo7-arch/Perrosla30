@@ -53,14 +53,14 @@
         #mesero-tab-bar { display: none; }
 
         @media (max-width: 1023px) {
-            /* Quitar height del contenedor padre */
-            #view-mesero {
-                display: block !important;
-                height: auto !important;
-                padding-bottom: 0 !important;
+            /* CRÍTICO: solo aplicar cuando view-mesero está visible (sin clase hidden) */
+            #view-mesero:not(.hidden) {
+                display: block;
+                height: auto;
+                padding-bottom: 0;
             }
             #mesero-tab-bar {
-                display: grid !important;
+                display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 6px;
                 position: sticky;
@@ -72,7 +72,6 @@
                 margin-bottom: 8px;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.12);
             }
-            /* Cada panel ocupa ventana completa menos header+tabs */
             #mesero-panel-productos {
                 display: block;
                 min-height: 0;
@@ -85,21 +84,18 @@
             }
             #mesero-panel-productos.panel-hidden { display: none !important; }
             #mesero-panel-carrito.panel-visible  { display: block !important; }
-
-            /* El scroll va en el contenido, no en el panel */
             #mesero-panel-productos > div.overflow-y-auto,
             #mesero-panel-carrito > div.overflow-y-auto {
                 height: auto !important;
                 max-height: none !important;
                 overflow-y: visible !important;
             }
-            /* Carrito: sin altura fija */
             #mesero-panel-carrito { height: auto !important; }
         }
 
         @media (min-width: 1024px) {
             #mesero-tab-bar { display: none !important; }
-            #view-mesero { height: calc(100vh - 7rem) !important; display: flex !important; }
+            #view-mesero:not(.hidden) { height: calc(100vh - 7rem) !important; display: flex !important; }
             #mesero-panel-productos { display: flex !important; flex: 1; height: 100%; }
             #mesero-panel-carrito   { display: flex !important; height: 100%; }
         }
